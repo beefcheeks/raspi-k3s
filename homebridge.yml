@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: homebridge
+  labels:
+    app: homebridge
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homebridge
+  namespace: homebridge
+data:
+  script: |+
+    #!/bin/bash
+    # Should make my own docker image with this included, but I'm too lazy
+    # Bluetooth access is required to communicate with my SwitchBots
+    apt update
+    apt install -y bluetooth bluez libbluetooth-dev libudev-dev
+    # Run the bluetooth daemon in the background inside the container (also bad)
+    # For reference: https://stackoverflow.com/a/64126744
+    bluetoothd --debug &
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homebridge
+  namespace: homebridge
+  labels:
+    app: homebridge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homebridge
+  template:
+    metadata:
+      labels:
+        app: homebridge
+      name: homebridge
+    spec:
+      hostNetwork: true
+      containers:
+      - name: homebridge
+        image: oznu/homebridge:debian-raspberry-pi
+        imagePullPolicy: Always
+        env:
+        - name: tz
+          value: 'America/Los_Angeles'
+        # You can change these to ID values to 1000 (ubuntu user) if not using Bluetooth
+        - name: PUID
+          value: '0'
+        - name: PGID
+          value: '0'
+        - name: HOMEBRIDGE_CONFIG_UI
+          value: '1'
+        - name: HOMEBRIDGE_CONFIG_UI_PORT
+          value: '8581'
+        volumeMounts:
+        - name: homebridge
+          mountPath: /homebridge
+          readOnly: false
+        # Comment out the 4 lines directly below this if you don't need Bluetooth
+        - name: scripts
+          mountPath: /homebridge/startup.sh
+          subPath: startup.sh
+          readOnly: true
+        securityContext:
+          privileged: true
+          procMount: Default
+      volumes:
+      - name: homebridge
+        persistentVolumeClaim:
+          claimName: homebridge
+      - name: scripts
+        configMap:
+          name: homebridge
+          items:
+          - key: script
+            path: startup.sh
+            mode: 0111
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: homebridge
+  namespace: homebridge
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
