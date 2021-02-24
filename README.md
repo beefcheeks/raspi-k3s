@@ -82,22 +82,27 @@ rm ~/.kube/k3s-config
 
 Homebridge is a useful tool for converting existing smart devices into homekit compatible ones. You can learn more [here](https://homebridge.io). Running it in a container helps isolate it from other applications and their dependences running on your pi.
 
-### No Bluetooth (probably most people)
+### Bluetooth
 
-Running homebridge inside of container is pretty easy, so long as you don't need Bluetooth access. Without Bluetooth, all you have to do is remove the entire `scripts` element/object from the `volumeMounts` array and apply it. If you want to get extra fancy, you can set the ID values in the env vars section to 1000 instead of 0 so you don't run homebridge as root. Then, simply apply the modified yaml file:
+By default, this container runs with access to bluetooth as some of the homebridge plugins I use require it. Prior to applying the yaml file, be sure disable the bluetooth service on your pi host so it does not conflict with the one running inside the container:
+```
+ssh ubuntu@${IP_ADDRESS} "sudo systemctl stop bluetooth && sudo systemctl disable bluetooth"
+```
+
+Then apply the homebridge yaml file
 ```
 kubectl apply -f homebridge.yml
 ```
 
-### Need Bluetooth (me)
+### No Bluetooth
 
-If you have the unfortunate need for Bluetooth like me, don't make any of the aforementioned changes and perform the following steps instead:
-1. Disable automatic Bluetooth daemon startup on your pi to prevent interference with the homebridge container
-```
-ssh ubuntu@${IP_ADDRESS}
-sudo systemctl disable bluetooth.service
-```
-2. Exit the ssh session and apply the homebridge yaml file
+If you wish to run without Bluetooth, make the following modifications to homebridge.yaml:
+  * Remove the `PACKAGES` env var from the env array
+  * Remove the entire `bluetooth` element/object from the `volumeMounts` array
+  * (Optional) For improved security, set the two ID values in the env vars section to 1000 instead of 0 so you don't run homebridge as root.
+  * (Optional) Remove the entire homebridge ConfigMap yaml document as it is unnecessary, although has no material impact
+
+Once you are finished making your modifications apply the homebridge yaml file:
 ```
 kubectl apply -f homebridge.yml
 ```

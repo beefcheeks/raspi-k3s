@@ -11,15 +11,10 @@ metadata:
   name: homebridge
   namespace: homebridge
 data:
-  script: |+
-    #!/bin/bash
-    # Should make my own docker image with this included, but I'm too lazy
-    # Bluetooth access is required to communicate with my SwitchBots
-    apt update
-    apt install -y bluetooth bluez libbluetooth-dev libudev-dev
-    # Run the bluetooth daemon in the background inside the container (also bad)
-    # For reference: https://stackoverflow.com/a/64126744
-    bluetoothd --debug &
+  bluetooth: |+
+    #!/usr/bin/with-contenv sh
+    echo "Starting bluetooth daemon"
+    exec bluetoothd -d
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -56,14 +51,16 @@ spec:
           value: '1'
         - name: HOMEBRIDGE_CONFIG_UI_PORT
           value: '8581'
+        # Comment out the two lines below for packages if you don't need bluetooth
+        - name: PACKAGES
+          value: bluetooth bluez libbluetooth-dev libudev-dev
         volumeMounts:
         - name: homebridge
           mountPath: /homebridge
           readOnly: false
-        # Comment out the 4 lines directly below this if you don't need Bluetooth
-        - name: scripts
-          mountPath: /homebridge/startup.sh
-          subPath: startup.sh
+        # Comment out the 3 lines directly below this if you don't need Bluetooth
+        - name: bluetooth
+          mountPath: /etc/services.d/bluetoothd
           readOnly: true
         securityContext:
           privileged: true
@@ -72,12 +69,12 @@ spec:
       - name: homebridge
         persistentVolumeClaim:
           claimName: homebridge
-      - name: scripts
+      - name: bluetooth
         configMap:
           name: homebridge
           items:
-          - key: script
-            path: startup.sh
+          - key: bluetooth
+            path: run
             mode: 0111
 ---
 apiVersion: v1
