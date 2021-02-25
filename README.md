@@ -65,7 +65,7 @@ cp ~/.kube/config ~/.kube/config.bak && KUBECONFIG=~/.kube/config:~/.kube/k3s-co
 ```
 4. Switch to your pi k3s context
 ```
-kubectl config use-context ${PI_CONTEXT}
+kubectl config use-context ${PI_NAME}
 ```
 5. Confirm you can see pods running with no errors:
 ```
@@ -255,6 +255,7 @@ Pro-tip: If you don't want to leave the LEDs on continuously, you can always hit
 Now that you have hyperion configured, you may want to pretty up the wires and hook up any other intermediate devices, but the bulk of the configuration is done. I also spent some time experimenting with the `Image Processing` configuration to see whether I preferred things like `Smoothing` and `Blackbar detection`.
 
 I'm also using this [hyperion homebridge module](https://www.npmjs.com/package/homebridge-hyperion-ng) to enable/disable the LEDs and even control color and brightness, which seems to work pretty well. In addition, I briefly checked out this [hyperion remote iOS app](https://hyperionremote.com), which has a few additional features beyond what the homebridge plugin offers.
+
 ## Caveats
 
 * I have noticed that making changes to the Statefulset and even just restarting the pod sometimes causes the USB video capture device to no longer function. An additional pod restart seems to resolve this most of the time.
@@ -266,3 +267,30 @@ I'm also using this [hyperion homebridge module](https://www.npmjs.com/package/h
 * [Hyperion docker image](https://hub.docker.com/r/sirfragalot/hyperion.ng)
 * [Hyperion user docs](https://docs.hyperion-project.org/en/user/)
 * [Ambilight color test](https://www.youtube.com/watch?v=8u4UzzJZAUg)
+
+
+# Router log forwarding (syslog https proxy)
+
+## Overview
+
+I use LogDNA for analyzing my logs (disclaimer: I work there) and take advantage of custom parsing to generate pretty graphs and track down devices abusing DHCP negotiation (I'm looking at you Wi-Fi rower). I wrote a containerized syslog forwarding module so I can send my logs over the internet via https instead of UDP. You can view the repo [here](https://github.com/logdna/logdna-rsyslog).
+
+## Installation
+
+I followed the same installation instructions except that I just make the services type `LoadBalancer` instead of `ClusterIP` so I can expose them to my local network.
+
+```
+INGESTION_KEY=<your LogDNA ingestion key here>
+
+kubectl create ns logdna
+
+kubectl create secret generic -n logdna logdna-agent-key --from-literal=logdna-agent-key=${INGESTION_KEY}
+
+kubectl apply -n logdna -f https://raw.githubusercontent.com/logdna/logdna-rsyslog/master/logdna-rsyslog-config-https.yml
+
+curl -s https://raw.githubusercontent.com/logdna/logdna-rsyslog/master/logdna-rsyslog-workload.yml | sed 's/ClusterIP/LoadBalancer/g;s/protocol: tcp/protocol: TCP/;s/protocol: udp/protocol: UDP/' | kubectl apply -n logdna -f -
+```
+
+# References
+* [rsyslog forwarder](https://github.com/logdna/logdna-rsyslog)
+* [LogDNA](https://www.logdna.com)
