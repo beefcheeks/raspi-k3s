@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hyperion
+  labels:
+    app: hyperion
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hyperion
+  namespace: hyperion
+  labels:
+    app: hyperion
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8090
+    name: configurator
+  - port: 19400
+    name: flatbuffer
+  - port: 19444
+    name: json
+  selector:
+    app: hyperion
+---
+# Use a statefulset to ensure only 1 container at a time is started to prevent /dev/XXX contention
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: hyperion
+  namespace: hyperion
+  labels:
+    app: hyperion
+spec:
+  replicas: 1
+  serviceName: hyperion
+  selector:
+    matchLabels:
+      app: hyperion
+  template:
+    metadata:
+      labels:
+        app: hyperion
+    spec:
+      containers:
+      - name: hyperion
+        image: sirfragalot/hyperion.ng:2.0.0-alpha.9-aarch64
+        imagePullPolicy: Always
+        command:
+        - /usr/bin/hyperiond
+        args:
+        - --debug
+        ports:
+        - containerPort: 8090
+        - containerPort: 19400
+        - containerPort: 19444
+        volumeMounts:
+        - name: hyperion
+          mountPath: /root/.hyperion
+          readOnly: false
+        - name: spidev0
+          mountPath: /dev/spidev0.0
+          readOnly: false
+        - name: spidev1
+          mountPath: /dev/spidev0.1
+          readOnly: false        
+        - name: video0
+          mountPath: /dev/video0
+          readOnly: true
+        - name: video1
+          mountPath: /dev/video1
+          readOnly: true
+        # Comment out the 3 lines directly below this if you don't need Bluetooth
+        securityContext:
+          privileged: true
+      volumes:
+      - name: hyperion
+        persistentVolumeClaim:
+          claimName: hyperion
+      - name: spidev0
+        hostPath:
+          path: /dev/spidev0.0
+          type: ''
+      - name: spidev1
+        hostPath:
+          path: /dev/spidev0.1
+          type: ''
+      - name: video0
+        hostPath:
+          path: /dev/video0
+          type: ''
+      - name: video1
+        hostPath:
+          path: /dev/video1
+          type: ''
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hyperion
+  namespace: hyperion
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
