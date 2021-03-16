@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name  }}
+  labels:
+    {{- include "homebridge.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "homebridge.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "homebridge.selectorLabels" . | nindent 8 }}
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name:  {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        {{- if .Values.deployment.timezone }}
+        - name: tz
+          value: {{ .Values.deployment.timezone }}
+        {{- end }}
+        {{- if .Values.feature.bluetooth }}
+        - name: PUID
+          value: '0'
+        - name: PGID
+          value: '0'
+        {{- else }}
+        - name: PUID
+          value: '1000'
+        - name: PGID
+          value: '1000'
+        {{- end }}
+        - name: HOMEBRIDGE_CONFIG_UI
+          value: '1'
+        {{- if .Values.deployment.port.ui }}
+        - name: HOMEBRIDGE_CONFIG_UI_PORT
+          value: "{{ .Values.deployment.port.ui }}"
+        {{- end }}
+        {{- if .Values.feature.bluetooth }}
+        - name: PACKAGES
+          value: bluetooth bluez libbluetooth-dev libudev-dev
+        {{- end }}
+        volumeMounts:
+        - name: {{ .Chart.Name  }}
+          mountPath: /homebridge
+          readOnly: false
+        {{- if .Values.feature.bluetooth }}
+        - name: bluetooth
+          mountPath: /etc/services.d/bluetoothd
+          readOnly: true
+        {{- end }}
+        securityContext:
+          privileged: true
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: {{ .Chart.Name  }}
+        persistentVolumeClaim:
+          claimName: homebridge
+      {{- if .Values.feature.bluetooth }}
+      - name: bluetooth
+        configMap:
+          name: {{ .Chart.Name  }}
+          items:
+          - key: bluetooth
+            path: run
+            mode: 0111
+      {{- end }}

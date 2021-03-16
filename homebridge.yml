@@ -35,6 +35,7 @@ spec:
       name: homebridge
     spec:
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: homebridge
         image: oznu/homebridge:debian-raspberry-pi

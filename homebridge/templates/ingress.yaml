@@ -1,0 +1,39 @@
+{{- if .Values.feature.ingress }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name  }}
+  labels:
+    {{- include "homebridge.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+      - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+        {{- if .Values.feature.webhook }}
+        - path: {{ .Values.ingress.path.webhook }}
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Chart.Name  }}
+              port:
+                number: {{ .Values.service.port.webhook }}
+        {{- end }}
+        - path: {{ .Values.ingress.path.ui }}
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Chart.Name  }}
+              port:
+                number: {{ .Values.service.port.ui }}
+{{- end }}

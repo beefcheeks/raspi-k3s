@@ -50,9 +50,9 @@ k3sup install --ip ${IP_ADDRESS} --user ubuntu --k3s-channel stable
 ```
 
 ## Configure your workstation
-1. Install kubernetes-cli, kubectx, and k9s (if not already installed)
+1. Install helm, kubernetes-cli, kubectx, and k9s (if not already installed)
 ```
-brew install kubernetes-cli kubectx k9s
+brew install helm kubernetes-cli kubectx k9s
 ```
 2. Save the rancher kubeconfig to your local workstation, but replace localhost with the pi private IP address, and the default name values with your own name (to prevent collisions):
 ```
@@ -89,25 +89,41 @@ Homebridge is a useful tool for converting existing smart devices into homekit c
 
 ## Bluetooth
 
-By default, this container runs with access to bluetooth as some of the homebridge plugins I use require it. Prior to applying the yaml file, be sure disable the bluetooth service on your pi host so it does not conflict with the one running inside the container:
+By default, this container runs with access to bluetooth as some of the homebridge plugins I use require it. Prior to installing homebridge, be sure disable the bluetooth service on your pi host so it does not conflict with the one running inside the container:
 ```
 ssh ubuntu@${IP_ADDRESS} "sudo systemctl stop bluetooth && sudo systemctl disable bluetooth"
 ```
 
-Then apply the homebridge yaml file
+## The helm way
+
+[Helm](https://helm.sh) has some neat templating options that let you customize a deployment without having to edit the podspecs directly. First, edit `homebridge/values.yaml` to your liking. In particular, be sure to set these values:
 ```
-kubectl apply -f homebridge.yml
+feature:
+  bluetooth: true
+  ingress: true
+  webhook: true
+```
+If you don't know what any of the above options mean, you probably don't need them. Set those values to `false`.
+
+Once you're happy with `values.yaml`, install homebridge with:
+```
+NAME=homebridge
+NAMESPACE=homebridge
+kubectl create ns ${NAMESPACE}
+helm install -n ${NAMESPACE} -f homebridge/values.yaml ${NAME} ./homebridge
 ```
 
-## No Bluetooth
+## The old fashioned kubectl way
 
-If you wish to run without Bluetooth, make the following modifications to homebridge.yaml:
+Instead of using helm and editing `values.yaml`, open `homebridge.yml` and edit the podspec directly.
+
+If you wish to run without Bluetooth and you didn't install via helm, make the following modifications to homebridge.yaml:
   * Remove the `PACKAGES` env var from the env array
   * Remove the entire `bluetooth` element/object from the `volumeMounts` array
   * (Optional) For improved security, set the two ID values in the env vars section to 1000 instead of 0 so you don't run homebridge as root.
   * (Optional) Remove the entire homebridge ConfigMap yaml document as it is unnecessary, although has no material impact
 
-Once you are finished making your modifications apply the homebridge yaml file:
+Once you are finished making your modifications (if any) apply the homebridge yaml file:
 ```
 kubectl apply -f homebridge.yml
 ```
@@ -227,11 +243,11 @@ Under `Configuration` -> `LED Hardware`:
 
 
 Under `Configuration` -> `Capturing Hardware`:
-* Uncheck `Enable platform capture` and check `Enable USB Ccapture`
+* Uncheck `Enable platform capture` and check `Enable USB capture`
 * Further down on that page under `USB Capture`:
   * Select your `Device` (e.g. USBX.0 capture)
-  * Set `Device Resolution` (e.g. 1280x720)
-  * Set `Frames per second` (recommend 30 or 60)
+  * Set `Device Resolution` (e.g. 720x480)
+  * Set `Frames per second` (recommend 30)
   * Click the `Save settings` button
 
 There are many other settings you can configure, but we'll get to those later. Head over to the `Dashboard` (top left) and you should see something like the this:
@@ -282,15 +298,44 @@ I followed the same installation instructions except that I just make the servic
 ```
 INGESTION_KEY=<your LogDNA ingestion key here>
 
-kubectl create ns logdna
+kubectl create ns logdna-agent
 
-kubectl create secret generic -n logdna logdna-agent-key --from-literal=logdna-agent-key=${INGESTION_KEY}
+kubectl create secret generic -n logdna-agent logdna-agent-key --from-literal=logdna-agent-key=${INGESTION_KEY}
 
-kubectl apply -n logdna -f https://raw.githubusercontent.com/logdna/logdna-rsyslog/master/logdna-rsyslog-config-https.yml
+kubectl apply -n logdna-agent -f https://raw.githubusercontent.com/logdna/logdna-rsyslog/master/logdna-rsyslog-config-https.yml
 
-curl -s https://raw.githubusercontent.com/logdna/logdna-rsyslog/master/logdna-rsyslog-workload.yml | sed 's/ClusterIP/LoadBalancer/g;s/protocol: tcp/protocol: TCP/;s/protocol: udp/protocol: UDP/' | kubectl apply -n logdna -f -
+curl -s https://raw.githubusercontent.com/logdna/logdna-rsyslog/master/logdna-rsyslog-workload.yml | sed 's/ClusterIP/LoadBalancer/g' | kubectl apply -n logdna-agent -f -
 ```
 
 # References
 * [rsyslog forwarder](https://github.com/logdna/logdna-rsyslog)
 * [LogDNA](https://www.logdna.com)
+
+
+# Log collection via LogDNA Kubernetes agent
+
+## Overview
+
+For the same reasons I forward my router logs via the rsyslog proxy, I also like to forward my Kubernetes container logs to LogDNA via the LogDNA agent.
+
+## Installation
+
+If you haven't already installed the rsyslog forwarder, follow the steps below. Otherwise, skip to the next step.
+```
+INGESTION_KEY=<your LogDNA ingestion key here>
+
+kubectl create ns logdna-agent
+
+kubectl create secret generic -n logdna logdna-agent-key --from-literal=logdna-agent-key=${INGESTION_KEY}
+```
+
+Once the `logdna-agent` namespace and secret are created, deploy the agent and its accompanying configuration.
+```
+curl -s https://raw.githubusercontent.com/logdna/logdna-agent-v2/2.2.4/k8s/agent-resources.yaml | sed 's#image:.*#image: beefcheeks/logdna-agent:2.2.4#' | kubectl apply -n logdna-agent -f -
+```
+Note: the LogDNA agent is not supported for ARM architectures. I've manually built an ARM64-compatible docker image using [docker buildx](https://github.com/docker/buildx), but due to the lack of ARMv7 support for the RedHat Universal Basic Image used as the base for the logdna-agent, it is not easily possible to build an ARMv7 one.
+
+# References
+* [LogDNA agent](https://github.com//logdna/logdna-agent-v2)
+* [Docker buildx](https://github.com/docker/buildx)
+* [Docker buildx multi-architecture how-to](https://medium.com/@artur.klauser/building-multi-architecture-docker-images-with-buildx-27d80f7e2408)

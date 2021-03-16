@@ -1,0 +1,13 @@
+{{- if .Values.feature.bluetooth }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "homebridge.fullname" . }}
+  labels:
+    {{- include "homebridge.labels" . | nindent 4 }}
+data:
+  bluetooth: |+
+    #!/usr/bin/with-contenv sh
+    echo "Starting bluetooth daemon"
+    exec bluetoothd -d
+{{- end }}

@@ -1,0 +1,21 @@
+{{- if .Values.feature.ingress }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    {{- include "homebridge.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - name: ui
+    port: {{ .Values.service.port.ui }}
+    targetPort: {{ .Values.deployment.port.ui}}
+  {{- if .Values.feature.webhook }}
+  - name: webhook
+    port: {{ .Values.service.port.webhook }}
+    targetPort: {{ .Values.deployment.port.webhook}}
+  {{- end }}
+  selector:
+    {{- include "homebridge.selectorLabels" . | nindent 4 }}
+{{- end  }}
