@@ -40,6 +40,11 @@ spec:
       - name: homebridge
         image: oznu/homebridge:debian-raspberry-pi
         imagePullPolicy: Always
+        ports:
+        - containerPort: 8581
+          name: http
+        - containerPort: 51828
+          name: webhook
         env:
         - name: tz
           value: 'America/Los_Angeles'
