@@ -1,0 +1,147 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pihole
+  labels:
+    app: pihole
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pihole
+  namespace: pihole
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - secretName: pihole
+    hosts:
+    - ph.therexhouse.com
+  rules:
+  - host: ph.therexhouse.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: http
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http
+  namespace: pihole
+  labels:
+    app: pihole
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+  selector:
+    app: pihole
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tcp
+  namespace: pihole
+  labels:
+    app: pihole
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+  - name: dns
+    protocol: TCP
+    port: 53
+  selector:
+    app: pihole
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: udp
+  namespace: pihole
+  labels:
+    app: pihole
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+  - name: dns
+    protocol: UDP
+    port: 53
+  - name: dhcp
+    protocol: UDP
+    port: 67
+  selector:
+    app: pihole
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pihole
+  name: pihole
+  namespace: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      containers:
+      - env:
+        - name: TZ
+          value: America/Los_Angeles
+        - name: VIRTUAL_HOST
+          value: ph.therexhouse.com
+        image: pihole/pihole:v5.7
+        imagePullPolicy: IfNotPresent
+        name: pihole
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        - containerPort: 443
+          name: ssl
+          protocol: TCP
+        - containerPort: 53
+          name: dns
+          protocol: TCP
+        - containerPort: 53
+          name: dns-udp
+          protocol: UDP
+        - containerPort: 67
+          name: dhcp
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /etc/pihole
+          name: config
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: pihole
+  name: config
+  namespace: pihole
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
