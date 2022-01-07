@@ -1,15 +1,7 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: pihole
-  labels:
-    app: pihole
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pihole
-  namespace: pihole
   annotations:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -17,9 +9,9 @@ spec:
   tls:
   - secretName: pihole
     hosts:
-    - ph.therexhouse.com
+    - my.domain.com
   rules:
-  - host: ph.therexhouse.com
+  - host: my.domain.com
     http:
       paths:
       - path: /
@@ -34,7 +26,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: http
-  namespace: pihole
   labels:
     app: pihole
 spec:
@@ -49,7 +40,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: tcp
-  namespace: pihole
   labels:
     app: pihole
 spec:
@@ -66,7 +56,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: udp
-  namespace: pihole
   labels:
     app: pihole
 spec:
@@ -88,7 +77,6 @@ metadata:
   labels:
     app: pihole
   name: pihole
-  namespace: pihole
 spec:
   replicas: 1
   selector:
@@ -101,11 +89,32 @@ spec:
     spec:
       containers:
       - env:
+        - name: PIHOLE_DNS_
+          valueFrom:
+            configMapKeyRef:
+              name: pihole
+              key: pihole_dns_
+        - name: TEMPERATUREUNIT
+          valueFrom:
+            configMapKeyRef:
+              name: pihole
+              key: temperatureunit
         - name: TZ
-          value: America/Los_Angeles
+          valueFrom:
+            configMapKeyRef:
+              name: pihole
+              key: tz
         - name: VIRTUAL_HOST
-          value: ph.therexhouse.com
-        image: pihole/pihole:v5.7
+          valueFrom:
+            configMapKeyRef:
+              name: pihole
+              key: virtual_host
+        - name: WEBPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pihole-webpassword
+              key: webpassword
+        image: pihole/pihole:v5.8.1
         imagePullPolicy: IfNotPresent
         name: pihole
         ports:
@@ -138,7 +147,6 @@ metadata:
   labels:
     app: pihole
   name: config
-  namespace: pihole
 spec:
   accessModes:
   - ReadWriteOnce

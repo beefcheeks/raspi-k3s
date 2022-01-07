@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflare-ddns
+  namespace: cloudflare-ddns
+  labels:
+    app: cloudflare-ddns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflare-ddns
+  template:
+    metadata:
+      labels:
+        app: cloudflare-ddns
+      name: cloudflare-ddns
+    spec:
+      containers:
+      - name: cloudflare-ddns
+        image: oznu/cloudflare-ddns:aarch64
+        imagePullPolicy: Always
+        env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cloudflare-ddns
+              key: apikey
+        - name: PUID
+          value: '1000'
+        - name: PGID
+          value: '1000'
+        - name: SUBDOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: cloudflare-ddns
+              key: subdomain
+        - name: ZONE
+          valueFrom:
+            configMapKeyRef:
+              name: cloudflare-ddns
+              key: zone
+

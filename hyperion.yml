@@ -72,7 +72,6 @@ spec:
         - name: video1
           mountPath: /dev/video1
           readOnly: true
-        # Comment out the 3 lines directly below this if you don't need Bluetooth
         securityContext:
           privileged: true
       volumes:

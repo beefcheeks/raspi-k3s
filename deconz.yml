@@ -1,0 +1,139 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: deconz
+  labels:
+    app: deconz
+spec:
+  selector:
+    app: deconz
+  ports:
+  - port: 80
+    name: http
+    targetPort: 8080
+  - port: 8443
+    name: websockets
+    targetPort: 8443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vnc
+  labels:
+    app: deconz
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: deconz
+  ports:
+  - port: 5900
+    name: vnc
+    targetPort: 5900
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: deconz
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - secretName: deconz
+    hosts:
+    - my.domain.com
+  rules:
+  - host: my.domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: deconz
+            port:
+              number: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deconz
+  labels:
+    app: deconz
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deconz
+  template:
+    metadata:
+      labels:
+        app: deconz
+    spec:
+      containers:
+      - name: deconz
+        image: deconzcommunity/deconz:stable
+        ports:
+        - containerPort: 5900
+        - containerPort: 8080
+        - containerPort: 8443
+        env:
+        - name: DECONZ_WEB_PORT
+          value: '8080'
+        - name: DECONZ_WS_PORT
+          value: '8443'
+        - name: DECONZ_VNC_PORT
+          value: '5900'
+        - name: DECONZ_DEVICE
+          value: '/dev/ttyACM0'
+        - name: DECONZ_UPNP
+          valueFrom:
+            configMapKeyRef:
+              name: deconz
+              key: deconz_upnp
+              optional: true
+        - name: DECONZ_VNC_MODE
+          valueFrom:
+            configMapKeyRef:
+              name: deconz
+              key: deconz_vnc_mode
+              optional: true
+        - name: DECONZ_VNC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: deconz-vnc
+              key: deconz_vnc_password
+              optional: true
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: deconz
+              key: tz
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: config
+            mountPath: /opt/deCONZ
+          - name: ttyacm
+            mountPath: /dev/ttyACM0
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config
+        - name: ttyacm
+          hostPath:
+            path: /dev/ttyACM0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config
+  labels:
+    app: deconz
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi

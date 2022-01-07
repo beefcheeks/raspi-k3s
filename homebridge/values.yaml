@@ -13,7 +13,7 @@ fullnameOverride: ""
 feature:
   bluetooth: true
   ingress: true
-  webhook: true
+  externalIngress: true
 
 deployment:
   timezone: America/Los_Angeles
@@ -35,13 +35,24 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-prod
-  host: hb.mydomain.com
+  host: my.domain.com
   path:
     ui: /
     webhook: /webhook
   tls:
-    enabled: true
     secretName: homebridge
+
+externalIngress:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: ingress-basic-auth
+  host: other.domain.com
+  path:
+    webhook: /hb
+  tls:
+    secretName: webhooks
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

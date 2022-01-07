@@ -93,6 +93,33 @@ By default, this container runs with access to bluetooth as some of the homebrid
 ssh ubuntu@${IP_ADDRESS} "sudo systemctl stop bluetooth && sudo systemctl disable bluetooth"
 ```
 
+## External ingress
+
+If you want to access your homebridge instance outside of your home or trigger webhooks from external services, you'll almost certainly want to set up https (see [SSL hosting via LetsEncrypt](#ssl-hosting-via-letsencrypt)) as well as basic authentication to prevent unauthorized access. For basic auth, you'll need to generate a secret that will be used by the external ingress in the homebridge helm chart.
+```
+FILENAME=basic-auth
+NAMESPACE=homebridge
+SECRET_NAME=ingress-basic-auth
+USERNAME=username
+htpasswd -c ./${FILENAME} ${USERNAME}
+# Enter password into prompt
+kubectl create secret generic ${SECRET_NAME} --from-file ${FILENAME} --namespace=${NAMESPACE}
+```
+
+If you want to set up dynamic DNS and you use cloudflare, you can run [cloudflare-ddns](https://github.com/oznu/docker-cloudflare-ddns). Create an access token with the correct permissions as specified in their GitHub README. To install, run:
+```
+NAMESPACE=cloudflare-ddns
+ZONE=mydomain.com
+SUBDOMAIN=mysubdomain
+TOKEN=your-token
+
+kubectl create ns ${NAMESPACE}
+kubectl create configmap -n ${NAMESPACE} cloudflare-ddns --from-literal=zone=${ZONE} --from-literal=subdomain=${SUBDOMAIN}
+kubectl create secret generic -n ${NAMESPACE} cloudflare-ddns --from-literal=apikey=${TOKEN}
+
+kubectl apply -n ${NAMESPACE} -f cloudflare-ddns.yml
+```
+
 ## The helm way
 
 [Helm](https://helm.sh) has some neat templating options that let you customize a deployment without having to edit the podspecs directly. First, edit `homebridge/values.yaml` to your liking. In particular, be sure to set these values:
@@ -100,7 +127,7 @@ ssh ubuntu@${IP_ADDRESS} "sudo systemctl stop bluetooth && sudo systemctl disabl
 feature:
   bluetooth: true
   ingress: true
-  webhook: true
+  externalIngress: false
 ```
 If you don't know what any of the above options mean, you probably don't need them. Set those values to `false`.
 
@@ -140,7 +167,9 @@ Any installed plugins and settings should be persisted to the /homebridge direct
 ## References
 * [Docker Homebridge](https://github.com/oznu/docker-homebridge)
 * [Using Bluetooth in a Docker container](https://stackoverflow.com/a/64126744)
-* [Switchbot BLE homebridge plugin](https://github.com/OpenWonderLabs/homebridge-switchbot-ble)
+* [Switchbot homebridge plugin](https://github.com/OpenWonderLabs/homebridge-switchbot)
+* [Ingress Basic Auth](https://stackoverflow.com/questions/50130797/kubernetes-basic-authentication-with-traefik)
+* [Cloudflare DDNS](https://github.com/oznu/docker-cloudflare-ddns)
 
 
 # Hyperion
@@ -340,6 +369,7 @@ Note: the LogDNA agent is not supported for ARM architectures. I've manually bui
 * [Docker buildx multi-architecture how-to](https://medium.com/@artur.klauser/building-multi-architecture-docker-images-with-buildx-27d80f7e2408)
 
 
+<a id="ssl-hosting-via-letsencrypt"></a>
 # SSL hosting via LetsEncrypt
 
 ## Overview
@@ -492,7 +522,7 @@ Warning: be aware that LetsEncrypt rate limits the number of certificates you ca
 
 ## Overview
 
-[Pi-hole]() can act as a DNS server, DHCP server, ad blocker/sinkhole. It's quite handy, especially if you want to allow for valid local https webhooks for things like iOS shortcuts.
+[Pi-hole](https://github.com/pi-hole/pi-hole) can act as a DNS server, DHCP server, ad blocker/sinkhole. It's quite handy, especially if you want to allow for valid local https webhooks for things like iOS shortcuts.
 
 ## Installation
 
@@ -535,7 +565,21 @@ sudo systemctl reload-or-restart systemd-resolved
 
 If you're using ingress and certificates for pihole, you'll need to configure the VIRTUAL_HOST in the pihole deployment as well as in the ingress.
 ```
-kubectl apply -f pihole.yml
+NAMESPACE=pihole
+PIHOLE_DNS_='1.1.1.1;1.0.0.1'
+TEMPERATUREUNIT=f
+TZ=America/Los_Angeles
+VIRTUAL_HOST=my.domain.com
+WEBPASSWORD=change-me
+
+kubectl create configmap -n ${NAMESPACE} pihole \
+  --from-literal=pihole_dns_=${PIHOLE_DNS_} \
+  --from-literal=temperatureunit=${TEMPERATUREUNIT} \
+  --from-literal=tz=${TZ} \
+  --from-literal=virtual_host=${VIRTUAL_HOST}
+kubectl create secret generic -n ${NAMESPACE} pihole-webpassword --from-literal=webpassword=${WEBPASSWORD}
+
+kubectl apply -n ${NAMESPACE} -f pihole.yml
 ```
 ```
 kubectl get po -n pihole
@@ -582,3 +626,30 @@ At this point, if you only want select devices on your network to use pi-hole, y
 * https://linuxhandbook.com/sudo-unable-resolve-host/
 * https://github.com/colin-mccarthy/k3s-pi-hole
 * https://www.linux.com/topic/distributions/how-use-netplan-network-configuration-tool-linux/
+
+
+# Configuring Deconz
+
+[Deconz](https://github.com/deconz-community/deconz-docker) is software used to control [ZigBee](https://en.wikipedia.org/wiki/Zigbee) networks. Since ZigBee requires specific hardware, I use the [ConBee II USB gateway](https://phoscon.de/en/conbee2), which works great across a variety of devices and platforms.
+
+Once your USB stick is plugged in, configure your settings and apply the podspec with the following commands:
+```
+NAMESPACE=deconz
+TZ=America/Los-Angeles
+DECONZ_UPNP='0'
+DECONZ_VNC_MODE='1'
+DECONZ_VNC_PASSWORD=hzfE4hYb@KN4gMvrZLEBzW4c
+
+kubectl create configmap -n ${NAMESPACE} deconz \
+  --from-literal=deconz_upnp=${DECONZ_UPNP} \
+  --from-literal=deconz_vnc_mode=${DECONZ_VNC_MODE} \
+  --from-literal=tz=${TZ}
+kubectl create secret generic -n ${NAMESPACE} deconz-vnc --from-literal=deconz_vnc_password=${DECONZ_VNC_PASSWORD}
+
+kubectl apply -n ${NAMSPACE} -f deconz.yml
+```
+
+## References
+* https://github.com/deconz-community/deconz-docker
+* https://en.wikipedia.org/wiki/Zigbee
+* https://phoscon.de/en/conbee2

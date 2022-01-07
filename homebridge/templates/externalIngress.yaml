@@ -1,27 +1,25 @@
-{{- if .Values.feature.ingress }}
+{{- if .Values.feature.externalIngress }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Chart.Name  }}
+  name: {{ .Chart.Name  }}-external
   labels:
     {{- include "homebridge.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- with .Values.externalIngress.annotations }}
   annotations:
     {{- toYaml . | nindent 8 }}
   {{- end }}
 spec:
-  {{- if .Values.ingress.tls.secretName }}
   tls:
     - hosts:
-      - {{ .Values.ingress.host }}
-      secretName: {{ .Values.ingress.tls.secretName }}
-  {{- end }}
+      - {{ .Values.externalIngress.host }}
+      secretName: {{ .Values.externalIngress.tls.secretName }}
   rules:
-    - host: {{ .Values.ingress.host | quote }}
+    - host: {{ .Values.externalIngress.host | quote }}
       http:
         paths:
-        {{- if .Values.ingress.path.webhook }}
-        - path: {{ .Values.ingress.path.webhook }}
+        {{- if .Values.externalIngress.path.webhook }}
+        - path: {{ .Values.externalIngress.path.webhook }}
           pathType: Prefix
           backend:
             service:
@@ -29,11 +27,13 @@ spec:
               port:
                 number: {{ .Values.service.port.webhook }}
         {{- end }}
-        - path: {{ .Values.ingress.path.ui }}
+        {{- if .Values.externalIngress.path.ui }}
+        - path: {{ .Values.externalIngress.path.ui }}
           pathType: Prefix
           backend:
             service:
               name: {{ .Chart.Name  }}
               port:
                 number: {{ .Values.service.port.ui }}
+        {{- end }}
 {{- end }}
