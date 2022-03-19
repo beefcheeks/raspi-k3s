@@ -15,7 +15,7 @@ feature:
   ingress: true
   externalIngress: true
 
-deployment:
+statefulset:
   timezone: America/Los_Angeles
   port:
     ui: 8581

@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Chart.Name  }}
   labels:
@@ -9,6 +9,7 @@ spec:
   selector:
     matchLabels:
       {{- include "homebridge.selectorLabels" . | nindent 6 }}
+  serviceName: {{ .Chart.Name }}
   template:
     metadata:
       labels:
@@ -21,9 +22,9 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
-        {{- if .Values.deployment.timezone }}
+        {{- if .Values.statefulset.timezone }}
         - name: tz
-          value: {{ .Values.deployment.timezone }}
+          value: {{ .Values.statefulset.timezone }}
         {{- end }}
         {{- if .Values.feature.bluetooth }}
         - name: PUID
@@ -38,9 +39,9 @@ spec:
         {{- end }}
         - name: HOMEBRIDGE_CONFIG_UI
           value: '1'
-        {{- if .Values.deployment.port.ui }}
+        {{- if .Values.statefulset.port.ui }}
         - name: HOMEBRIDGE_CONFIG_UI_PORT
-          value: "{{ .Values.deployment.port.ui }}"
+          value: "{{ .Values.statefulset.port.ui }}"
         {{- end }}
         {{- if .Values.feature.bluetooth }}
         - name: PACKAGES
