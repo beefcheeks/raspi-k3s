@@ -40,4 +40,3 @@ spec:
             configMapKeyRef:
               name: cloudflare-ddns
               key: zone
-

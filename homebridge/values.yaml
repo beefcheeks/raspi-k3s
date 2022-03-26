@@ -22,7 +22,7 @@ statefulset:
     webhook: 51828
 
 pvc:
-  storage: 1Gi
+  storage: 2Gi
   storageClassName: local-path
 
 service:
@@ -47,7 +47,10 @@ externalIngress:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-prod
     ingress.kubernetes.io/auth-type: basic
+    # Needed for basic auth in traefik v1 only:
     ingress.kubernetes.io/auth-secret: ingress-basic-auth
+    # Needed for basic auth in traefik v2+ only:
+    traefik.ingress.kubernetes.io/router.middlewares: homebridge-ingress-basic-auth@kubernetescrd
   host: other.domain.com
   path:
     webhook: /hb

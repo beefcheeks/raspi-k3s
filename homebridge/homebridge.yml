@@ -39,7 +39,7 @@ spec:
         env:
         - name: tz
           value: 'America/Los_Angeles'
-        # You can change these to ID values to 1000 (ubuntu user) if not using Bluetooth
+        # You can change these to ID values to 1000 (pi/ubuntu user) if not using Bluetooth
         - name: PUID
           value: '0'
         - name: PGID
