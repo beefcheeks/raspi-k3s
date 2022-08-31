@@ -26,26 +26,9 @@ spec:
         - name: tz
           value: {{ .Values.statefulset.timezone }}
         {{- end }}
-        {{- if .Values.feature.bluetooth }}
-        - name: PUID
-          value: '0'
-        - name: PGID
-          value: '0'
-        {{- else }}
-        - name: PUID
-          value: '1000'
-        - name: PGID
-          value: '1000'
-        {{- end }}
-        - name: HOMEBRIDGE_CONFIG_UI
-          value: '1'
         {{- if .Values.statefulset.port.ui }}
         - name: HOMEBRIDGE_CONFIG_UI_PORT
           value: "{{ .Values.statefulset.port.ui }}"
-        {{- end }}
-        {{- if .Values.feature.bluetooth }}
-        - name: PACKAGES
-          value: bluetooth bluez libbluetooth-dev libudev-dev
         {{- end }}
         volumeMounts:
         - name: {{ .Chart.Name  }}
@@ -54,6 +37,10 @@ spec:
         {{- if .Values.feature.bluetooth }}
         - name: bluetooth
           mountPath: /etc/services.d/bluetoothd
+          readOnly: true
+        - name: startup
+          mountPath: /defaults/startup.sh
+          subPath: startup.sh
           readOnly: true
         {{- end }}
         securityContext:
@@ -72,4 +59,11 @@ spec:
           - key: bluetooth
             path: run
             mode: 0111
+      - name: startup
+        configMap:
+          name: homebridge
+          items:
+          - key: startup
+            path: startup.sh
+            mode: 0444
       {{- end }}

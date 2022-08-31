@@ -10,4 +10,8 @@ data:
     #!/usr/bin/with-contenv sh
     echo "Starting bluetooth daemon"
     exec bluetoothd -d
+  startup: |+
+    #!/bin/bash
+    apt-get update
+    apt-get install -y bluetooth bluez libbluetooth-dev libudev-dev
 {{- end }}
