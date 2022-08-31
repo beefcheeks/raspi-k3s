@@ -8,11 +8,23 @@ You'll need edit access to the hosting domain in which you are attempting to reg
 
 ## Installation
 
-Given cert-manager supports arm64 out of the box, there aren't any special instructions to follow besides what is documented on [their website](https://cert-manager.io/v1.7-docs/installation/).
+Given cert-manager supports arm64 out of the box, there aren't any special instructions to follow besides what is documented on [their website](https://cert-manager.io/v1.9-docs/installation/).
 
 Install cert-manager using the following command
 ```
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.7.2/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
+```
+or if you prefer Helm, use:
+```
+helm repo add jetstack https://charts.jetstack.io
+
+helm repo update
+
+helm install \
+  cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.9.1 \
 ```
 Verify that all 3 cert-manager pods are running the cert-manager namespace:
 ```

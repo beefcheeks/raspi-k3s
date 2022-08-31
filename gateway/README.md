@@ -6,7 +6,7 @@ Kubernetes gateways are a new type of resource somewhat early in the development
 
 1. Install the needed Kubernetes Custom Resource Definitions (CRDs) to enable the creation of gateway-based resources.
 ```
-kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.4.2" | kubectl apply -f -
+kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd/experimental?ref=v0.5.0" | kubectl apply -f -
 ```
 
 2. Enable traefik to interact with Kubernetes gateways:
@@ -29,21 +29,14 @@ kubectl patch deployment traefik -n kube-system --type json -p '[
 3. If you want automatically renewed TLS certfificates via cert-manager/LetsEncrypt, you'll need to perform the following steps:
 
 ```
-# Add the required permissions for cert-manager (likely not needed after the 1.8 release)
-kubectl patch clusterrole cert-manager-controller-ingress-shim --type json -p '[
-  {"op":"add","path":"/rules/-","value":{"apiGroups":["gateway.networking.k8s.io"],"resources":["ingresses/finalizers"],"verbs":["update"]}},
-  {"op":"add","path":"/rules/-","value":{"apiGroups":["gateway.networking.k8s.io"],"resources":["gateways","httproutes"],"verbs":["get","list","watch"]}}
-]'
-
-# Use the pre-release image I've built that includes v0.4+ CRD compatibility with gateways (likely not needed after the 1.8 release)
-kubectl patch deploy -n cert-manager cert-manager --type json -p '[
-  {"op":"replace","path":"/spec/template/spec/containers/0/image","value":"beefcheeks/cert-manager-controller:v1.8.0-beta.0-252-gc0da0894ba29ef"}
-]'
-
 # Enable gateway capabilities for cert-manager
 kubectl patch deployment cert-manager -n cert-manager --type json -p '[
   {"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--feature-gates=ExperimentalGatewayAPISupport=true"}
 ]'
+
+# Or, if you're using helm, use:
+helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager \
+  --set "extraArgs={--feature-gates=ExperimentalGatewayAPISupport=true}"
 ```
 
 4. Create the GatewayClass resource needed to provision future gateways.

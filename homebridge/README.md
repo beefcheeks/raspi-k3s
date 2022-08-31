@@ -62,9 +62,8 @@ helm install -n ${NAMESPACE} -f homebridge/values.yaml ${NAME} ./homebridge
 Instead of using helm and editing `values.yaml`, open `homebridge.yml` and edit the podspec directly.
 
 If you wish to run without Bluetooth and you didn't install via helm, make the following modifications to homebridge.yaml:
-  * Remove the `PACKAGES` env var from the env array
-  * Remove the entire `bluetooth` element/object from the `volumeMounts` array
-  * (Optional) For improved security, set the two ID values in the env vars section to 1000 instead of 0 so you don't run homebridge as root.
+  * Remove the entire `startup` element/object from the `volumeMounts` and `volumes` arrays
+  * Remove the entire `bluetooth` element/object from the `volumeMounts` and `volumes` arrays
   * (Optional) Remove the entire homebridge ConfigMap yaml document as it is unnecessary, although has no material impact
 
 Once you are finished making your modifications (if any) apply the homebridge yaml file:
