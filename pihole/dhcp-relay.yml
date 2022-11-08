@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dhcp-relay
+  labels:
+    app: dhcp-relay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dhcp-relay
+  serviceName: dhcp-relay
+  template:
+    metadata:
+      labels:
+        app: dhcp-relay
+      name: dhcp-relay
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: dhcp-relay
+        image: modem7/dhcprelay:latest
+        imagePullPolicy: Always
+        args:
+        - "-id"
+        - "$(EXTERNAL_NIC)"
+        - "-iu"
+        - "$(KUBERNETES_NIC)"
+        - "$(PIHOLE_UDP_SERVICE_IP)"
+        env:
+        - name: EXTERNAL_NIC
+          valueFrom:
+            configMapKeyRef:
+              name: dhcp-relay
+              key: external_nic
+        - name: KUBERNETES_NIC
+          valueFrom:
+            configMapKeyRef:
+              name: dhcp-relay
+              key: kubernetes_nic
+        - name: PIHOLE_UDP_SERVICE_IP
+          valueFrom:
+            configMapKeyRef:
+              name: dhcp-relay
+              key: pihole_udp_service_ip
+        ports:
+        - containerPort: 67
+          name: dhcp

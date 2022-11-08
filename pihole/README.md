@@ -107,10 +107,58 @@ kubectl create configmap -n ${NAMESPACE} pihole \
   --from-literal=virtual_host=${VIRTUAL_HOST}
 kubectl create secret generic -n ${NAMESPACE} pihole-webpassword --from-literal=webpassword=${WEBPASSWORD}
 
+## Configuring DHCP (optional):
+
+If you want pihole to handle DHCP requests, create the following configmap:
+```
+NAMESPACE=pihole
+DHCP_ACTIVE="true"
+DHCP_ROUTER=10.0.0.1
+DHCP_START=10.0.0.2
+DHCP_END=10.0.0.254
+
+kubectl create configmap -n ${NAMESPACE} dhcp \
+  --from-literal=dhcp_active=${DHCP_ACTIVE} \
+  --from-literal=dhcp_router=${DHCP_ROUTER} \
+  --from-literal=dhcp_start=${DHCP_START} \
+  --from-literal=dhcp_end=${DHCP_END}
+```
+
+If you want to set static IP addresses ahead of time,
+
+## Installing Pi-hole
+Just run:
+```
 kubectl apply -n ${NAMESPACE} -f pihole.yml
 ```
+Check status with:
 ```
 kubectl get po -n pihole
+```
+NAMESPACE=pihole
+DNS_IP=10.0.0.10 # why this is needed: https://github.com/pi-hole/docker-pi-hole/issues/429
+STATIC_ENTRIES="dhcp-host=00:ab:ad:c0:ff:ee,10.0.0.123,My_Hostname
+dhcp-host=11:ab:ad:c0:ff:ee,10.0.0.234,My_Hostname2"
+
+kubectl create configmap -n ${NAMESPACE} dhcp-files \
+  --from-literal=dns_config="dhcp-option=6,${DNS_IP}" \
+  --from-literal=static_entries=${STATIC_ENTRIES}
+
+## Running a DHCP relay
+
+To make dhcp udp multicast lookups work with containers, a dhcp relay is needed.
+```
+NAMESPACE=pihole
+EXTERNAL_NIC="eth0"
+KUBERNETES_NIC="cni0"
+PIHOLE_UDP_SERVICE_IP=$(kubectl get svc -n $NAMESPACE udp --no-headers | awk '{print $3}')
+
+kubectl create configmap -n ${NAMESPACE} dhcp-relay \
+  --from-literal=external_nic=${EXTERNAL_NIC} \
+  --from-literal=kubernetes_nic=${KUBERNETES_NIC} \
+  --from-literal=pihole_udp_service_ip=${PIHOLE_UDP_SERVICE_IP}
+
+kubectl apply -n $NAMESPACE -f dhcp-relay.yml
 ```
 
 ## Configuring a default DHCP server

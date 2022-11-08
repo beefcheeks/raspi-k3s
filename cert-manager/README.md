@@ -33,7 +33,7 @@ kubectl get pod -n cert-manager
 
 ### Cloudflare
 
-While I was using AWS Route53 previously, I'm not using Cloudflare as my DNS provider. I followed the steps below to get cert-manager working with Cloudflare.
+While I was using AWS Route53 previously, I'm now using Cloudflare as my DNS provider. I followed the steps below to get cert-manager working with Cloudflare.
 
 First, provision a Cloudflare API token with read/write capability:
 ```

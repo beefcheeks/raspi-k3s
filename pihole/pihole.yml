@@ -88,7 +88,13 @@ spec:
         app: pihole
     spec:
       containers:
-      - env:
+      - name: pihole
+        image: pihole/pihole:2022.10
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        env:
         - name: PIHOLE_DNS_
           valueFrom:
             configMapKeyRef:
@@ -99,24 +105,49 @@ spec:
             configMapKeyRef:
               name: pihole
               key: temperatureunit
+              optional: true
         - name: TZ
           valueFrom:
             configMapKeyRef:
               name: pihole
               key: tz
+              optional: true
         - name: VIRTUAL_HOST
           valueFrom:
             configMapKeyRef:
               name: pihole
               key: virtual_host
+              optional: true
         - name: WEBPASSWORD
           valueFrom:
             secretKeyRef:
               name: pihole-webpassword
               key: webpassword
-        image: pihole/pihole:v5.8.1
-        imagePullPolicy: IfNotPresent
-        name: pihole
+              optional: true
+        - name: DHCP_ACTIVE
+          valueFrom:
+            configMapKeyRef:
+              name: dhcp
+              key: dhcp_active
+              optional: true
+        - name: DHCP_ROUTER
+          valueFrom:
+            configMapKeyRef:
+              name: dhcp
+              key: dhcp_router
+              optional: true
+        - name: DHCP_START
+          valueFrom:
+            configMapKeyRef:
+              name: dhcp
+              key: dhcp_start
+              optional: true
+        - name: DHCP_END
+          valueFrom:
+            configMapKeyRef:
+              name: dhcp
+              key: dhcp_end
+              optional: true
         ports:
         - containerPort: 80
           name: http
@@ -134,12 +165,32 @@ spec:
           name: dhcp
           protocol: UDP
         volumeMounts:
-        - mountPath: /etc/pihole
-          name: config
+        - name: config
+          mountPath: /etc/pihole
+        - name: dns-config
+          mountPath: /etc/dnsmasq.d/03-pihole-dhcp-dns.conf
+          subPath:  03-pihole-dhcp-dns.conf
+        - name: static-dhcp
+          mountPath: /etc/dnsmasq.d/04-pihole-static-dhcp.conf
+          subPath: 04-pihole-static-dhcp.conf
       volumes:
       - name: config
         persistentVolumeClaim:
           claimName: config
+      - name: dns-config
+        configMap:
+          name: dhcp-files
+          optional: true
+          items:
+          - key: dns_config
+            path: 03-pihole-dhcp-dns.conf
+      - name: static-dhcp
+        configMap:
+          name: dhcp-files
+          optional: true
+          items:
+          - key: static_entries
+            path: 04-pihole-static-dhcp.conf
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
