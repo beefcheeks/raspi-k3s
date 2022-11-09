@@ -106,7 +106,7 @@ kubectl create configmap -n ${NAMESPACE} pihole \
   --from-literal=tz=${TZ} \
   --from-literal=virtual_host=${VIRTUAL_HOST}
 kubectl create secret generic -n ${NAMESPACE} pihole-webpassword --from-literal=webpassword=${WEBPASSWORD}
-
+```
 ## Configuring DHCP (optional):
 
 If you want pihole to handle DHCP requests, create the following configmap:
