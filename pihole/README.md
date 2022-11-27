@@ -116,12 +116,15 @@ DHCP_ACTIVE="true"
 DHCP_ROUTER=10.0.0.1
 DHCP_START=10.0.0.2
 DHCP_END=10.0.0.254
+# Must be set to "false" if using more than one pihole instance (e.g. high availability)
+DHCP_RAPID_COMMIT="true"
 
 kubectl create configmap -n ${NAMESPACE} dhcp \
   --from-literal=dhcp_active=${DHCP_ACTIVE} \
   --from-literal=dhcp_router=${DHCP_ROUTER} \
   --from-literal=dhcp_start=${DHCP_START} \
-  --from-literal=dhcp_end=${DHCP_END}
+  --from-literal=dhcp_end=${DHCP_END} \
+  --from-literal=dhcp_rapid_commit=${DHCP_RAPID_COMMIT}
 ```
 
 If you want to set static IP addresses ahead of time,

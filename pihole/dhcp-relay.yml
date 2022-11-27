@@ -1,3 +1,5 @@
+# Must use a StatefulSet for network identity to work
+# Can only be set to 1 replica per host/node (host port binding conflicts)
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

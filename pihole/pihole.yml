@@ -71,6 +71,7 @@ spec:
   selector:
     app: pihole
 ---
+# Use a deployment otherwise your DNS will be down when attempting to restart
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -87,6 +88,9 @@ spec:
       labels:
         app: pihole
     spec:
+      # 999 pihole user permissions needed to read/write files on hostPath volumes
+      securityContext:
+        fsGroup: 999
       containers:
       - name: pihole
         image: pihole/pihole:2022.10
@@ -148,6 +152,12 @@ spec:
               name: dhcp
               key: dhcp_end
               optional: true
+        - name: DHCP_rapid_commit
+          valueFrom:
+            configMapKeyRef:
+              name: dhcp
+              key: dhcp_rapid_commit
+              optional: true
         ports:
         - containerPort: 80
           name: http
@@ -170,6 +180,10 @@ spec:
         - name: dns-config
           mountPath: /etc/dnsmasq.d/03-pihole-dhcp-dns.conf
           subPath:  03-pihole-dhcp-dns.conf
+        - name: log-lighttpd
+          mountPath: /var/log/lighttpd
+        - name: log-pihole
+          mountPath: /var/log/pihole
         - name: static-dhcp
           mountPath: /etc/dnsmasq.d/04-pihole-static-dhcp.conf
           subPath: 04-pihole-static-dhcp.conf
@@ -184,6 +198,17 @@ spec:
           items:
           - key: dns_config
             path: 03-pihole-dhcp-dns.conf
+      # Host paths are terrible, but there isn't an easier way to get the logs out of the container
+      # These host paths are scoped to designated directories to reduce security risk
+      # /var/log is automatically picked up by many kubernetes logging agents, including logdna/mezmo
+      - name: log-lighttpd
+        hostPath:
+          path: /var/log/lighttpd
+          type: DirectoryOrCreate
+      - name: log-pihole
+        hostPath:
+          path: /var/log/pihole
+          type: DirectoryOrCreate
       - name: static-dhcp
         configMap:
           name: dhcp-files
