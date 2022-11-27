@@ -39,7 +39,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tcp
+  name: dns-tcp
   labels:
     app: pihole
 spec:
@@ -55,7 +55,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: udp
+  name: dns-udp
   labels:
     app: pihole
 spec:
@@ -65,6 +65,17 @@ spec:
   - name: dns
     protocol: UDP
     port: 53
+  selector:
+    app: pihole
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dhcp
+  labels:
+    app: pihole
+spec:
+  ports:
   - name: dhcp
     protocol: UDP
     port: 67
@@ -184,6 +195,9 @@ spec:
           mountPath: /var/log/lighttpd
         - name: log-pihole
           mountPath: /var/log/pihole
+        - name: no-ip-dhcp
+          mountPath: /etc/dnsmasq.d/05-pihole-no-ip-dhcp.conf
+          subPath: 05-pihole-no-ip-dhcp.conf
         - name: static-dhcp
           mountPath: /etc/dnsmasq.d/04-pihole-static-dhcp.conf
           subPath: 04-pihole-static-dhcp.conf
@@ -209,6 +223,13 @@ spec:
         hostPath:
           path: /var/log/pihole
           type: DirectoryOrCreate
+      - name: no-ip-dhcp
+        configMap:
+          name: dhcp-files
+          optional: true
+          items:
+          - key: no_ip
+            path: 05-pihole-no-ip-dhcp.conf
       - name: static-dhcp
         configMap:
           name: dhcp-files

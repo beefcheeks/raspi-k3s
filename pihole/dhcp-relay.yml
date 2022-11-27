@@ -29,7 +29,7 @@ spec:
         - "$(EXTERNAL_NIC)"
         - "-iu"
         - "$(KUBERNETES_NIC)"
-        - "$(PIHOLE_UDP_SERVICE_IP)"
+        - "$(PIHOLE_DHCP_SERVICE_IP)"
         env:
         - name: EXTERNAL_NIC
           valueFrom:
@@ -41,11 +41,11 @@ spec:
             configMapKeyRef:
               name: dhcp-relay
               key: kubernetes_nic
-        - name: PIHOLE_UDP_SERVICE_IP
+        - name: PIHOLE_DHCP_SERVICE_IP
           valueFrom:
             configMapKeyRef:
               name: dhcp-relay
-              key: pihole_udp_service_ip
+              key: pihole_dhcp_service_ip
         ports:
         - containerPort: 67
           name: dhcp

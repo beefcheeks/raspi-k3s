@@ -127,7 +127,20 @@ kubectl create configmap -n ${NAMESPACE} dhcp \
   --from-literal=dhcp_rapid_commit=${DHCP_RAPID_COMMIT}
 ```
 
-If you want to set static IP addresses ahead of time,
+To prevent returning the incorrect DHCP server IP, or to set static IP addresses ahead of time, or deny addresses to specific devices, modify the below variables as needed and run:
+```
+NAMESPACE=pihole
+DNS_IP=10.0.0.10 # why this is needed: https://github.com/pi-hole/docker-pi-hole/issues/429
+STATIC_ENTRIES="dhcp-host=00:ab:ad:c0:ff:ee,10.0.0.123,My_Hostname
+dhcp-host=11:ab:ad:c0:ff:ee,10.0.0.234,My_Hostname2"
+NO_IP="dhcp-host,22:ab:ad:c0:ff:ee,ignore
+dhcp-host=33:ab:ad:c0:ff:ee,ignore"
+
+kubectl create configmap -n ${NAMESPACE} dhcp-files \
+  --from-literal=dns_config="dhcp-option=6,${DNS_IP}" \
+  --from-literal=static_entries=${STATIC_ENTRIES} \
+  --from-literal=no_ip=${NO_IP}
+```
 
 ## Installing Pi-hole
 Just run:
@@ -138,28 +151,20 @@ Check status with:
 ```
 kubectl get po -n pihole
 ```
-NAMESPACE=pihole
-DNS_IP=10.0.0.10 # why this is needed: https://github.com/pi-hole/docker-pi-hole/issues/429
-STATIC_ENTRIES="dhcp-host=00:ab:ad:c0:ff:ee,10.0.0.123,My_Hostname
-dhcp-host=11:ab:ad:c0:ff:ee,10.0.0.234,My_Hostname2"
-
-kubectl create configmap -n ${NAMESPACE} dhcp-files \
-  --from-literal=dns_config="dhcp-option=6,${DNS_IP}" \
-  --from-literal=static_entries=${STATIC_ENTRIES}
 
 ## Running a DHCP relay
 
-To make dhcp udp multicast lookups work with containers, a dhcp relay is needed.
+To make dhcp udp multicast lookups work with a pihole container that is not host networked, a dhcp relay is needed.
 ```
 NAMESPACE=pihole
 EXTERNAL_NIC="eth0"
 KUBERNETES_NIC="cni0"
-PIHOLE_UDP_SERVICE_IP=$(kubectl get svc -n $NAMESPACE udp --no-headers | awk '{print $3}')
+PIHOLE_DHCP_SERVICE_IP=$(kubectl get svc -n $NAMESPACE dhcp --no-headers | awk '{print $3}')
 
 kubectl create configmap -n ${NAMESPACE} dhcp-relay \
   --from-literal=external_nic=${EXTERNAL_NIC} \
   --from-literal=kubernetes_nic=${KUBERNETES_NIC} \
-  --from-literal=pihole_udp_service_ip=${PIHOLE_UDP_SERVICE_IP}
+  --from-literal=pihole_udp_service_ip=${PIHOLE_DHCP_SERVICE_IP}
 
 kubectl apply -n $NAMESPACE -f dhcp-relay.yml
 ```
