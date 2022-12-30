@@ -44,25 +44,28 @@ spec:
         env:
         - name: tz
           value: 'America/Los_Angeles'
+        securityContext:
+          privileged: true
+          procMount: Default
         volumeMounts:
         - name: homebridge
           mountPath: /homebridge
           readOnly: false
-        # Comment out the 3 lines directly below this if you don't need Bluetooth
+        # Comment out all volume mounts directly below if you don't need bluetooth
         - name: bluetooth
           mountPath: /etc/services.d/bluetoothd
           readOnly: true
+        - name: dbus
+          mountPath: /var/run/dbus
         - name: startup
           mountPath: /defaults/startup.sh
           subPath: startup.sh
           readOnly: true
-        securityContext:
-          privileged: true
-          procMount: Default
       volumes:
       - name: homebridge
         persistentVolumeClaim:
           claimName: homebridge
+      # Comment out all volumes directly below if you don't need bluetooth
       - name: bluetooth
         configMap:
           name: homebridge
@@ -70,6 +73,9 @@ spec:
           - key: bluetooth
             path: run
             mode: 0111
+      - name: dbus
+        hostPath:
+          path: /var/run/dbus
       - name: startup
         configMap:
           name: homebridge

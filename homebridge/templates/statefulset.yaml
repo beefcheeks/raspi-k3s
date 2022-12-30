@@ -38,6 +38,8 @@ spec:
         - name: bluetooth
           mountPath: /etc/services.d/bluetoothd
           readOnly: true
+        - name: dbus
+          mountPath: /var/run/dbus
         - name: startup
           mountPath: /defaults/startup.sh
           subPath: startup.sh
@@ -59,6 +61,9 @@ spec:
           - key: bluetooth
             path: run
             mode: 0111
+      - name: dbus
+        hostPath:
+          path: /var/run/dbus
       - name: startup
         configMap:
           name: homebridge
