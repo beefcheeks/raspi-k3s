@@ -85,13 +85,9 @@ ssh pi@${IP_ADDRESS}
 # Install k3s
 curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
 ```
-3. Open a new shell on your local workstation and run
-```
-ssh pi@${IP_ADDRESS} "sudo cat /etc/rancher/k3s/k3s.yaml" | sed -e "s/127.0.0.1/${IP_ADDRESS}/; s/: default/: ${PI_NAME}/" > ~/.kube/k3s-config
-cp ~/.kube/config ~/.kube/config.bak && KUBECONFIG=~/.kube/config:~/.kube/k3s-config kubectl config view --flatten > /tmp/config && mv /tmp/config ~/.kube/config
-```
 
 ## Configure your workstation
+
 1. Install helm, kubernetes-cli, kubectx, and k9s (if not already installed)
 ```
 brew install helm kubernetes-cli kubectx k9s
