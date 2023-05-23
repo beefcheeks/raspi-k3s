@@ -13,7 +13,7 @@ sudo nano /etc/dhcpd.conf
 ```
 # Append the following to the end of the file
 interface eth0
-static ip_address=<YOUR_PI_PRIVATE_IP_ADDRESS_HERE>
+static ip_address=<YOUR_PI_PRIVATE_IP_ADDRESS_HERE>/24
 static routers=<YOUR_ROUTER_IP_HERE>
 ```
 Save and exit, and then restart the pi
