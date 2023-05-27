@@ -15,6 +15,7 @@ OS Installation & Configuration
 Kubernetes expanded capabilities (often prequisites for specific applications)
 * [Auto-renewing Lets Encrypt SSL certificates (cert-manager)](cert-manager/README.md)
 * [Dynamic DNS updater with Cloudflare](cloudflare-ddns/README.md)
+* [multus CNI plugin for attaching custom host interfaces to pods](multus/README.md)
 * [Kubernetes gateways for auto-renewable TLS endpoints - EXPERIMENTAL!](gateway/README.md)
 
 Kubernetes applications

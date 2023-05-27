@@ -181,8 +181,39 @@ kubectl get po samplepod -o jsonpath="{['metadata.annotations.k8s\.v1\.cni\.cncf
 
 If all went well, you should see two network interface definitions, one with your mac address (net1 interface)!
 
+### Caveats
+
+There appears to be a bug in multus v4.0.2 (latest at the time of writing). Whenever the multus pod restarts, it will create errant nested delegate configuration entries inside `/etc/cni/net.d/00-multus.conf` on the host nodes. This causes pods using custom network interfaces to fail to start due to two interfaces attempting to use the same name (`net1`). See [this GitHub issue](https://github.com/k8snetworkplumbingwg/multus-cni/issues/1089#issuecomment-1550442393) for additional details.
+
+To fix this, I added another initContainer to the multus DaemonSet that deletes this configuration file on the host every time a multus pod starts, which forces it to be recreated correctly. If you use a different location for your CNI configurations, make sure to edit both the `args` and `mountPath` fields.
+```
+kubectl patch daemonset -n kube-system kube-multus-ds --type='json' -p='[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/initContainers/-",
+    "value": {
+      "name": "delete-multus-conf-workaround",
+      "image": "alpine",
+      "command": ["rm"],
+      "args": ["/host/etc/cni/net.d/00-multus.conf"],
+      "securityContext": {
+        "privileged": true
+      },
+      "volumeMounts": [
+        {
+          "name": "cni",
+          "mountPath": "/host/etc/cni/net.d"
+        }
+      ]
+    }
+  }
+]'
+```
+
 ## References:
 * [Multus GitHub repo](https://github.com/k8snetworkplumbingwg/multus-cni)
 * [Multus DHCP daemon reference Deployment](https://github.com/k8snetworkplumbingwg/reference-deployment/blob/master/multus-dhcp/dhcp-daemonset.yml)
 * [CNI plugins documentation](https://www.cni.dev/plugins/current/)
 * [Flannel configuration](https://github.com/flannel-io/flannel/blob/master/Documentation/configuration.md)
+* [Multus autconfig issue](https://github.com/k8snetworkplumbingwg/multus-cni/issues/1089#issuecomment-1550442393)
+* [Similar setup instructions found afterwards](https://www.reddit.com/r/homelab/comments/ilz3ct/howto_set_up_k8s_or_k3s_so_pods_get_ip_from_lan/)
