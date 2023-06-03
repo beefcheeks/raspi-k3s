@@ -21,6 +21,7 @@ Kubernetes expanded capabilities (often prequisites for specific applications)
 Kubernetes applications
 * [homebridge](homebridge/README.md)
 * [DNS filtering & adblock with pi-hole](pihole/README.md)
+* [Asus Router Management via SSH](asus-router/README.md)
 * [Logging with LogDNA agent & syslog forwarder](logdna/README.md)
 * [Zigbee Device Management with deCONZ](deconz/README.md)
 * [Dynamic edge lighting with hyperion](hyperion/README.md)

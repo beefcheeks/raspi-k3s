@@ -102,6 +102,8 @@ kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-c
 
 In order to actually use multus, you must create a NetworkAttachmentDefinition that acts as the configuration for a particular network interface. The below configuration creates a network interface using the macvlan CNI plugin in dhcp mode. This enables the interface to retrieve an IP address from the host network by way of the dhcp daemon that was deployed earlier.
 ```
+NET_ATTACH_NAME=macvlan-conf
+
 cat <<EOF | kubectl create -f -
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
@@ -164,14 +166,30 @@ Be sure to clean up the sample pod once you have the mac address
 kubectl delete po samplepod
 ```
 
-To use this network interface and mac address on one of your workloads, you'll need annotate it. 
+To use this network interface and mac address on one of your workloads, you'll need annotate it. Also, you'll likely want to disable hostNetwork mode if you're using multus since it would be redundant.
 ```
 RESOURCE_TYPE=StatefulSet
 NAME=name
 NAMESPACE=namespace
 
-# Adds the pod annotation within the parent workload controller (e.g. StatefulSet)
-kubectl patch $RESOURCE_TYPE/$NAME -n $NAMESPACE -p '{"spec":{"template":{"metadata":{"annotations":{"k8s.v1.cni.cncf.io/networks":"[{\"name\":\"macvlan-conf\",\"namespace\":\"default\",\"mac\":\"'${MAC}'\"}]"}}}}}'
+# Adds the pod annotation within the parent workload controller (e.g. StatefulSet) and sets hostNetwork to false
+kubectl patch $RESOURCE_TYPE/$NAME -n $NAMESPACE -p '
+  {
+    "spec": {
+        "template": {
+            "metadata": {
+                "annotations": {
+                    "k8s.v1.cni.cncf.io/networks":"[{\"name\":\"'${NET_ATTACH_NAME}'\",\"namespace\":\"default\",\"mac\":\"'${MAC}'\"}]"
+                }
+            },
+            "spec": {
+              "hostNetwork": false
+            }
+        }
+    }
+}'
+
+
 ```
 
 To check if the patch is successful, look for the network status annotation value:
