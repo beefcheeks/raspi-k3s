@@ -1,0 +1,3 @@
+resources:
+  - cni-plugins.yaml
+  - macvlan.yaml
