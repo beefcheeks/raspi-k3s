@@ -4,40 +4,22 @@ metadata:
   name: raspi-k3s
 spec:
   generators:
-  - list:
-      elements:
-        - app: cert-manager
-        - app: gateway
-        - app: multus
+    - list:
+        elements:
+          - app: argocd
+          - app: cert-manager
+          - app: gateway
+          - app: multus
   template:
     metadata:
-      name: '{{ .app }}'
+      name: "{{ .app }}"
     spec:
       source:
         repoURL: https://github.com/beefcheeks/raspi-k3s.git
         targetRevision: HEAD
-        path: argocd/apps/{{ .app }}
+        path: "argocd/apps/{{ .app }}/overlays/homelab"
       destination:
         server: https://kubernetes.default.svc
       syncPolicy:
         automated:
           prune: true
-      {{ if fileExists (printf "argocd/apps/%s/Chart.yaml" .app) }}
-      helm:
-        valueFiles:
-        - argocd/apps/{{ .app }}/values.yaml
-        - |
-          {{- if fileExists (printf "argocd/envs/homelab/%s/values.yaml" .app) }}
-          envs/homelab/{{ .app }}/values.yaml
-          {{- end }}
-      {{ else if fileExists (printf "argocd/apps/%s/kustomization.yaml" .app) }}
-      kustomize:
-        paths:
-        - argocd/apps/{{ .app }}
-        - |
-          {{- if fileExists (printf "argocd/envs/homelab/%s/kustomization.yaml" .app) }}
-          envs/homelab/{{ .app }}
-          {{- end }}
-      {{ else }}
-        # ERROR: No helm or kustomize files found for {{ .app }}
-      {{ end }}

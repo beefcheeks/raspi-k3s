@@ -1,8 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-annotations:
-  argocd.argoproj.io/sync-wave: "0"
-resources:
-  - https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v4.0.2/deployments/multus-daemonset-thick.yml
-  - macvlan.yaml
-  - dhcp-daemon.yaml

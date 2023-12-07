@@ -1,3 +1,0 @@
-# The Gateway API CRDs should either be installed before cert-manager starts or the cert-manager Deployment should be restarted after installing the Gateway API CRDs. This is important because some of the cert-manager components only perform the Gateway API check on startup.
-extraArgs:
-  feature-gates: "ExperimentalGatewayAPISupport=true"
