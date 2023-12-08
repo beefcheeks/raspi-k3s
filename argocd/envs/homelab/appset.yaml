@@ -17,7 +17,7 @@ spec:
           - list:
               elementsYaml: "{{ .apps | toJson }}"
           - list:
-              elementsYaml: "{{ .clusters | toJson }}
+              elementsYaml: "{{ .clusters | toJson }}"
   template:
     metadata:
       name: "{{ .app }}"
