@@ -1,3 +1,5 @@
+resources:
+  - ../../base
 helmCharts:
   - name: cert-manager
     version: "v1.13.2"
