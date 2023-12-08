@@ -7,4 +7,4 @@ helmCharts:
     valuesInLine:
       installCRDs: true
       extraArgs:
-        --feature-gates: ExperimentalGatewayAPISupport=true
+        - --feature-gates=ExperimentalGatewayAPISupport=true
