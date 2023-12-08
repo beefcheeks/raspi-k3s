@@ -21,8 +21,8 @@ spec:
     spec:
       project: homelab
       source:
-        repoURL: https://github.com/beefcheeks/raspi-k3s
-        targetRevision: main
+        repoURL: https://github.com/beefcheeks/raspi-k3s.git
+        targetRevision: HEAD
         path: "argocd/apps/{{ .app }}/overlays/homelab"
       destination:
         name: "{{ .cluster }}"

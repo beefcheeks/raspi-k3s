@@ -4,7 +4,7 @@ metadata:
   name: homelab
 spec:
   sourceRepos:
-    - "https://github.com/beefcheeks/raspi-k3s"
+    - "https://github.com/beefcheeks/raspi-k3s.git"
   destinations:
     - namespace: "*"
       server: "https://kubernetes.default.svc"
