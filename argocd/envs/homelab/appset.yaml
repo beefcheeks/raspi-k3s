@@ -23,7 +23,7 @@ spec:
       source:
         repoURL: https://github.com/beefcheeks/raspi-k3s.git
         targetRevision: HEAD
-        path: "argocd/apps/{{ .app }}/overlays/homelab"
+        path: "argocd/apps/{{ .app }}/homelab"
       destination:
         name: "{{ .cluster }}"
       syncPolicy:

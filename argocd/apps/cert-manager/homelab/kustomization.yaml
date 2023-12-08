@@ -1,8 +1,9 @@
-resources:
-  - ../../base
 helmCharts:
   - name: cert-manager
-    version: "v1.13.2"
+    repo: https://charts.jetstack.io
+    releaseName: cert-manager
+    namespace: cert-manager
+    version: v1.13.2
     valuesInLine:
       installCRDs: true
       extraArgs:
