@@ -8,13 +8,16 @@ spec:
   generators:
     - matrix:
         generators:
+          - git:
+              repoURL: https://github.com/beefcheeks/raspi-k3s.git
+              revision: HEAD
+              files:
+                - path: envs/homelab/config/apps.yaml
+                - path: envs/homelab/config/clusters.yaml
           - list:
-              elements:
-                - app: argocd
-                - app: cert-manager
+              elementsYaml: "{{ .apps | toJson }}"
           - list:
-              elements:
-                - cluster: in-cluster
+              elementsYaml: "{{ .clusters | toJson }}
   template:
     metadata:
       name: "{{ .app }}"
