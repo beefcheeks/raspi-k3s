@@ -1,7 +1,5 @@
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
-annotations:
-  argocd.argoproj.io/sync-wave: "1"
 metadata:
   name: macvlan-conf
 spec:
