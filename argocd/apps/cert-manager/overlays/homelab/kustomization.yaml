@@ -1,0 +1,7 @@
+helmCharts:
+  - name: cert-manager
+    version: "v1.13.2"
+    valuesInLine:
+      installCRDs: true
+      extraArgs:
+        --feature-gates: ExperimentalGatewayAPISupport=true

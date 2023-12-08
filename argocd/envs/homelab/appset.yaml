@@ -1,25 +1,31 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: raspi-k3s
+  name: homelab
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
-    - list:
-        elements:
-          - app: argocd
-          - app: cert-manager
-          - app: gateway
-          - app: multus
+    - matrix:
+        generators:
+          - list:
+              elements:
+                - app: argocd
+                - app: cert-manager
+          - list:
+              elements:
+                - cluster: in-cluster
   template:
     metadata:
       name: "{{ .app }}"
     spec:
+      project: homelab
       source:
-        repoURL: https://github.com/beefcheeks/raspi-k3s.git
-        targetRevision: HEAD
+        repoURL: https://github.com/beefcheeks/raspi-k3s
+        targetRevision: main
         path: "argocd/apps/{{ .app }}/overlays/homelab"
       destination:
-        server: https://kubernetes.default.svc
+        name: "{{ .cluster }}"
       syncPolicy:
         automated:
           prune: true
