@@ -12,12 +12,10 @@ spec:
               repoURL: https://github.com/beefcheeks/raspi-k3s.git
               revision: HEAD
               files:
-                - path: envs/homelab/config/apps.yaml
-                - path: envs/homelab/config/clusters.yaml
+                - path: argocd/envs/homelab/config/apps.yaml
           - list:
+              elements: []
               elementsYaml: "{{ .apps | toJson }}"
-          - list:
-              elementsYaml: "{{ .clusters | toJson }}"
   template:
     metadata:
       name: "{{ .app }}"
@@ -28,7 +26,7 @@ spec:
         targetRevision: HEAD
         path: "argocd/apps/{{ .app }}/homelab"
       destination:
-        name: "{{ .cluster }}"
+        name: in-cluster
       syncPolicy:
         automated:
           prune: true
