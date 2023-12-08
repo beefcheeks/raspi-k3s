@@ -1,3 +1,4 @@
+namespace: cert-manager
 helmCharts:
   - name: cert-manager
     repo: https://charts.jetstack.io

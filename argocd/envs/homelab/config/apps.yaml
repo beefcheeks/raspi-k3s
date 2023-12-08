@@ -1,3 +1,5 @@
 apps:
   - app: argocd
   - app: cert-manager
+  - app: gateway
+  - app: multus
