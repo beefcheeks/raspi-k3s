@@ -8,6 +8,9 @@ helmCharts:
     namespace: cert-manager
     version: v1.13.2
     valuesInLine:
+      global:
+        leaderElection:
+          namespace: cert-manager
       installCRDs: true
       extraArgs:
         - --feature-gates=ExperimentalGatewayAPISupport=true

@@ -8,7 +8,7 @@ metadata:
 spec:
   config: |
     {
-      "cniVersion": "1.3.0",
+      "cniVersion": "1.0.0",
       "type": "macvlan",
       "master": "eth0",
       "capabilities": {"mac": true},
