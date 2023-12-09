@@ -1,5 +1,5 @@
 resources:
   - ../base
-  - https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v4.0.2/deployments/multus-daemonset-thick.yml
   - cni-plugins.yaml
+  - https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v4.0.2/deployments/multus-daemonset.yml
   - macvlan.yaml
