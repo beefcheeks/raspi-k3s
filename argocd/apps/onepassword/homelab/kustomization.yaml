@@ -6,5 +6,5 @@ helmCharts:
     namespace: onepassword
     releaseName: cert-manager
     repo: https://1password.github.io
-    valuesFiles: values.yaml
+    valuesFile: values.yaml
     version: 1.14.0
