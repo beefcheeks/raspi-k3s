@@ -4,3 +4,4 @@ apps:
   - app: gateway
   - app: onepassword
   - app: multus
+  - app: traefik
