@@ -3,7 +3,8 @@ resources:
   - namespace.yaml
 helmCharts:
   - name: onepassword
-    repo: https://1password.github.io
     namespace: onepassword
-    version: 1.14.0
+    releaseName: cert-manager
+    repo: https://1password.github.io
     valuesFiles: values.yaml
+    version: 1.14.0

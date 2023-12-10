@@ -2,4 +2,5 @@ apps:
   - app: argocd
   - app: cert-manager
   - app: gateway
+  - app: onepassword
   - app: multus
