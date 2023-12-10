@@ -1,0 +1,9 @@
+namespace: onepassword
+resources:
+  - namespace.yaml
+helmCharts:
+  - name: onepassword
+    repo: https://1password.github.io
+    namespace: onepassword
+    version: 1.14.0
+    valuesFiles: values.yaml

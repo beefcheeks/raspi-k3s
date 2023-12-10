@@ -1,16 +1,9 @@
 namespace: cert-manager
 resources:
-  - ../base
+  - namespace.yaml
 helmCharts:
   - name: cert-manager
     repo: https://charts.jetstack.io
-    releaseName: cert-manager
     namespace: cert-manager
     version: v1.13.2
-    valuesInLine:
-      global:
-        leaderElection:
-          namespace: cert-manager
-      installCRDs: true
-      extraArgs:
-        - --feature-gates=ExperimentalGatewayAPISupport=true
+    valuesFile: values.yaml

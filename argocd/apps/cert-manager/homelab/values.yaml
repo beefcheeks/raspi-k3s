@@ -1,0 +1,6 @@
+global:
+  leaderElection:
+    namespace: cert-manager
+installCRDs: true
+extraArgs:
+  - --feature-gates=ExperimentalGatewayAPISupport=true
