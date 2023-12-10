@@ -2,7 +2,8 @@ namespace: onepassword
 resources:
   - namespace.yaml
 helmCharts:
-  - name: connect
+  - includeCRDs: true
+    name: connect
     namespace: onepassword
     releaseName: connect
     repo: https://1password.github.io/connect-helm-charts/
