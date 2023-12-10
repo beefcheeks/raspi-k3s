@@ -2,9 +2,9 @@ namespace: onepassword
 resources:
   - namespace.yaml
 helmCharts:
-  - name: onepassword
+  - name: connect
     namespace: onepassword
-    releaseName: cert-manager
-    repo: https://1password.github.io
+    releaseName: connect
+    repo: https://1password.github.io/connect-helm-charts/
     valuesFile: values.yaml
     version: 1.14.0
