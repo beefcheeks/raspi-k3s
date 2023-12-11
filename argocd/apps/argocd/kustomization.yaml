@@ -1,2 +1,15 @@
+images:
+  - name: quay.io/argoproj/argocd
+    newTag: v2.9.3
+
 resources:
+  # Install ArgoCD
+  - https://github.com/argoproj/argo-cd//manifests/cluster-install?ref=v2.9.3
+  # Enable argocd vault plugin
+  - https://github.com/argoproj-labs/argocd-vault-plugin//manifests/cmp-sidecar/cmp-plugin.yaml?ref=v1.17.0
+
+patchesStrategicMerge:
+  # Inject required sidecar for argocd vault plugin
+  - https://github.com/argoproj-labs/argocd-vault-plugin//manifests/cmp-sidecar/argocd-repo-server.yaml?ref=v1.17.0
+  # Enable helm within kustomize
   - configmap.yaml
