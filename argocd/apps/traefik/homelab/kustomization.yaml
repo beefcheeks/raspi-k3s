@@ -1,6 +1,6 @@
 namespace: kube-system
 resources:
-- https://raw.githubusercontent.com/traefik/traefik/v2.10.5/docs/content/reference/dynamic-configuration/kubernetes-gateway-rbac.yml
+- rbac.yaml
 helmCharts:
 - includeCRDs: true
   name: traefik
