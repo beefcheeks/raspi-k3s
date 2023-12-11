@@ -8,11 +8,11 @@ resources:
   # Install ArgoCD
   - https://github.com/argoproj/argo-cd//manifests/cluster-install?ref=v2.9.3
   # Enable argocd vault plugin
-  - https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/cmp-plugin.yaml
+  - https://github.com/argoproj-labs/argocd-vault-plugin//manifests/cmp-sidecar/cmp-plugin.yaml?ref=v1.17.0
 
 patches:
   # Inject required sidecar for argocd vault plugin
-  - path: https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
+  - path: https://github.com/argoproj-labs/argocd-vault-plugin//manifests/cmp-sidecar/argocd-repo-server.yaml?ref=v1.17.0
     target:
       kind: Deployment
       name: argocd-repo-server
