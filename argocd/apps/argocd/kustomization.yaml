@@ -6,10 +6,10 @@ resources:
   # Install ArgoCD
   - https://github.com/argoproj/argo-cd//manifests/cluster-install?ref=v2.9.3
   # Enable argocd vault plugin
-  - https://github.com/argoproj-labs/argocd-vault-plugin//manifests/cmp-sidecar/cmp-plugin.yaml?ref=v1.17.0
+  - https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/cmp-plugin.yaml
 
-patchesStrategicMerge:
+patches:
   # Inject required sidecar for argocd vault plugin
-  - https://github.com/argoproj-labs/argocd-vault-plugin//manifests/cmp-sidecar/argocd-repo-server.yaml?ref=v1.17.0
+  - https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
   # Enable helm within kustomize
   - configmap.yaml
