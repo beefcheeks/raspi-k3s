@@ -12,7 +12,7 @@ resources:
 
 patches:
   # Enable helm within kustomize
-  - path: configmap.yaml
+  - path: patch-configmap.yaml
     target:
       kind: ConfigMap
       name: argocd-cm
@@ -22,7 +22,7 @@ patches:
       kind: Deployment
       name: argocd-repo-server
   # Patch argocd-vault-plugin sidecar initContainer binary download script with correct architecture and version
-  - path: patch.yaml
+  - path: patch-deployment.yaml
     target:
       kind: Deployment
       name: argocd-repo-server
