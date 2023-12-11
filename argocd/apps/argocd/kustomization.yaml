@@ -10,6 +10,12 @@ resources:
 
 patches:
   # Inject required sidecar for argocd vault plugin
-  - https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
+  - path: https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
+    target:
+      kind: Deployment
+      name: argocd-repo-server
   # Enable helm within kustomize
-  - configmap.yaml
+  - path: configmap.yaml
+    target:
+      kind: ConfigMap
+      name: argocd-cm
