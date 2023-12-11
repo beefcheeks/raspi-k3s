@@ -1,13 +1,6 @@
 namespace: kube-system
-patches:
-- patch: |-
-    - op: replace
-      path: "/apiVersion"
-      value: gateway.networking.k8s.io/v1beta1
-  target:
-    group: gateway.networking.k8s.io
-    version: v1alpha2
-    kind: 'gatewayclass'
+resources:
+- https://raw.githubusercontent.com/traefik/traefik/v2.10.5/docs/content/reference/dynamic-configuration/kubernetes-gateway-rbac.yml
 helmCharts:
 - includeCRDs: true
   name: traefik
