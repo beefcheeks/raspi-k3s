@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: homelab
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/beefcheeks/raspi-k3s.git
+        revision: HEAD
+        directories:
+          - path: argocd/apps/*
+  template:
+    metadata:
+      name: "{{ .path.basename }}"
+    spec:
+      project: homelab
+      source:
+        repoURL: https://github.com/beefcheeks/raspi-k3s.git
+        targetRevision: HEAD
+        path: "{{ .path.path }}"
+      destination:
+        name: in-cluster
+      syncPolicy:
+        automated:
+          prune: true

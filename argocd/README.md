@@ -49,7 +49,7 @@ argocd cluster list
 Add relevant git repos and apply the ApplicationSet and Project configuration for this environment
 ```
 argocd repo add --name homelab https://github.com/beefcheeks/raspi-k3s
-kubectl apply -f argocd/envs/homelab/
+kubectl apply -f argocd/
 ```
 
 ## References

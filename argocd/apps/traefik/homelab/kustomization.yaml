@@ -1,8 +1,0 @@
-helmCharts:
-- includeCRDs: true
-  name: traefik
-  namespace: kube-system
-  releaseName: traefik
-  repo: https://traefik.github.io/charts
-  version: 25.0.0
-  valuesFile: values.yaml

@@ -1,0 +1,6 @@
+resources:
+  - cni-symlinker.yaml
+  - cni-plugins.yaml
+  - dhcp-daemon.yaml
+  - https://github.com/k8snetworkplumbingwg/multus-cni//deployments/multus-daemonset.yml?ref=v4.0.2
+  - macvlan.yaml
