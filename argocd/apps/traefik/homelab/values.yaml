@@ -1,7 +1,3 @@
-# Only compatible with older versions of the gateway CRDs
-# experimental:
-#   kubernetesGateway:
-#     enabled: true
-additionalArguments:
-  - "--providers.kubernetesgateway"
-  - "--experimental.kubernetesgateway"
+experimental:
+  kubernetesGateway:
+    enabled: true
