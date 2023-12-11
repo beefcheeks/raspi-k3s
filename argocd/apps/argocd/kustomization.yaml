@@ -11,13 +11,18 @@ resources:
   - https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/cmp-plugin.yaml
 
 patches:
-  # Inject required sidecar for argocd vault plugin
-  - path: https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
-    target:
-      kind: Deployment
-      name: argocd-repo-server
   # Enable helm within kustomize
   - path: configmap.yaml
     target:
       kind: ConfigMap
       name: argocd-cm
+  # Inject required sidecar for argocd vault plugin
+  - path: https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
+    target:
+      kind: Deployment
+      name: argocd-repo-server
+  # Patch argocd-vault-plugin sidecar initContainer binary download script with correct architecture and version
+  - path: patch.yaml
+    target:
+      kind: Deployment
+      name: argocd-repo-server
