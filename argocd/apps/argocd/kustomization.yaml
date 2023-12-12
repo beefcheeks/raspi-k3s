@@ -5,10 +5,9 @@ images:
     newTag: v2.9.3
 
 helmCharts:
-  - includeCRDs: true
-    name: argo-cd
+  - name: argo-cd
     namespace: argocd
-    releaseName: connect
+    releaseName: argocd
     repo: https://argoproj.github.io/argo-helm
     valuesFile: values.yaml
     version: 5.51.6
@@ -16,10 +15,3 @@ helmCharts:
 resources:
   # Add required vault secrets via OnePasswordItem CRD
   - onepassworditem.yaml
-
-patches:
-  # Enable helm within kustomize so above helmchart can be rendered
-  - path: patch-configmap.yaml
-    target:
-      kind: ConfigMap
-      name: argocd-cm

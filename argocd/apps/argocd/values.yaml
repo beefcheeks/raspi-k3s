@@ -1,20 +1,6 @@
-## Repo Server
-repoServer:
-  name: repo-server
-  # argo vault plugin
-  envFrom: 
-   - secretRef:
-       name: argocd-vault-plugin
-  rbac:
-    - verbs:
-        - get
-        - list
-        - watch
-      apiGroups:
-        - ''
-      resources:
-        - secrets
-        - configmaps
+configs:
+  cm:
+    create: false
   cmp:
     create: true
     # Adapted from: https://github.com/argoproj-labs/argocd-vault-plugin/blob/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
@@ -36,7 +22,23 @@ repoServer:
             - "-c"
             - "kustomize build --enable-helm . | argocd-vault-plugin generate -"
         lockRepo: false
-
+## Repo Server
+repoServer:
+  name: repo-server
+  # argo vault plugin
+  envFrom:
+   - secretRef:
+       name: argocd-vault-plugin
+  rbac:
+    - verbs:
+        - get
+        - list
+        - watch
+      apiGroups:
+        - ''
+      resources:
+        - secrets
+        - configmaps
   initContainers:
     - name: download-tools
       image: registry.access.redhat.com/ubi8
