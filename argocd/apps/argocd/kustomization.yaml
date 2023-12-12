@@ -9,6 +9,8 @@ resources:
   - https://github.com/argoproj/argo-cd//manifests/cluster-install?ref=v2.9.3
   # Enable argocd vault plugin
   - https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/cmp-plugin.yaml
+  # Add required vault secrets via OnePasswordItem CRD
+  - onepassworditem.yaml
 
 patches:
   # Enable helm within kustomize
