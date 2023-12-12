@@ -4,27 +4,22 @@ images:
   - name: quay.io/argoproj/argocd
     newTag: v2.9.3
 
+helmCharts:
+  - includeCRDs: true
+    name: argo-cd
+    namespace: argocd
+    releaseName: connect
+    repo: https://argoproj.github.io/argo-helm
+    valuesFile: values.yaml
+    version: 5.51.6
+
 resources:
-  # Install ArgoCD
-  - https://github.com/argoproj/argo-cd//manifests/cluster-install?ref=v2.9.3
-  # Enable argocd vault plugin
-  - https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/cmp-plugin.yaml
   # Add required vault secrets via OnePasswordItem CRD
   - onepassworditem.yaml
 
 patches:
-  # Enable helm within kustomize
+  # Enable helm within kustomize so above helmchart can be rendered
   - path: patch-configmap.yaml
     target:
       kind: ConfigMap
       name: argocd-cm
-  # Inject required sidecar for argocd vault plugin
-  - path: https://raw.githubusercontent.com/argoproj-labs/argocd-vault-plugin/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
-    target:
-      kind: Deployment
-      name: argocd-repo-server
-  # Patch argocd-vault-plugin sidecar initContainer binary download script with correct architecture and version
-  - path: patch-deployment.yaml
-    target:
-      kind: Deployment
-      name: argocd-repo-server
