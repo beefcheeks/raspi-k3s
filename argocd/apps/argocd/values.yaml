@@ -28,9 +28,6 @@ configs:
 repoServer:
   name: repo-server
   # argo vault plugin
-  envFrom:
-   - secretRef:
-       name: argocd-vault-plugin
   rbac:
     - verbs:
         - get
@@ -51,10 +48,10 @@ repoServer:
           value: linux_arm64
       command: [sh, -c]
       args:
-      - >-
-          curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_$(AVP_ARCH) -o argocd-vault-plugin &&
-          chmod +x argocd-vault-plugin &&
-          mv argocd-vault-plugin /custom-tools/
+        - >-
+            curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_$(AVP_ARCH) -o argocd-vault-plugin &&
+            chmod +x argocd-vault-plugin &&
+            mv argocd-vault-plugin /custom-tools/
       volumeMounts:
         - mountPath: /custom-tools
           name: custom-tools
@@ -63,6 +60,9 @@ repoServer:
     - name: avp-kustomize-helm
       command: [/var/run/argocd/argocd-cmp-server]
       image: quay.io/argoproj/argocd:v2.9.3
+      envFrom:
+        - secretRef:
+            name: argocd-vault-plugin
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
