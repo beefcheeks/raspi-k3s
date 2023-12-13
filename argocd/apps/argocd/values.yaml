@@ -7,7 +7,7 @@ configs:
     create: true
     # Adapted from: https://github.com/argoproj-labs/argocd-vault-plugin/blob/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
     plugins:
-      argocd-vault-plugin-kustomize:
+      avp-kustomize-helm:
         allowConcurrency: true
         # Note: this command is run _before_ anything is done, therefore the logic is to check
         # if this looks like a Kustomize bundle
@@ -60,7 +60,7 @@ repoServer:
           name: custom-tools
   extraContainers:
     # argocd-vault-plugin with Helm
-    - name: avp-helm
+    - name: avp-kustomize-helm
       command: [/var/run/argocd/argocd-cmp-server]
       image: quay.io/argoproj/argocd:v2.9.3
       securityContext:
@@ -75,7 +75,7 @@ repoServer:
           name: cmp-tmp
         # Register plugins into sidecar
         - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-          subPath: avp-helm.yaml
+          subPath: avp-kustomize-helm
           name: argocd-cmp-cm
         # Important: Mount tools into $PATH
         - name: custom-tools
