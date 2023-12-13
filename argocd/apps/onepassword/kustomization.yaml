@@ -1,6 +1,4 @@
 namespace: onepassword
-resources:
-  - namespace.yaml
 helmCharts:
   - includeCRDs: true
     name: connect

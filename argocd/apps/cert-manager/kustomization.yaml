@@ -1,7 +1,6 @@
 namespace: cert-manager
 resources:
   - clusterissuer.yaml
-  - namespace.yaml
   - onepassworditem.yaml
 helmCharts:
   - name: cert-manager
