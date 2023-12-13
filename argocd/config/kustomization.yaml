@@ -3,24 +3,15 @@
 # ArgoCD is then managed as an app under the applicationset
 namespace: argocd
 
-# ArgoCD automated install changes default label selectors
-# Label selectors are immutable
-# Adding them on bootstrap to avoid issues
-commonLabels:
-  app.kubernetes.io/instance: argocd
-
-configMapGenerator:
-  - name: argocd-cm
-    behavior: merge
-    literals:
-      - kustomize.buildOptions=--enable-helm
-  - name: argocd-cmd-params-cm
-    behavior: merge
-    literals:
-      - applicationsetcontroller.enable.progressive.syncs=true
-
 resources:
   - namespace.yaml
-  - https://github.com/argoproj/argo-cd/raw/v2.9.3/manifests/install.yaml
   - project.yaml
   - appset.yaml
+
+helmCharts:
+  - name: argo-cd
+    namespace: argocd
+    releaseName: argocd
+    repo: https://argoproj.github.io/argo-helm
+    valuesFile: values.yaml
+    version: 5.51.6
