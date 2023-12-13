@@ -31,11 +31,6 @@ spec:
               operator: In
               values:
                 - "1"
-        - matchExpressions:
-            - key: wave
-              operator: In
-              values:
-                - "2"
   template:
     metadata:
       name: "{{ .app }}"
