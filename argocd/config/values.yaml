@@ -1,0 +1,5 @@
+params:
+  applicationsetcontroller.enable.progressive.syncs: true
+configs:
+  cm:
+    kustomize.buildOptions: --enable-helm
