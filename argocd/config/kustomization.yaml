@@ -1,0 +1,20 @@
+# This file is used to bootstrap argocd
+# This includes project and applicationset resources
+# ArgoCD is then managed as an app under the applicationset
+namespace: argocd
+
+configMapGenerator:
+  - name: argocd-cm
+    behavior: merge
+    literals:
+      - kustomize.buildOptions=--enable-helm
+  - name: argocd-cmd-params-cm
+    behavior: merge
+    literals:
+      - applicationsetcontroller.enable.progressive.syncs=true
+
+resources:
+  - namespace.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v2.9.3/manifests/ha/install.yaml
+  - project.yaml
+  - appset.yaml

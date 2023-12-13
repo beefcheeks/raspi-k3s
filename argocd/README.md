@@ -33,10 +33,9 @@ Install CLI (macOS)
 brew install argocd
 ```
 
-Apply Kubernetes resources
+Bootstrap Argo CD into Kubernetes and apply initial project and applicationset configurations
 ```
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply -k argocd/config
 ```
 
 Wait for pods to finish starting and then check clusters
@@ -46,10 +45,9 @@ kubectl config set-context --current --namespace=argocd
 argocd cluster list
 ```
 
-Add relevant git repos and apply the ApplicationSet and Project configuration for this environment
+Add relevant git repo (this one)
 ```
 argocd repo add --name homelab https://github.com/beefcheeks/raspi-k3s
-kubectl apply -f argocd/
 ```
 
 ## References

@@ -1,9 +1,5 @@
 namespace: argocd
 
-images:
-  - name: quay.io/argoproj/argocd
-    newTag: v2.9.3
-
 helmCharts:
   - name: argo-cd
     namespace: argocd
@@ -11,7 +7,3 @@ helmCharts:
     repo: https://argoproj.github.io/argo-helm
     valuesFile: values.yaml
     version: 5.51.6
-
-resources:
-  # Add required vault secrets via OnePasswordItem CRD
-  - onepassworditem.yaml

@@ -1,6 +1,8 @@
+params:
+  applicationsetcontroller.enable.progressive.syncs: true
 configs:
   cm:
-    create: false
+    kustomize.buildOptions: --enable-helm
   cmp:
     create: true
     # Adapted from: https://github.com/argoproj-labs/argocd-vault-plugin/blob/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
@@ -88,3 +90,13 @@ repoServer:
     - name: custom-tools
       emptyDir: {}
   ## end argo vault plugin
+extraObjects:
+  - apiVersion: onepassword.com/v1
+    kind: OnePasswordItem
+    metadata:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+      name: argocd-vault-plugin
+      namespace: argocd
+    spec:
+      itemPath: "vaults/homelab/items/argocd-vault-plugin"
