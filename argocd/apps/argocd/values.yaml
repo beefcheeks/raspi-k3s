@@ -2,7 +2,6 @@ params:
   applicationsetcontroller.enable.progressive.syncs: true
 configs:
   cm:
-    application.instanceLabelKey: argocd.argoproj.io/name
     kustomize.buildOptions: --enable-helm
   cmp:
     create: true

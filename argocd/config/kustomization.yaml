@@ -3,6 +3,12 @@
 # ArgoCD is then managed as an app under the applicationset
 namespace: argocd
 
+# ArgoCD automated install changes default label selectors
+# Label selectors are immutable
+# Adding them on bootstrap to avoid issues
+commonLabels:
+  app.kubernetes.io/instance: argocd
+
 configMapGenerator:
   - name: argocd-cm
     behavior: merge
