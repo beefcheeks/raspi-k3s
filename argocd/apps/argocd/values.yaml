@@ -1,16 +1,18 @@
 params:
+  # Enable progressive sync (ordering for apps in appset)
   applicationsetcontroller.enable.progressive.syncs: true
 configs:
   cm:
+    # Enable kustomize to render helm charts
     kustomize.buildOptions: --enable-helm
+  ## BEGIN ARGOCD VAULT PLUGIN CONFIGURATION ##
   cmp:
+    # Creates the configmap argocd-cmp-cm
     create: true
     # Adapted from: https://github.com/argoproj-labs/argocd-vault-plugin/blob/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
     plugins:
       avp-kustomize-helm:
         allowConcurrency: true
-        # Note: this command is run _before_ anything is done, therefore the logic is to check
-        # if this looks like a Kustomize bundle
         discover:
           find:
             command:
@@ -24,10 +26,8 @@ configs:
             - "-c"
             - "kustomize build --enable-helm . | argocd-vault-plugin generate -"
         lockRepo: false
-## Repo Server
 repoServer:
   name: repo-server
-  # argo vault plugin
   rbac:
     - verbs:
         - get
@@ -89,8 +89,11 @@ repoServer:
       emptyDir: {}
     - name: custom-tools
       emptyDir: {}
-  ## end argo vault plugin
+## END ARGOCD VAULT PLUGIN CONFIGURATION ##
 extraObjects:
+  # OnePasswordItem renders a required secret
+  # See: https://argocd-vault-plugin.readthedocs.io/en/stable/config/
+  # 1Password connect/operator: https://github.com/1Password/onepassword-operator
   - apiVersion: onepassword.com/v1
     kind: OnePasswordItem
     metadata:
