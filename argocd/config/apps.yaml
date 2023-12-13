@@ -1,10 +1,5 @@
 apps:
-  - app: argocd
-    namespace: argocd
-    wave: "1"
-  - app: cert-manager
-    namespace: cert-manager
-    wave: "1"
+  # Wave 0
   - app: gateway
     namespace: kube-system
     wave: "0"
@@ -14,6 +9,14 @@ apps:
   - app: onepassword
     namespace: onepassword
     wave: "0"
+  # Wave 1
+  - app: cert-manager
+    namespace: cert-manager
+    wave: "1"
   - app: traefik
     namespace: kube-system
-    wave: "0"
+    wave: "1"
+  # Wave 2
+  - app: argocd
+    namespace: argocd
+    wave: "2"

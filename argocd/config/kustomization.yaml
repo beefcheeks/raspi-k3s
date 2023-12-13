@@ -15,6 +15,6 @@ configMapGenerator:
 
 resources:
   - namespace.yaml
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v2.9.3/manifests/ha/install.yaml
+  - https://github.com/argoproj/argo-cd/raw/v2.9.3/manifests/install.yaml
   - project.yaml
   - appset.yaml
