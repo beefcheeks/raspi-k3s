@@ -6,13 +6,8 @@ resources:
 
 # Patches required for multus and the dhcp-daemon to work on k3s
 patches:
-  - path: patches/dhcp-daemon.yaml
+  - path: patch.yaml
     target:
+      # Targets both dhcp-daemon and kube-multus-ds
       kind: DaemonSet
-      name: dhcp-daemon
-      namespace: kube-system
-  - path: patches/kube-multus-ds.yaml
-    target:
-      kind: DaemonSet
-      name: kube-multus-ds
       namespace: kube-system
