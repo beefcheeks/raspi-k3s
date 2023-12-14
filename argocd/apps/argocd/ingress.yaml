@@ -10,7 +10,7 @@ metadata:
   namespace: argocd
 spec:
   # Need to specify ingressClass for reasons: https://github.com/argoproj/argo-cd/issues/4863#issuecomment-1516246342
-  ingressClass: traefik
+  ingressClassName: traefik
   rules:
     - http:
         paths:
@@ -39,7 +39,7 @@ metadata:
   namespace: argocd
 spec:
   # Need to specify ingressClass for reasons: https://github.com/argoproj/argo-cd/issues/4863#issuecomment-1516246342
-  ingressClass: traefik
+  ingressClassName: traefik
   rules:
     - http:
         paths:
