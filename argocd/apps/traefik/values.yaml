@@ -1,3 +1,6 @@
 experimental:
   kubernetesGateway:
     enabled: true
+service:
+  spec:
+    externalTrafficPolicy: Local
