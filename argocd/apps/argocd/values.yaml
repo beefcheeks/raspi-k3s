@@ -1,8 +1,3 @@
-params:
-  # Enable progressive sync (ordering for apps in appset)
-  applicationsetcontroller.enable.progressive.syncs: true
-  # Disable local TLS since we're using ingress + cert-manager
-  server.insecure: true
 configs:
   cm:
     # Enable kustomize to render helm charts
@@ -28,6 +23,11 @@ configs:
             - "-c"
             - "kustomize build --enable-helm . | argocd-vault-plugin generate -"
         lockRepo: false
+  params:
+    # Enable progressive sync (ordering for apps in appset)
+    applicationsetcontroller.enable.progressive.syncs: true
+    # Disable local TLS since we're using ingress + cert-manager
+    server.insecure: true
   secret:
     # Don't create a secret because a OnePasswordItem will create it for us
     createSecret: false

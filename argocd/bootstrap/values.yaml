@@ -1,7 +1,7 @@
-params:
-  applicationsetcontroller.enable.progressive.syncs: true
-  # Disable local TLS since we're using ingress + cert-manager
-  server.insecure: true
 configs:
   cm:
     kustomize.buildOptions: --enable-helm
+  params:
+    applicationsetcontroller.enable.progressive.syncs: true
+    # Disable local TLS since we're using ingress + cert-manager
+    server.insecure: true
