@@ -1,6 +1,18 @@
 resources:
-  - cni-symlinker.yaml
   - cni-plugins.yaml
   - dhcp-daemon.yaml
   - https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v4.0.2/deployments/multus-daemonset.yml
   - macvlan.yaml
+
+# Patches required for multus and the dhcp-daemon to work on k3s
+patches:
+  - path: patches/dhcp-daemon.yaml
+    target:
+      kind: DaemonSet
+      name: dhcp-daemon
+      namespace: kube-system
+  - path: patches/kube-multus-ds.yaml
+    target:
+      kind: DaemonSet
+      name: kube-multus-ds
+      namespace: kube-system
