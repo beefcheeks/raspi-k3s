@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    avp.kubernetes.io/path: "vaults/homelab/items/dns-hosts"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https-redirect@kubernetescrd,kube-system-ip-allow-list@kubernetescrd
+  name: argocd-server-http
+  namespace: argocd
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  name: http
+      host: <argocd>
+  tls:
+    - hosts:
+        - <argocd>
+      secretName: argocd-ingress-http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    avp.kubernetes.io/path: "vaults/homelab/items/dns-hosts"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https-redirect@kubernetescrd,kube-system-ip-allow-list@kubernetescrd
+  name: argocd-server-grpc
+  namespace: argocd
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  name: https
+      host: <argocd-grpc>
+  tls:
+    - hosts:
+        - <argocd-grpc>
+      secretName: argocd-ingress-grpc

@@ -1,5 +1,10 @@
 params:
   applicationsetcontroller.enable.progressive.syncs: true
+  # Disable local TLS since we're using ingress + cert-manager
+  server.insecure: true
 configs:
   cm:
     kustomize.buildOptions: --enable-helm
+  secret:
+    # Don't create a secret because a OnePasswordItem will create it for us later
+    createSecret: false
