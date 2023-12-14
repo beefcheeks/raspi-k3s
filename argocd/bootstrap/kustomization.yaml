@@ -6,7 +6,7 @@ namespace: argocd
 resources:
   - namespace.yaml
   - project.yaml
-  - appset.yaml
+  - root.yaml
 
 helmCharts:
   - name: argo-cd

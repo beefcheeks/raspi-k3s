@@ -12,7 +12,7 @@ spec:
               repoURL: https://github.com/beefcheeks/raspi-k3s.git
               revision: HEAD
               files:
-                - path: argocd/config/apps.yaml
+                - path: argocd/config.yaml
           - list:
               elements: []
               elementsYaml: "{{ .apps | toJson }}"

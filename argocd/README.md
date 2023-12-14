@@ -35,7 +35,7 @@ brew install argocd
 
 Bootstrap Argo CD into Kubernetes and apply initial project and applicationset configurations
 ```
-kubectl kustomize --enable-helm argocd/config | kubectl apply -f -
+kubectl kustomize --enable-helm argocd/bootstrap | kubectl apply -f -
 ```
 
 Wait for pods to finish starting and then check clusters
