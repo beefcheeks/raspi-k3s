@@ -10,6 +10,7 @@ spec:
       - 127.0.0.1/32
       - 10.0.0.0/24
       - 10.6.0.0/28
+      - 10.43.0.0/24
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
