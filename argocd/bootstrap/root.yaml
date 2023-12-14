@@ -6,9 +6,9 @@ metadata:
 spec:
   project: homelab
   source:
-    repoURL: git@gitlab.com/beefcheeks/raspi-k3s.git
+    repoURL: https://github.com/beefcheeks/raspi-k3s
     targetRevision: HEAD
-    path: appset.yaml
+    path: argocd
   destination:
     name: in-cluster
     namespace: argocd
