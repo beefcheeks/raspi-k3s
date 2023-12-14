@@ -1,6 +1,12 @@
 experimental:
   kubernetesGateway:
     enabled: true
+# Required for Traefik to update the LoadBalancer status field
+# Without this, ArgoCD apps with ingress resources get stuck in a Progressing loop
+providers:
+  kubernetesIngress:
+    publishedService:
+      enabled: true
 service:
   spec:
     externalTrafficPolicy: Local
