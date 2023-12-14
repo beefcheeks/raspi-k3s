@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  # Name is not applied
+  name: ignored
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: cni-symlinker
+          image: busybox
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - |
+              if [ ! -L /host/etc/cni/net.d ]; then
+                  ln -s /var/lib/rancher/k3s/agent/etc/cni/net.d /host/etc/cni/net.d
+              fi
+              if [ ! -L /host/opt/cni/bin ]; then
+                  ln -s /var/lib/rancher/k3s/data/current/bin /host/opt/cni/bin
+              fi
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: etc
+              mountPath: /host/etc/cni
+            - name: opt
+              mountPath: /host/opt/cni
+      volumes:
+        - name: etc
+          hostPath:
+            path: /etc/cni
+        - name: opt
+          hostPath:
+            path: /opt/cni
