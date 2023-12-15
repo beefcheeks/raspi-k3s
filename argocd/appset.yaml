@@ -50,6 +50,12 @@ spec:
       destination:
         name: in-cluster
         namespace: "{{ .namespace }}"
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 1
+        maxDuration: 1m
       syncPolicy:
         automated:
           prune: true

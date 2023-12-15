@@ -20,3 +20,7 @@ apps:
   - app: argocd
     namespace: argocd
     wave: "2"
+  # Wave 3
+  - app: argocd-ingress
+    namespace: argocd
+    wave: "3"
