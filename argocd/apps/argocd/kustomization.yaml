@@ -1,7 +1,6 @@
 namespace: argocd
 
 resources:
-  - ingress.yaml
   - onepassworditem.yaml
 
 helmCharts:
