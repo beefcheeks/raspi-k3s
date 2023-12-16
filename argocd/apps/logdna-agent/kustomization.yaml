@@ -1,0 +1,12 @@
+resources:
+  # Syslog to https log forwarder
+  - https://github.com/logdna/logdna-rsyslog/raw/c17ce1bf9a7160c74f4820518f01229882742aae/logdna-rsyslog-config-https.yml
+  - https://github.com/logdna/logdna-rsyslog/raw/c17ce1bf9a7160c74f4820518f01229882742aae/logdna-rsyslog-workload.yml
+
+helmCharts:
+  - name: agent
+    namespace: logdna-agent
+    releaseName: logdna-agent
+    repo: https://assets.logdna.com/charts
+    version: 203.8.2
+    valuesFile: values.yaml
