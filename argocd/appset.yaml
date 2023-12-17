@@ -1,6 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
   name: homelab
 spec:
   goTemplate: true
