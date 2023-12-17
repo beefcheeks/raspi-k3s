@@ -1,5 +1,9 @@
 namespace: homebridge
 
+images:
+  - name: homebridge
+    newTag: 2023-11-28
+
 resources:
 - ingress.yaml
 - pvc.yaml

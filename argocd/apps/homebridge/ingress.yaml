@@ -18,7 +18,7 @@ spec:
               service:
                 name: homebridge
                 port:
-                  name: ui
+                  name: http
       host: <homebridge>
   tls:
     - hosts:
