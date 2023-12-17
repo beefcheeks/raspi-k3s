@@ -59,7 +59,7 @@ spec:
         namespace: "{{ .namespace }}"
       syncPolicy:
         automated:
-          prune: "{{. prune }}"
+          prune: true
           selfHeal: true
         retry:
           limit: 5

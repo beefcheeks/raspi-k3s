@@ -2,32 +2,25 @@ apps:
   # Wave 0
   - app: gateway
     namespace: kube-system
-    prune: true
     wave: "0"
   - app: multus
     namespace: kube-system
-    prune: false # deleting multus stops pods from terminating/starting
     wave: "0"
   - app: onepassword
     namespace: onepassword
-    prune: true
     wave: "0"
   # Wave 1
   - app: cert-manager
     namespace: cert-manager
-    prune: true
     wave: "1"
   - app: traefik
     namespace: kube-system
-    prune: true
     wave: "1"
   # Wave 2
   - app: argocd
     namespace: argocd
-    prune: false # don't delete self
     wave: "2"
   # Wave 3
   - app: argocd-ingress
     namespace: argocd
-    prune: true
     wave: "3"
