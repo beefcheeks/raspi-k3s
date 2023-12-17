@@ -1,5 +1,0 @@
-extraEnvs:
-- name: LOGDNA_USE_K8S_LOG_ENRICHMENT
-  value: "always"
-- name: LOGDNA_LOG_K8S_EVENTS
-  value: "always"
