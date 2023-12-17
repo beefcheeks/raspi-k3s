@@ -13,6 +13,9 @@ apps:
   - app: cert-manager
     namespace: cert-manager
     wave: "1"
+  - app: logdna-agent
+    namespace: logdna-agent
+    wave: "1"
   - app: traefik
     namespace: kube-system
     wave: "1"
@@ -23,7 +26,4 @@ apps:
   # Wave 3
   - app: argocd-ingress
     namespace: argocd
-    wave: "3"
-  - app: logdna-agent
-    namespace: logdna-agent
     wave: "3"
