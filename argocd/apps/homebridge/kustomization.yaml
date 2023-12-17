@@ -1,7 +1,7 @@
 namespace: homebridge
 
 images:
-  - name: homebridge
+  - name: homebridge/homebridge
     newTag: 2023-11-28
 
 resources:
