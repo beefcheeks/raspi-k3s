@@ -16,6 +16,7 @@ spec:
     name: in-cluster
     namespace: argocd
   syncPolicy:
+    preserveResourcesOnDeletion: true
     automated:
       prune: true
       selfHeal: true

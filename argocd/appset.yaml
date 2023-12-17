@@ -41,6 +41,8 @@ spec:
               operator: In
               values:
                 - "3"
+  syncPolicy:
+    preserveResourcesOnDeletion: true
   template:
     metadata:
       name: "{{ .app }}"
