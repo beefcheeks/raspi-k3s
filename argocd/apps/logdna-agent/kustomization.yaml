@@ -16,5 +16,5 @@ helmCharts:
 patches:
   - path: patch.yaml
     target:
-     - kind: Service
+       kind: Service
        namespace: logdna-agent

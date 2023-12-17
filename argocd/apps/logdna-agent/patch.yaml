@@ -3,4 +3,4 @@ kind: Service
 metadata:
   name: ignored
 spec:
-  type: ClusterIP
+  type: LoadBalancer
