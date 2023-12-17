@@ -1,0 +1,8 @@
+namespace: mosquitto
+
+resources:
+  - configmap.yaml
+  - gateway.yaml
+  - pvc.yaml
+  - service.yaml
+  - tcproute.yaml
