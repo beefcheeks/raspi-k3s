@@ -1,6 +1,7 @@
 namespace: logdna-agent
 
 resources:
+  - onepassworditem.yaml
   # Syslog to https log forwarder
   - https://github.com/logdna/logdna-rsyslog/raw/c17ce1bf9a7160c74f4820518f01229882742aae/logdna-rsyslog-config-https.yml
   - https://github.com/logdna/logdna-rsyslog/raw/c17ce1bf9a7160c74f4820518f01229882742aae/logdna-rsyslog-workload.yml
