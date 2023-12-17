@@ -1,0 +1,12 @@
+# Separate PVC to avoid creation of volumes in event of accidental scale up
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: homebridge
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi

@@ -1,0 +1,22 @@
+namespace: homebridge
+
+resources:
+- ingress.yaml
+- pvc.yaml
+- service.yaml
+- statefulset.yaml
+
+# Patch Homebridge StatefulSet to use multus interface so hostNetwork: true is not needed
+patches:
+  - target:
+      kind: StatefulSet
+    patch: |-
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: ignored
+      spec:
+        template:
+          metadata:
+            annotations:
+              k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'

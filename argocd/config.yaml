@@ -27,3 +27,6 @@ apps:
   - app: argocd-ingress
     namespace: argocd
     wave: "3"
+  - app: homebridge
+    namespace: homebridge
+    wave: "3"
