@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: mosquitto
+  name: mosquitto
+spec:
+  selector:
+    matchLabels:
+      app: mosquitto
+  replicas: 1
+  serviceName: mosquitto
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+    spec:
+      containers:
+      - name: mosquitto
+        image: eclipse-mosquitto:2.0
+        command:
+        - /opt/scripts/startup.sh
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: 1883
+          timeoutSeconds: 3
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: 1883
+          timeoutSeconds: 3
+        ports:
+        - containerPort: 1883
+          name: broker
+        securityContext:
+         runAsUser: 1883
+        envFrom:
+        - secretRef:
+            name: mosquitto-users
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: config
+          mountPath: /mosquitto/config
+        - name: passwd
+          mountPath: /mosquitto/passwd
+        - name: startup
+          mountPath: /opt/scripts
+        - name: storage
+          mountPath: /mosquitto/storage
+      volumes:
+      - name: config
+        configMap:
+          name: mosquitto
+          items:
+          - key: config
+            path: mosquitto.conf
+      - name: passwd
+        emptyDir: {}
+      - name: startup
+        configMap:
+          name: mosquitto
+          defaultMode: 0777
+          items:
+          - key: startup
+            path: startup.sh
+      - name: storage
+        persistentVolumeClaim:
+          claimName: mosquitto

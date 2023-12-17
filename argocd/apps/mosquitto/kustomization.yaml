@@ -1,8 +1,14 @@
 namespace: mosquitto
 
+images:
+  - name: mosquitto
+    newTag: 2.0.18
+
 resources:
   - configmap.yaml
   - gateway.yaml
+  - onepassworditem.yaml
   - pvc.yaml
   - service.yaml
+  - statefulset.yaml
   - tcproute.yaml
