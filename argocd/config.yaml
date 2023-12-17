@@ -24,3 +24,6 @@ apps:
   - app: argocd-ingress
     namespace: argocd
     wave: "3"
+  - app: logdna-agent
+    namespace: logdna-agent
+    wave: "3"
