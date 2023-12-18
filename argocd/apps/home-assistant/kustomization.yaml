@@ -10,8 +10,8 @@ resources:
 - statefulset.yaml
 
 images:
-  - name: home-assistant
-    newTag: "2023.12"
+  - name: ghcr.io/home-assistant/home-assistant
+    newTag: "2023.12.3"
 
 patches:
   # Patch default configuration for initial setup
