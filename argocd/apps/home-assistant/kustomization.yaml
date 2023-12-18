@@ -101,11 +101,11 @@ patches:
                 volumeMounts:
                 - name: route-manager
                   mountPath: /opt/scripts
-          volumes:
-            - name: route-manager
-              configMap:
-                name: route-manager
-                defaultMode: 0777
-                items:
-                  - key: route-manager
-                    path: route-manager.sh
+            volumes:
+              - name: route-manager
+                configMap:
+                  name: route-manager
+                  defaultMode: 0777
+                  items:
+                    - key: route-manager
+                      path: route-manager.sh

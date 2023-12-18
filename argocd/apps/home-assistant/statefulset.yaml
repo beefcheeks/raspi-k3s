@@ -26,10 +26,10 @@ spec:
           mountPath: '/config'
         - name: homekit-triggers-workaround
           mountPath: /homekit-triggers-workaround
+        - name: initial-config
+          mountPath: /opt/config
         - name: setup
           mountPath: /opt/scripts
-        - name: yamls
-          mountPath: /opt/config
       containers:
       - name: home-assistant
         image: homeassistant/home-assistant:stable
@@ -74,9 +74,6 @@ spec:
           items:
             - key: setup
               path: setup.sh
-      - name: blueprints
-        configMap:
-          name: blueprints
       - name: initial-config
         configMap:
           name: home-assistant
