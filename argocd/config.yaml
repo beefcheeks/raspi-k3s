@@ -30,6 +30,9 @@ apps:
   - app: homebridge
     namespace: homebridge
     wave: "3"
+  - app: matter-server
+    namespace: home-assistant
+    wave: "3"
   - app: mosquitto
     namespace: mosquitto
     wave: "3"

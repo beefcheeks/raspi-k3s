@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: matter-server
+  name: matter-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matter-server
+  serviceName: 
+  template:
+    metadata:
+      labels:
+        app: matter-server
+    spec:
+      containers:
+      - image: homeassistant/aarch64-addon-matter-server:latest
+        imagePullPolicy: Always
+        name: matter-server
+        command:
+        - matter-server
+        args:
+        - --storage-path
+        - "/data"
+        - --port
+        - $(server_port)
+        - --log-level
+        - $(log_level)
+        - --fabricid
+        - '2'
+        - --vendorid
+        - '4939'
+        env:
+        - name: log_level
+          value: info
+        - name: server_port
+          value: '5580'
+        ports:
+        - containerPort: 5580
+        # Only needed for bluetooth access
+        # securityContext:
+        #   privileged: true
+        resources:
+          requests:
+            memory: 100Mi
+            cpu: 100m
+          limits:
+            memory: 500Mi
+            cpu: 500m
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        # Only needed for bluetooth access
+        # - name: dbus
+        #   mountPath: /run/dbus
+        #   readOnly: True
+      restartPolicy: Always
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: matter-server
+      # Only needed for bluetooth access
+      # - name: dbus
+      #   hostPath:
+      #     path: /run/dbus

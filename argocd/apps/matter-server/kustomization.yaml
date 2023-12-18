@@ -1,0 +1,25 @@
+namespace: home-assistant
+
+images:
+  - name: homeassistant/aarch64-addon-matter-server
+    newTag: 5.0.1
+
+resources:
+  - pvc.yaml
+  - service.yaml
+  - statefulset.yaml
+
+patches:
+  - target:
+      kind: StatefulSet
+    # Patch matter-server StatefulSet to use multus interface so hostNetwork: true is not needed
+    patch: |-
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: ignored
+      spec:
+        template:
+          metadata:
+            annotations:
+              k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'
