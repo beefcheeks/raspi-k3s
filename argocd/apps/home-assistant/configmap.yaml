@@ -24,10 +24,7 @@ data:
     fi
     touch /config/scripts.yaml
     touch /config/scenes.yaml
-    if [[ ! -f /config/template.yaml ]]
-    then
-        cp /opt/config/template.yaml /config/template.yaml
-    fi
+    touch /config/template.yaml
 
     # If blueprints exist, symlink blueprints directory in /config to mounted location
     if [[ -d /opt/blueprints ]]
