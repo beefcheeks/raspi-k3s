@@ -2,6 +2,13 @@
 
 In order to use Argo CD and some of its applications effectively, some initial bootstrapping is required.
 
+## k3s
+
+Since we require custom features of traefik, we install k3s without it. Execute the script below to bootstrap your Kubernetes nodes.
+```
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik" sh -s - --write-kubeconfig-mode 644
+```
+
 ## 1Password
 
 I use 1Password to manage my secrets, including through Argo CD. To do so, you'll need to create the required configuration in 1Password, as well as apply the credentials as secrets to your Kubernetes cluster.
