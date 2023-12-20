@@ -8,30 +8,47 @@ spec:
   template:
     spec:
       initContainers:
-        - name: cni-symlinker
+        - name: configure-cni
           image: busybox
           command:
             - /bin/sh
           args:
             - -c
             - |
+              # Symlink cni binaries and config to default locations
               if [ ! -L /host/etc/cni/net.d ]; then
                   ln -s /var/lib/rancher/k3s/agent/etc/cni/net.d /host/etc/cni/net.d
               fi
               if [ ! -L /host/opt/cni/bin ]; then
                   ln -s /var/lib/rancher/k3s/data/current/bin /host/opt/cni/bin
               fi
+              # Override default flannel config so multus routes dns service via flannel interface
+              echo '{
+                "Network": "10.42.0.0/15",
+                "SubnetMax": "10.42.254.0",
+                "EnableIPv6": false,
+                "EnableIPv4": true,
+                "IPv6Network": "::/0",
+                "Backend": {
+                  "Type": "vxlan"
+                }
+              }' > /host/var/lib/rancher/k3s/agent/etc/flannel
           securityContext:
             privileged: true
           volumeMounts:
             - name: etc
               mountPath: /host/etc/cni
+            - name: flannel
+              mountPath: /host/var/lib/rancher/k3s/agent/etc/flannel
             - name: opt
               mountPath: /host/opt/cni
       volumes:
         - name: etc
           hostPath:
             path: /etc/cni
+        - name: flannel
+          hostPath:
+            path: /var/lib/rancher/k3s/agent/etc/flannel
         - name: opt
           hostPath:
             path: /opt/cni
