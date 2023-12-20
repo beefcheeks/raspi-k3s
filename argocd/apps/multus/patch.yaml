@@ -22,17 +22,6 @@ spec:
               if [ ! -L /host/opt/cni/bin ]; then
                   ln -s /var/lib/rancher/k3s/data/current/bin /host/opt/cni/bin
               fi
-              # Override default flannel config so multus routes dns service via flannel interface
-              echo '{
-                "Network": "10.42.0.0/15",
-                "SubnetMax": "10.42.254.0",
-                "EnableIPv6": false,
-                "EnableIPv4": true,
-                "IPv6Network": "::/0",
-                "Backend": {
-                  "Type": "vxlan"
-                }
-              }' > /host/var/lib/rancher/k3s/agent/etc/flannel/net-conf.json
           securityContext:
             privileged: true
           volumeMounts:

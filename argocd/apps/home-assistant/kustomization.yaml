@@ -64,6 +64,7 @@ patches:
               - name: blueprints
                 configMap:
                   name: blueprints
+
   - target:
       kind: StatefulSet
       name: home-assistant
@@ -78,6 +79,19 @@ patches:
           metadata:
             annotations:
               k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'
+          spec:
+            initContainers:
+              - name: 0-init-dns-route
+                image: busybox
+                command:
+                  - /bin/sh
+                args:
+                - -c
+                # Add custom route so DNS can reach service CIDR
+                - ip route add 10.43.0.0/16 via 10.42.0.1 dev eth0
+                securityContext:
+                  privileged: true
+
   - target:
       kind: StatefulSet
       name: home-assistant
