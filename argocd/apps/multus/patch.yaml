@@ -32,7 +32,7 @@ spec:
                 "Backend": {
                   "Type": "vxlan"
                 }
-              }' > /host/var/lib/rancher/k3s/agent/etc/flannel
+              }' > /host/var/lib/rancher/k3s/agent/etc/flannel/net-conf.json
           securityContext:
             privileged: true
           volumeMounts:
