@@ -21,7 +21,7 @@ configs:
           command:
             - sh
             - "-c"
-            - "kustomize build --enable-helm . | argocd-vault-plugin generate -"
+            - "kustomize build --enable-helm --load-restrictor LoadRestrictionsNone . | argocd-vault-plugin generate -"
         lockRepo: false
   params:
     # Enable progressive sync (ordering for apps in appset)

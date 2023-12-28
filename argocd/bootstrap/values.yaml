@@ -1,6 +1,6 @@
 configs:
   cm:
-    kustomize.buildOptions: --enable-helm
+    kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
   params:
     applicationsetcontroller.enable.progressive.syncs: true
     # Disable local TLS since we're using ingress + cert-manager
