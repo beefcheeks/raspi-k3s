@@ -12,11 +12,6 @@ resources:
 
 # Patch Homebridge StatefulSet to use multus interface so hostNetwork: true is not needed
 patches:
-  # Patch routing for DNS while using multus
-  - target:
-      kind: StatefulSet
-      name: homebridge
-    path: ../multus/patches/dns-route.yaml
   # Enable macvlan interface via multus
   - target:
       kind: StatefulSet
@@ -31,3 +26,9 @@ patches:
           metadata:
             annotations:
               k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'
+  # Patch routing for DNS while using multus
+  # Always put this last so it becomes the first initContainer to run
+  - target:
+      kind: StatefulSet
+      name: homebridge
+    path: ../multus/patches/dns-route.yaml

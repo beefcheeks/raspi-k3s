@@ -10,15 +10,10 @@ resources:
   - statefulset.yaml
 
 patches:
-  # Ensure DNS routes correctly while using multus
+  # Patch matter-server StatefulSet to use multus interface so hostNetwork: true is not needed
   - target:
       kind: StatefulSet
       name: matter-server
-    path: ../multus/patches/dns-route.yaml
-  - target:
-      kind: StatefulSet
-      name: matter-server
-    # Patch matter-server StatefulSet to use multus interface so hostNetwork: true is not needed
     patch: |-
       apiVersion: apps/v1
       kind: StatefulSet
@@ -29,3 +24,9 @@ patches:
           metadata:
             annotations:
               k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'
+  # Ensure DNS routes correctly while using multus
+  # Always list this last so it becomes the first initContainer to run
+  - target:
+      kind: StatefulSet
+      name: matter-server
+    path: ../multus/patches/dns-route.yaml

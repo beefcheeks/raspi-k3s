@@ -18,11 +18,6 @@ patches:
       kind: ConfigMap
       name: home-assistant
     path: patches/configuration.yaml
-  # Ensure DNS routes correctly while using multus
-  - target:
-      kind: StatefulSet
-      name: home-assistant
-    path: ../multus/patches/dns-route.yaml
   # Add custom blueprints to home-assistant
   - target:
       kind: StatefulSet
@@ -48,3 +43,9 @@ patches:
           metadata:
             annotations:
               k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'
+  # Ensure DNS routes correctly while using multus
+  # Always put this last so it becomes the first initContainer to run
+  - target:
+      kind: StatefulSet
+      name: home-assistant
+    path: ../multus/patches/dns-route.yaml
