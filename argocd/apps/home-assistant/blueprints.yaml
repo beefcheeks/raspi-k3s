@@ -1,3 +1,5 @@
+# Custom blueprints for use in home-assistant
+# Updates require a yaml configuration refresh via the UI (or container restart)
 apiVersion: v1
 kind: ConfigMap
 metadata:

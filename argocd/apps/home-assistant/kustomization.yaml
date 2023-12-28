@@ -2,10 +2,9 @@ namespace: home-assistant
 
 resources:
 - blueprints.yaml # Only needed if using custom blueprints
-- configmap.yaml
+- configuration.yaml
 - ingress.yaml
 - pvc.yaml
-- route-manager.yaml # Only needed if using route advertisement
 - service.yaml
 - statefulset.yaml
 
@@ -14,57 +13,27 @@ images:
     newTag: "2023.12.3"
 
 patches:
-  # Patch default configuration for initial setup
+  # Add configuration to support ingress
   - target:
       kind: ConfigMap
       name: home-assistant
-    patch: |-
-      apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: ignored
-      data:
-        configuration: |+
-          default_config:
-
-          http:
-            use_x_forwarded_for: true
-            trusted_proxies:
-              - 127.0.0.0
-              - 10.42.0.0/24
-
-          automation: !include automations.yaml
-          script: !include scripts.yaml
-          scene: !include scenes.yaml
-          template: !include template.yaml
-
+    path: patches/configuration.yaml
+  # Ensure DNS routes correctly while using multus
   - target:
       kind: StatefulSet
       name: home-assistant
-    patch: |-
-      # Patch home-assistant StatefulSet to mount custom blueprint directory for init script
-      apiVersion: apps/v1
+    path: ../multus/patches/dns-route.yaml
+  # Add custom blueprints to home-assistant
+  - target:
       kind: StatefulSet
-      metadata:
-        name: ignored
-      spec:
-        template:
-          spec:
-            initContainers:
-            - name: init-home-assistant
-              volumeMounts:
-                - name: blueprints
-                  mountPath: /opt/blueprints
-            containers:
-            - name: home-assistant
-              volumeMounts:
-                - name: blueprints
-                  mountPath: /opt/blueprints
-            volumes:
-              - name: blueprints
-                configMap:
-                  name: blueprints
-
+      name: home-assistant
+    path: patches/blueprints.yaml
+  # Ensure route advertisements update the routing table
+  - target:
+      kind: StatefulSet
+      name: home-assistant
+    path: patches/route-manager.yaml
+  # Enable external network interface via multus
   - target:
       kind: StatefulSet
       name: home-assistant
@@ -79,47 +48,3 @@ patches:
           metadata:
             annotations:
               k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'
-          spec:
-            initContainers:
-              - name: 0-init-dns-route
-                image: busybox
-                command:
-                  - /bin/sh
-                args:
-                - -c
-                # Add custom route so DNS can reach service CIDR
-                - ip route add 10.43.0.0/16 via 10.42.0.1 dev eth0
-                securityContext:
-                  privileged: true
-
-  - target:
-      kind: StatefulSet
-      name: home-assistant
-    patch: |-
-      # Patch home-assistant StatefulSet to use route manager needed for thread border route advertisement
-      apiVersion: apps/v1
-      kind: StatefulSet
-      metadata:
-        name: ignored
-      spec:
-        template:
-          spec:
-            # Ensure route advertisement works
-            containers:
-              - name: route-manager
-                image: apearson/radvd:latest
-                command:
-                - /opt/scripts/route-manager.sh
-                securityContext:
-                  privileged: true
-                volumeMounts:
-                - name: route-manager
-                  mountPath: /opt/scripts
-            volumes:
-              - name: route-manager
-                configMap:
-                  name: route-manager
-                  defaultMode: 0777
-                  items:
-                    - key: route-manager
-                      path: route-manager.sh
