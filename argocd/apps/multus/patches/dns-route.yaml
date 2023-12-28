@@ -20,6 +20,11 @@ spec:
           args:
           - -c
           # Add custom route so DNS can reach service CIDR
-          - ip route add <k8s-service-cidr> via <k8s-gateway> dev eth0
+          - ip route add $SERVICE_CIDR via $GATEWAY dev eth0
+          env:
+          - name: SERVICE_CIDR
+            value: <k8s-service-cidr>
+          - name: GATEWAY
+            value: <k8s-gateway>
           securityContext:
             privileged: true
