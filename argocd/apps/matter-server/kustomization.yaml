@@ -10,8 +10,14 @@ resources:
   - statefulset.yaml
 
 patches:
+  # Ensure DNS routes correctly while using multus
   - target:
       kind: StatefulSet
+      name: matter-server
+    path: ../multus/patches/dns-route.yaml
+  - target:
+      kind: StatefulSet
+      name: matter-server
     # Patch matter-server StatefulSet to use multus interface so hostNetwork: true is not needed
     patch: |-
       apiVersion: apps/v1
@@ -23,15 +29,3 @@ patches:
           metadata:
             annotations:
               k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'
-          spec:
-            initContainers:
-              - name: 0-init-dns-route
-                image: busybox
-                command:
-                  - /bin/sh
-                args:
-                - -c
-                # Add custom route so DNS can reach service CIDR
-                - ip route add 10.43.0.0/16 via 10.42.0.1 dev eth0
-                securityContext:
-                  privileged: true

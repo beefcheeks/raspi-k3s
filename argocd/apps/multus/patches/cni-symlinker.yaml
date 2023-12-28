@@ -1,7 +1,9 @@
+# Intended for k3s only
+# k3s uses non-standard cni configuration paths
+# Symlinking them to the standard ones ensures multus works correctly
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  # Name is not applied
   name: ignored
   namespace: kube-system
 spec:

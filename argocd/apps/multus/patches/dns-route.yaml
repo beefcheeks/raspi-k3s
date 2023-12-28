@@ -1,0 +1,25 @@
+# By default, k3s uses separate CIDRs for pods and services
+# multus only detects the pod CIDR and not the service CIDR
+# As a result, k8s service requests are routed via the external interface
+# This includes kube-dns, which can only be routed through the pod interface
+# This patch is intended for other apps' StatefulSets that use the multus interface
+kind: StatefulSet
+metadata:
+  annotations:
+    avp.kubernetes.io/path: "vaults/homelab/items/ips"
+  name: ignored
+spec:
+  template:
+    spec:
+      initContainers:
+        # Prefix with 0 to ensure this is the first initContainer to run
+        - name: 0-init-dns-route
+          image: busybox:1.36.1
+          command:
+            - /bin/sh
+          args:
+          - -c
+          # Add custom route so DNS can reach service CIDR
+          - ip route add <k8s-service-cidr> via <k8s-gateway> dev eth0
+          securityContext:
+            privileged: true
