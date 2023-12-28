@@ -31,17 +31,17 @@ spec:
             #
             # interface eth0
             # {
-            #   <interface settings>
+            #   // interface settings
             #
             # 	prefix fd9a:9a2c:1ec4:4dbe::/64
             # 	{
-            #       <prefix settings>
+            #       // prefix settings
             # 	}; # End of prefix definition
 
 
             # 	route fd49:e143:177::/64
             # 	{
-            #        <route settings>
+            #        // route settings
             # 	}; # End of route definition
             # }; # End of interface definition
 
