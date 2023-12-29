@@ -57,4 +57,4 @@ patches:
   - target:
       kind: StatefulSet
       name: home-assistant
-    path: ../multus/patches/dns-route.yaml
+    path: ../multus/shared/dns-route.yaml

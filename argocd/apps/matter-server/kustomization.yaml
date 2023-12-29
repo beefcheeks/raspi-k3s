@@ -20,4 +20,4 @@ patches:
   - target:
       kind: StatefulSet
       name: matter-server
-    path: ../multus/patches/dns-route.yaml
+    path: ../multus/shared/dns-route.yaml

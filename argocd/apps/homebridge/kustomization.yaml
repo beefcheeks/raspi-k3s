@@ -22,4 +22,4 @@ patches:
   - target:
       kind: StatefulSet
       name: homebridge
-    path: ../multus/patches/dns-route.yaml
+    path: ../multus/shared/dns-route.yaml

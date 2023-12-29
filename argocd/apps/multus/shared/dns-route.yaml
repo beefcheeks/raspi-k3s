@@ -12,7 +12,6 @@ spec:
   template:
     spec:
       initContainers:
-        # Prefix with 0 to ensure this is the first initContainer to run
         - name: 0-init-dns-route
           image: busybox:1.36.1
           command:
