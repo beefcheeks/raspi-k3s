@@ -1,7 +1,7 @@
 namespace: argocd
 
 resources:
-  - onepassworditem.yaml
+  - resources/onepassworditem.yaml
 
 helmCharts:
   - name: argo-cd
