@@ -11,31 +11,9 @@ resources:
 patches:
   # Patch to make rsyslog service type LoadBalancer for router logs
   - target:
-       kind: Service
-    patch: |-
-      apiVersion: v1
       kind: Service
-      metadata:
-        name: logdna-rsyslog-tcp
-        namespace: logdna-agent
-      spec:
-        type: LoadBalancer
+    path: patches/rsyslog-lb.yaml
   # Patch to enable Kubernetes metrics and events
   - target:
-       kind: DaemonSet
-       namespace: logdna-agent
-    patch: |-
-      apiVersion: apps/v1
       kind: DaemonSet
-      metadata:
-        name: ignored
-      spec:
-        template:
-           spec:
-              containers:
-                - name: logdna-agent
-                  env:
-                    - name: LOGDNA_USE_K8S_LOG_ENRICHMENT
-                      value: "always"
-                    - name: LOGDNA_LOG_K8S_EVENTS
-                      value: "always"
+    path: patches/agent-enrichment.yaml
