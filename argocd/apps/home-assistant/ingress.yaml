@@ -7,18 +7,20 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.middlewares: default-https-redirect@kubernetescrd,default-ip-allow-list@kubernetescrd
 spec:
+  # Need to specify ingressClass for reasons: https://github.com/argoproj/argo-cd/issues/4863#issuecomment-1516246342
+  ingressClassName: traefik
   rules:
-  - host: <home-assistant>
-    http:
-      paths:
-      - backend:
-          service:
-            name: home-assistant
-            port:
-              number: 80
-        path: /
-        pathType: Prefix
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: home-assistant
+                port:
+                  name: http
+      host: <home-assistant>
   tls:
-  - hosts:
-    - <home-assistant>
-    secretName: home-assistant
+    - hosts:
+        - <home-assistant>
+      secretName: home-assistant
