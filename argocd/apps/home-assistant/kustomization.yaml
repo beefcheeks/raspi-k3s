@@ -1,10 +1,10 @@
 namespace: home-assistant
 
 resources:
-- resources/ingress.yaml
-- resources/pvc.yaml
-- resources/service.yaml
-- resources/statefulset.yaml
+  - resources/ingress.yaml
+  - resources/pvc.yaml
+  - resources/service.yaml
+  - resources/statefulset.yaml
 
 images:
   - name: ghcr.io/home-assistant/home-assistant
