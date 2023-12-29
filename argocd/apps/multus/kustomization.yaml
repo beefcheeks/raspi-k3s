@@ -1,8 +1,17 @@
 resources:
-  - cni-plugins.yaml
   - dhcp-daemon.yaml
-  - https://github.com/k8snetworkplumbingwg/multus-cni/raw/v4.0.2/deployments/multus-daemonset.yml
   - macvlan.yaml
+  - https://github.com/k8snetworkplumbingwg/multus-cni/raw/v4.0.2/deployments/multus-daemonset.yml
+
+configMapGenerator:
+  - name: cni-plugins
+    literals:
+      - arch=arm64
+      - version=v1.3.0
+
+generatorOptions:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
 
 # Patches required for multus and the dhcp-daemon to work on k3s
 patches:

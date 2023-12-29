@@ -63,19 +63,13 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: mosquitto
-          items:
-          - key: config
-            path: mosquitto.conf
+          name: config
       - name: passwd
         emptyDir: {}
       - name: startup
         configMap:
-          name: mosquitto
-          defaultMode: 0777
-          items:
-          - key: startup
-            path: startup.sh
+          name: startup
+          defaultMode: 0100
       - name: storage
         persistentVolumeClaim:
           claimName: mosquitto

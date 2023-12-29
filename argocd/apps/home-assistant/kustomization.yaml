@@ -1,8 +1,6 @@
 namespace: home-assistant
 
 resources:
-- blueprints.yaml # Only needed if using custom blueprints
-- configuration.yaml
 - ingress.yaml
 - pvc.yaml
 - service.yaml
@@ -12,12 +10,33 @@ images:
   - name: ghcr.io/home-assistant/home-assistant
     newTag: "2023.12.3"
 
+# Custom blueprints for use in home-assistant
+# Updates require a yaml configuration refresh via the UI (or container restart)
+configMapGenerator:
+  - name: blueprints
+    files:
+      - files/blueprints/automation-manual-override.yaml
+      - files/blueprints/motion-activated-light.yaml
+      - files/blueprints/sensor-threshold-activated-light.yaml
+
+  - name: initial-config
+    files:
+      - files/initial-config.yaml
+
+  - name: route-manager
+    files:
+      - files/route-manager.sh
+
+  - name: setup
+    files:
+      - files/setup.sh
+
 patches:
   # Add configuration to support ingress
   - target:
       kind: ConfigMap
-      name: home-assistant
-    path: patches/configuration.yaml
+      name: initial-config
+    path: patches/initial-config.yaml
   # Add custom blueprints to home-assistant
   - target:
       kind: StatefulSet
@@ -28,12 +47,11 @@ patches:
       kind: StatefulSet
       name: home-assistant
     path: patches/route-manager.yaml
-  # Enable external network interface via multus
+  # Enable external network interface via multus to eliminate hostNetwork: true
   - target:
       kind: StatefulSet
       name: home-assistant
     patch: |-
-      # Patch home-assistant StatefulSet to use multus interface so hostNetwork: true is not needed
       apiVersion: apps/v1
       kind: StatefulSet
       metadata:

@@ -69,14 +69,8 @@ spec:
         emptyDir: {}
       - name: setup
         configMap:
-          name: home-assistant
-          defaultMode: 0777
-          items:
-            - key: setup
-              path: setup.sh
+          name: setup
+          defaultMode: 0100
       - name: initial-config
         configMap:
-          name: home-assistant
-          items:
-          - key: configuration
-            path: configuration.yaml
+          name: initial-config

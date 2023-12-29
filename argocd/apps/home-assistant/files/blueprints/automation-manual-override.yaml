@@ -1,0 +1,197 @@
+# Custom blueprints for use in home-assistant
+# Updates require a yaml configuration refresh via the UI (or container restart)
+
+# This automation manages an override input boolean
+# for / timers lose state on restart, so input_datetime is used
+# This input boolean can be used to enable/disable other automations
+# The override is engaged for the light if off -> on -> off is < 2.5s
+# Note that time triggers are not detectable as made by an automation
+# Hence only triggering the override on off -> on, not on -> off
+blueprint:
+  name: Automation Manual Override
+  domain: automation
+  input:
+    lights:
+      name: Lights
+      description: "Lights to turn on and off"
+      default: []
+      selector:
+        entity:
+          multiple: true
+          domain: light
+    switches:
+      name: Switches
+      description: "Switches to turn on and off"
+      default: []
+      selector:
+        entity:
+          multiple: true
+          domain: switch
+    boolean_override:
+      name: Input Boolean Override
+      description: Input_boolean used to enable/disable another automation based on user/switch input
+      selector:
+        entity:
+          domain: input_boolean
+    datetime:
+      name: Input DateTime
+      description: input_datetime entity for persisting override timer state
+      selector:
+        entity:
+          domain: input_datetime
+    wait_delay:
+      name: Wait Delay For Override Activation
+      description: "How long to wait to detect manual switch on -> off for activating override"
+      default: 3
+      selector:
+        number:
+          min: 1
+          max: 10
+          unit_of_measurement: seconds
+    wait_time:
+      name: Wait Time For Override
+      description: "(Optional if no override) How long to leave the override on."
+      default: 7200
+      selector:
+        number:
+          min: 30
+          max: 21600
+          unit_of_measurement: seconds
+    # Only if light switch supports this feature
+    light_indicators:
+      name: Indicator Lights
+      description: (Optional) Indicator lights to flash during override state changes
+      default: []
+      selector:
+        entity:
+          domain: button
+          multiple: true
+    # Useful if you miss a datetime 'off' trigger during a restart
+    downtime_grace_period:
+      name: Downtime Grace Period
+      description: (Optional) Grace period in minutes for back-processing input_datetime triggers missed during downtime/restarts.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 720
+          unit_of_measurement: minutes
+
+mode: restart
+
+variables:
+  # Direct input variables
+  boolean_override: !input boolean_override
+  datetime: !input datetime
+  downtime_grace_period: !input downtime_grace_period
+  light_indicators: !input light_indicators
+  lights: !input lights
+  switches: !input switches
+  wait_time: !input wait_time
+  # Derivative input variables
+  lights_and_switches: >
+    {{ lights + switches }}
+
+trigger:
+    # Override is only engaged on light/switch off -> on (-> off)
+
+  - platform: state
+    entity_id: !input lights
+    from: 'off'
+    to: 'on'
+
+  - platform: state
+    entity_id: !input switches
+    from: 'off'
+    to: 'on'
+
+  - platform: state
+    entity_id: !input boolean_override
+    from: 'off'
+    to: 'on'
+
+  - platform: state
+    entity_id: !input boolean_override
+    from: 'on'
+    to: 'off'
+
+  - platform: time
+    at: !input datetime
+
+action:
+  - choose:
+      - conditions:
+          # Only trigger if light/switch NOT turned on via automation
+          - condition: template
+            value_template: >
+              {{ trigger.to_state.context.parent_id == None and trigger.entity_id in lights_and_switches }}
+        sequence:
+          # Wait X seconds to see if light/switch changed state
+          - wait_template: >
+              {{ is_state(trigger.entity_id , 'off') }}
+            timeout: !input wait_delay
+            continue_on_timeout: false
+          - service: input_boolean.toggle
+            entity_id: !input boolean_override
+      - conditions:
+          - or:
+              # On override timer end, turn override off
+              - condition: template
+                value_template: >
+                  {{ trigger.entity_id == datetime }}
+              # Alternatively, on home assistant startup, if within the grace period, also turn off override
+              - and:
+                  - condition: template
+                    value_template: >
+                      {{ trigger.platform == 'homeassistant' }}
+                  - condition: template
+                    value_template: >
+                      {{ downtime_grace_period > 0 }}
+                  - condition: template
+                    value_template: >
+                      {{ 0 < (now() | as_timestamp - states(datetime) | as_timestamp) <= timedelta(minutes=downtime_grace_period) }}
+          # Only turn override off if it is on
+          - condition: state
+            entity_id: !input boolean_override
+            state: 'on'
+        sequence:
+          - service: input_boolean.turn_off
+            entity_id: !input boolean_override
+      - conditions:
+        - condition: template
+          value_template: >
+            {{ trigger.entity_id == boolean_override }}
+        sequence:
+          - if:
+              - condition: template
+                value_template: >
+                  {{ trigger.to_state.state == 'on' }}
+            then:
+              # If override changed to 'on', start override timer
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: >
+                    {{ datetime }}
+                data:
+                  datetime: >
+                    {{ now() + timedelta(seconds=wait_time) }}
+          # If override changed to 'off', turn off fans, lights, and switches
+            else:
+              - repeat:
+                  for_each: >
+                      {{ lights_and_switches }}
+                  sequence:
+                    - condition: template
+                      value_template: >
+                        {{ states(repeat.item) == 'on' }}
+                    - service_template: >
+                        {{ repeat.item.split(".")[0] }}.turn_off
+                      data:
+                        entity_id: >
+                          {{ repeat.item }}
+          - condition: template
+            value_template: >
+                {{ light_indicators | length > 0 }}
+          - service: button.press
+            entity_id: !input light_indicators
+

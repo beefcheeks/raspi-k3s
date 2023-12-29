@@ -1,0 +1,401 @@
+# This automation manages a motion-activated light
+# Light turns on when motion is detected
+# Light turns off when motion is not detected for a set period of time
+# for / timers lose state on restart, so input_datetime is used instead
+# An optional set of override input_booleans can stop the automation
+blueprint:
+  name: Motion/Contact Sensor Activated Light
+  domain: automation
+  input:
+    sensors_motion:
+      name: Motion Sensors
+      description: Motion sensors that turn on lights/switches when detecting motion
+      default: []
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class:
+          - motion
+          multiple: true
+    sensors_contact:
+      name: Contact Sensors
+      description: Contact sensors that turn on lights/switches when detecting no contact
+      default: []
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class:
+          - door
+          - opening
+          - window
+          multiple: true
+    lights:
+      name: Lights
+      description: "Lights to turn on and off"
+      default: []
+      selector:
+        entity:
+          domain: light
+          multiple: true
+    switches:
+      name: Switches
+      description: "Switches to turn on and off"
+      default: []
+      selector:
+        entity:
+          domain: switch
+          multiple: true
+    wait_time:
+      name: Wait Time
+      description: "How long to leave the lights/switches on after the motion sensor changes from motion to no motion."
+      default: 60
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+    datetime:
+      name: Input DateTime
+      description: input_datetime entity for persisting timer state
+      selector:
+        entity:
+          domain: input_datetime
+    # Brightness (only applies to entity type light)
+    brightness_level:
+      name: Brightness Level
+      description: (Optional) The static brightness level to set lights to when they turn on. Does not apply to switches. Default value 0 does not set brightness.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: percent
+    brightness_entity:
+      name: Brightness Entity
+      description: (Optional) The input_number entity to match the brightness level to for the lights. Does not apply to switches. Overrides Brightness Level. 
+      default: {}
+      selector:
+        entity:
+          domain: input_number
+    # Time inputs (most common optional inputs)
+    time_start:
+      name: Start Time
+      description: (Optional) When the automation can start running
+      default: '0:00:00'
+      selector:
+        time:
+    time_end:
+      name: End Time
+      description: (Optional) When the automation stops running
+      default: '23:59:59'
+      selector:
+        time:
+    # Light sensor inputs
+    sensor_light:
+      name: Light Sensor
+      description: (Optional) The light sensor to measure illuminance value in lux (lx)
+      default: {}
+      selector:
+        entity:
+          domain: sensor
+          device_class: illuminance
+    sensor_light_min:
+      name: Light Sensor - Minimum Level
+      description: (Optional) The light does not turn on below this light level.
+      default: -1
+      selector:
+        number:
+          min: -1
+          max: 1000
+          unit_of_measurement: lx
+    sensor_light_max:
+      name: Light Sensor - Maximum Level
+      description: (Optional) The light does not turn on above this light level.
+      default: 999
+      selector:
+        number:
+          min: 0
+          max: 1001
+          unit_of_measurement: lx
+    # Input booleans that act as enablement overrides for this automation
+    boolean_overrides:
+      name: Input Boolean Overrides
+      description: (Optional) input_booleans that disable this automation if any are on
+      default: []
+      selector:
+        entity:
+          domain: input_boolean
+          multiple: true
+    boolean_activations:
+      name: Input Boolean Activations
+      description: (Optional) input_booleans that this automation ensures matches the state of the lights/switches
+      default: []
+      selector:
+        entity:
+          domain: input_boolean
+          multiple: true
+    # Zero seconds means not enabled
+    delay_on:
+      name: On Delay
+      description: (Optional) The delay before turning on the lights/switches. Defaults to no delay.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 600
+          unit_of_measurement: seconds
+    # When set to True, contact sensors changing to 'off' turn on the lights/switches
+    contact_sensors_reverse:
+      name: Reverse Contact Sensors
+      description: (Optional) Contact sensor triggers automation when changing to 'off' instead of 'on'
+      default: False
+      selector:
+        boolean:
+    # Useful if you miss a datetime 'off' trigger during a restart
+    downtime_grace_period:
+      name: Downtime Grace Period
+      description: (Optional) Grace period in minutes for back-processing input_datetime triggers missed during downtime/restarts.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 720
+          unit_of_measurement: minutes
+
+# If motion is detected within the delay,
+# we restart the script.
+mode: restart
+variables:
+  # Direct input variables
+  boolean_activations: !input boolean_activations
+  boolean_overrides: !input boolean_overrides
+  brightness_entity: !input brightness_entity
+  brightness_level: !input brightness_level
+  datetime: !input datetime
+  downtime_grace_period: !input downtime_grace_period
+  lights: !input lights
+  sensor_light: !input sensor_light
+  sensors_contact: !input sensors_contact
+  sensors_motion: !input sensors_motion
+  switches: !input switches
+  wait_time: !input wait_time
+  # Derivative input variables
+  lights_and_switches: >
+    {{ lights + switches }}
+
+trigger:
+  - id: contact_on
+    platform: state
+    entity_id: !input sensors_contact
+    from: 'off'
+    to: 'on'
+
+  - id: contact_off
+    platform: state
+    entity_id: !input sensors_contact
+    from: 'on'
+    to: 'off'
+
+  - id: motion_on
+    platform: state
+    entity_id: !input sensors_motion
+    from: 'off'
+    to: 'on'
+
+  - id: motion_off
+    platform: state
+    entity_id: !input sensors_motion
+    from: 'on'
+    to: 'off'
+
+  - id: timer_done
+    platform: time
+    at: !input datetime
+
+  - id: ha_started
+    platform: homeassistant
+    event: start
+
+condition:
+  # Since there can be multiple overrides, we just need to know if a single override is on
+  - condition: template
+    value_template: >
+      {{ boolean_overrides | length == 0 or boolean_overrides | select('is_state', 'on') | list | count == 0 }}
+
+# Message malformed: extra keys not allowed @ data['action'][0]['choose'][0]['conditions'][0]['value_template']
+action:
+  - choose:
+      - conditions:
+          # Both motion and contact triggers are grouped since they share conditions
+          - condition: trigger
+            id:
+              - contact_on
+              - contact_off
+              - motion_on
+              - motion_off
+          # Time is optionally specified (e.g. only turn on if day/night)
+          # Only applies to setting/resetting the timer, not the timer expiring
+          - condition: time
+            after: !input time_start
+            before: !input time_end
+        sequence:
+          # If statement needed to determine motion/contact sensors value (on vs off)
+          - if:
+            # Detect 'on' state for motion sensors, or contact sensors changing to desired state (e.g. door open/close)
+            - or:
+              - condition: trigger
+                id: motion_on
+              - and:
+                  - condition: trigger
+                    id: contact_on
+                  - condition: template
+                    value_template: >
+                      {{ contact_sensors_reverse }}
+              - and:
+                  - condition: trigger
+                    id: contact_off
+                  - condition: template
+                    value_template: >
+                      {{ not contact_sensors_reverse }}
+            then:
+              # Always reset timer if basic conditions are met
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: !input datetime
+                # Reset is arbitrarily set to 1 day in the future
+                data:
+                  datetime: >
+                    {{ now() + timedelta(days=1) }}
+              # Illuminance sensor can be affected by the light of the device turning on
+              # It is only used to gauge whether to turn on the light, instead of whether to reset the timer
+              # If light state is unavailable/unknown/none, assume light should turn on
+              - or:
+                - condition: template
+                  value_template: >
+                    {{ sensor_light | length == 0 }}
+                - condition: template
+                  value_template: >
+                    {{ states(sensor_light) in ['unavailable', 'unknown', 'none'] }}
+                - condition: numeric_state
+                  entity_id: !input sensor_light
+                  above: !input sensor_light_min
+                  below: !input sensor_light_max
+              # Optional Delay for turning on lights/switches.
+              # - delay: >
+              #     {{ false }}
+              #   timeout: !input delay_on
+              # Turn on lights and switches in parallel (as well as any activation switches)
+              - parallel:
+                  - repeat:
+                      for_each: >
+                        {{ lights }}
+                      sequence:
+                        - condition: template
+                          value_template: >
+                            {{ states(repeat.item) == 'off' }}
+                        - service: light.turn_on
+                          target:
+                            entity_id: >
+                              {{ repeat.item }}
+                          # Service data keys that are defined must be the correct type and supported by the entity
+                          # Service data keys cannot be None, so they must be programmatically added if they exist
+                          # Only include a specific option if it is a defined input
+                          # Dictionary updates are not allowed in home assistant, so a list of tuples is appended to
+                          # List of tuples is converted to dictionary to create the final templated data object
+                          data: >
+                            {% set data = [] %}
+                            {% if brightness_entity | length > 0 %}
+                              {% set data = data + [("brightness_pct", states(brightness_entity))] %}
+                            {% elif brightness_level > 0 %}
+                              {% set data = data + [("brightness_pct", brightness_level)] %}
+                            {% endif %}
+                            {{ dict.from_keys(data) }}
+                  - repeat:
+                      for_each: >
+                        {{ switches }}
+                      sequence:
+                        - condition: template
+                          value_template: >
+                            {{ states(repeat.item) == 'off' }}
+                        - service: switch.turn_on
+                          target:
+                            entity_id: >
+                              {{ repeat.item }}
+                  - repeat:
+                      for_each: >
+                        {{ boolean_activations }}
+                      sequence:
+                        - condition: template
+                          value_template: >
+                            {{ states(repeat.item) == 'off' }}
+                        - service: input_boolean.turn_on
+                          target:
+                            entity_id: >
+                              {{ repeat.item }}
+            else:
+              # Ensure no 'on' state for motion sensors, or all contact sensors not in undesired state
+              - or:
+                - and:
+                  - condition: trigger
+                    id: motion_off
+                  - condition: template
+                    value_template: >
+                      {{ sensors_motion | select('is_state', 'on') | list | count == 0 }}
+                - and:
+                  - condition: trigger
+                    id: contact_on
+                  - condition: template
+                    value_template: >
+                      {{ sensors_contact | select('is_state', 'off') | list | count == 0 }}
+                - and:
+                  - condition: trigger
+                    id: contact_off
+                  - condition: template
+                    value_template: >
+                      {{ sensors_contact | select('is_state', 'on') | list | count == 0 }}
+              # If any light/switch is already on, no motion starts timer to turn it off
+              - condition: template
+                value_template: >
+                  {% set ns = namespace(is_on=false) %}
+                  {% for entity in lights_and_switches %}
+                    {% if states(entity) == 'on' %}
+                      {% set ns.is_on = true %}
+                    {% endif %}
+                  {% endfor %}
+                  {{ ns.is_on }}
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: !input datetime
+                data:
+                  datetime: >
+                    {{ now() + timedelta(seconds=wait_time) }}
+      - conditions:
+          - or:
+              # On timer end, turn lights/switches/activations off
+              - condition: template
+                value_template: >
+                  {{ trigger.entity_id == datetime }}
+              # Alternatively, on home assistant startup, if within the grace period, also turn off lights/switches/activations
+              - and:
+                  - condition: template
+                    value_template: >
+                      {{ trigger.platform == 'homeassistant' }}
+                  - condition: template
+                    value_template: >
+                      {{ downtime_grace_period > 0 }}
+                  - condition: template
+                    value_template: >
+                      {{ 0 < (now() | as_timestamp - states(datetime) | as_timestamp) <= timedelta(minutes=downtime_grace_period).total_seconds() }}
+        sequence:
+          - repeat:
+              for_each: >
+                {{ lights_and_switches + boolean_activations }}
+              sequence:
+                - condition: template
+                  value_template: >
+                    {{ states(repeat.item) == 'on' }}
+                - service_template: >
+                    {{ repeat.item.split(".")[0] }}.turn_off
+                  data:
+                    entity_id: >
+                      {{ repeat.item }}

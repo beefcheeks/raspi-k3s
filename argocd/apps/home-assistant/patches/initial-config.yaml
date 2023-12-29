@@ -4,7 +4,6 @@ metadata:
   name: ignored
   annotations:
     avp.kubernetes.io/path: "vaults/homelab/items/ips"
-
 data:
   configuration: |+
     default_config:
