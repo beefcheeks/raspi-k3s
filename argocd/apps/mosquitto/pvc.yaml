@@ -1,6 +1,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Delete=false,Prune=false
   name: mosquitto
 spec:
   accessModes:
