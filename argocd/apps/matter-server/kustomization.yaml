@@ -5,9 +5,9 @@ images:
     newTag: 5.0.1
 
 resources:
-  - pvc.yaml
-  - service.yaml
-  - statefulset.yaml
+  - resources/pvc.yaml
+  - resources/service.yaml
+  - resources/statefulset.yaml
 
 patches:
   # Patch matter-server StatefulSet to use multus interface so hostNetwork: true is not needed
@@ -25,7 +25,7 @@ patches:
             annotations:
               k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'
   # Ensure DNS routes correctly while using multus
-  # Always list this last so it becomes the first initContainer to run
+  # Always put this last so it becomes the first initContainer to run
   - target:
       kind: StatefulSet
       name: matter-server

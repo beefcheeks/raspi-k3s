@@ -1,6 +1,6 @@
 resources:
-  - dhcp-daemon.yaml
-  - macvlan.yaml
+  - resources/dhcp-daemon.yaml
+  - resources/macvlan.yaml
   - https://github.com/k8snetworkplumbingwg/multus-cni/raw/v4.0.2/deployments/multus-daemonset.yml
 
 configMapGenerator:

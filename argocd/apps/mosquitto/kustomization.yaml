@@ -5,12 +5,12 @@ images:
     newTag: 2.0.18
 
 resources:
-  - gateway.yaml
-  - onepassworditem.yaml
-  - pvc.yaml
-  - service.yaml
-  - statefulset.yaml
-  - tcproute.yaml
+  - resources/gateway.yaml
+  - resources/onepassworditem.yaml
+  - resources/pvc.yaml
+  - resources/service.yaml
+  - resources/statefulset.yaml
+  - resources/tcproute.yaml
 
 configMapGenerator:
   - name: config
