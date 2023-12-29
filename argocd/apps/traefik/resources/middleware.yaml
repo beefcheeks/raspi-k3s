@@ -3,7 +3,6 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: ip-allow-list
-  namespace: kube-system
 spec:
   ipWhiteList:
     sourceRange:
@@ -15,7 +14,6 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: https-redirect
-  namespace: kube-system
 spec:
   redirectScheme:
     permanent: true

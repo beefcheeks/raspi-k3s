@@ -6,7 +6,6 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.middlewares: kube-system-https-redirect@kubernetescrd,kube-system-ip-allow-list@kubernetescrd
   name: argocd-server-http
-  namespace: argocd
 spec:
   # Need to specify ingressClass for reasons: https://github.com/argoproj/argo-cd/issues/4863#issuecomment-1516246342
   ingressClassName: traefik
@@ -34,7 +33,6 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.middlewares: kube-system-https-redirect@kubernetescrd,kube-system-ip-allow-list@kubernetescrd
   name: argocd-server-grpc
-  namespace: argocd
 spec:
   # Need to specify ingressClass for reasons: https://github.com/argoproj/argo-cd/issues/4863#issuecomment-1516246342
   ingressClassName: traefik

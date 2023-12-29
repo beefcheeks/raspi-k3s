@@ -5,7 +5,6 @@ metadata:
   labels:
     app: dhcp-daemon
   name: dhcp-daemon
-  namespace: kube-system
 spec:
   selector:
     matchLabels:

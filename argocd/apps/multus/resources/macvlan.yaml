@@ -4,7 +4,6 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
   name: macvlan-conf
-  namespace: kube-system
 spec:
   config: |
     {

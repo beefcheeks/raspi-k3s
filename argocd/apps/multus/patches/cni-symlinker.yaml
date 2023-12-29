@@ -5,7 +5,6 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: ignored
-  namespace: kube-system
 spec:
   template:
     spec:

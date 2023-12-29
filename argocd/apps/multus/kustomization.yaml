@@ -1,3 +1,5 @@
+namespace: kube-system
+
 resources:
   - resources/dhcp-daemon.yaml
   - resources/macvlan.yaml
