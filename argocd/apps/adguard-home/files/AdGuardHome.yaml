@@ -4,11 +4,11 @@ dns:
   bind_hosts:
     - 0.0.0.0
   port: 5300
-  # Enable caching for better performance
+
   cache_size: 4194304
   cache_ttl_min: 4
   cache_ttl_max: 84600
-  # Use DNSSEC
+
   enable_dnssec: true
   upstream_dns:
     - https://security.cloudflare-dns.com/dns-query
@@ -17,7 +17,7 @@ dns:
     - tls://dns.quad9.net
     - https://dns.adguard.com/dns-query
     - tls://dns.adguard.com
-  # Add local rewrites
+
   rewrites:
     - domain: <adguard-home>
       answer: <ip-rpi4-4>
