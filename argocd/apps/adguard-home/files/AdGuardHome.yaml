@@ -19,7 +19,7 @@ dns:
     - tls://dns.adguard.com
   # Add local rewrites
   rewrites:
-    - domain: <adguard>
+    - domain: <adguard-home>
       answer: <ip-rpi4-4>
     - domain: <argocd>
       answer: <ip-rpi4-4>
@@ -40,7 +40,7 @@ trusted_proxies:
   - <path:vaults/homelab/items/cidrs#k3s>
 tls:
   enabled: true
-  server_name: <adguard>
+  server_name: <adguard-home>
   port_https: 4430
   port_dns_over_tls: 8530
   port_dns_over_quic: 8530
