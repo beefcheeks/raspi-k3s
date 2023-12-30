@@ -28,7 +28,7 @@ apps:
     wave: "2"
   # Wave 3
   - app: adguard-home
-    namespace: argocd
+    namespace: adguard-home
     wave: "3"
   - app: argocd-ingress
     namespace: argocd
