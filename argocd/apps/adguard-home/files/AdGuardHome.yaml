@@ -1,5 +1,6 @@
 http:
   address: 0.0.0.0:8080
+
 dns:
   bind_hosts:
     - 0.0.0.0
@@ -35,9 +36,11 @@ dns:
       answer: <ip-router>
     - domain: <router-https>
       answer: <ip-router>
+
 trusted_proxies:
   - <path:vaults/homelab/items/cidrs#localhost>
   - <path:vaults/homelab/items/cidrs#k3s>
+
 tls:
   enabled: true
   server_name: <adguard-home>
@@ -47,4 +50,3 @@ tls:
   allow_unencrypted_doh: true
   certificate_path: "/opt/adguardhome/certs/tls.crt"
   private_key_path: "/opt/adguardhome/certs/tls.key"
-schema_version: 20
