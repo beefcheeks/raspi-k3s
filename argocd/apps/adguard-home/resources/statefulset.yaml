@@ -89,7 +89,7 @@ spec:
         emptyDir: {}
       - name: initial-config
         configMap:
-          name: adguard-home
+          name: initial-config
       - name: scripts
         configMap:
           name: scripts

@@ -12,7 +12,7 @@ resources:
   - resources/statefulset.yaml
 
 configMapGenerator:
-  - name: config
+  - name: initial-config
     files:
       - files/AdGuardHome.yaml
 
