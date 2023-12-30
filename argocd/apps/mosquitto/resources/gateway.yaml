@@ -3,7 +3,7 @@ kind: Gateway
 metadata:
   name: mosquitto
   annotations:
-    avp.kubernetes.io/path: "vaults/homelab/items/dns-hosts"
+    avp.kubernetes.io/path: "vaults/homelab/items/dns"
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   gatewayClassName: traefik

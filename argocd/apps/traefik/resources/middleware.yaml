@@ -2,13 +2,15 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
+  annotations:
+    avp.kubernetes.io/path: "vaults/homelab/items/cidrs"
   name: ip-allow-list
 spec:
   ipWhiteList:
     sourceRange:
-      - 127.0.0.1/32
-      - 10.0.0.0/24
-      - 10.6.0.0/28
+      - <localhost>
+      - <router>
+      - <vpn>
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware

@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: ignored
   annotations:
-    avp.kubernetes.io/path: "vaults/homelab/items/ips"
+    avp.kubernetes.io/path: "vaults/homelab/items/cidrs"
 data:
   configuration: |+
     default_config:
@@ -11,8 +11,8 @@ data:
     http:
       use_x_forwarded_for: true
       trusted_proxies:
-        - 127.0.0.0
-        - <k8s-cidr>
+        - <localhost>
+        - <k3s>
 
     automation: !include automations.yaml
     script: !include scripts.yaml

@@ -6,7 +6,7 @@
 kind: StatefulSet
 metadata:
   annotations:
-    avp.kubernetes.io/path: "vaults/homelab/items/ips"
+    avp.kubernetes.io/path: "vaults/homelab/items/cidrs"
   name: ignored
 spec:
   template:
@@ -22,8 +22,8 @@ spec:
           - ip route add $SERVICE_CIDR via $GATEWAY dev eth0
           env:
           - name: SERVICE_CIDR
-            value: <k8s-service-cidr>
+            value: <k3s-services>
           - name: GATEWAY
-            value: <k8s-gateway>
+            value: <k3s-gateway>
           securityContext:
             privileged: true

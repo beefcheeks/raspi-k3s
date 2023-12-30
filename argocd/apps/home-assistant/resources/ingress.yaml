@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: home-assistant
   annotations:
-    avp.kubernetes.io/path: "vaults/homelab/items/dns-hosts"
+    avp.kubernetes.io/path: "vaults/homelab/items/dns"
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.middlewares: default-https-redirect@kubernetescrd,default-ip-allow-list@kubernetescrd
 spec:
