@@ -1,0 +1,25 @@
+namespace: adguard-home
+
+images:
+  - name: adguard/adguardhome
+    newTag: v0.107.43
+
+resources:
+  - resources/ingress.yaml
+  - resources/onepassworditem.yaml
+  - resources/pvc.yaml
+  - resources/service.yaml
+  - resources/statefulset.yaml
+
+configMapGenerator:
+  - name: config
+    files:
+      - files/AdGuardHome.yaml
+
+  - name: scripts
+    files:
+      - files/setup.sh
+
+generatorOptions:
+  annotations:
+    avp.kubernetes.io/path: "vaults/homelab/items/dns"
