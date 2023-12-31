@@ -10,15 +10,17 @@ CUSTOM_CLIENTLIST=$(awk -F ',' '{gsub(/_/, " "); print "<"$3">"toupper($1)">0>0>
 DHCP_STATICLIST=$(awk -F ',' '{print "<"toupper($1)">"$2">>"$3}' /opt/static-clients/static-clients.csv)
 
 ssh $ROUTER_USER@$ROUTER_IP \
-  -p $ROUTER_SSH_PORT \
+  -p $ROUTER_PORT \
   -i /opt/ssh/id_rsa \
   -o StrictHostKeyChecking=accept-new \
   "nvram set custom_clientlist=\"$CUSTOM_CLIENTLIST\""
 
 ssh $ROUTER_USER@$ROUTER_IP \
-  -p $ROUTER_SSH_PORT \
+  -p $ROUTER_PORT \
   -i /opt/ssh/id_rsa \
   -o StrictHostKeyChecking=accept-new \
   "nvram set dhcp_staticlist=\"$DHCP_STATICLIST\""
 
-echo "Script completed."
+echo "Script completed, sleeping..."
+
+sleep infinity

@@ -23,7 +23,7 @@ spec:
                 secretKeyRef:
                   name: ssh-config
                   key: ip
-            - name: ROUTER_SSH_PORT
+            - name: ROUTER_PORT
               valueFrom:
                 secretKeyRef:
                   name: ssh-config
