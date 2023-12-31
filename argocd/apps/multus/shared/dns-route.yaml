@@ -3,7 +3,7 @@
 # As a result, k8s service requests are routed via the external interface
 # This includes kube-dns, which can only be routed through the pod interface
 # This patch is intended for other apps' StatefulSets that use the multus interface
-kind: StatefulSet
+kind: ignored
 metadata:
   name: ignored
 spec:
