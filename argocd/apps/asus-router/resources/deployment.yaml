@@ -27,7 +27,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: ssh-config
-                  key: ssh-port
+                  key: port
             - name: ROUTER_USER
               valueFrom:
                 secretKeyRef:
