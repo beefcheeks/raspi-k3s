@@ -5,8 +5,6 @@
 # This patch is intended for other apps' StatefulSets that use the multus interface
 kind: StatefulSet
 metadata:
-  annotations:
-    avp.kubernetes.io/path: "vaults/homelab/items/cidrs"
   name: ignored
 spec:
   template:
@@ -19,11 +17,13 @@ spec:
           args:
           - -c
           # Add custom route so DNS can reach service CIDR
-          - ip route add $SERVICE_CIDR via $GATEWAY dev eth0
+          - ip route add $SERVICE_CIDR via $GATEWAY dev $INTERFACE
           env:
           - name: SERVICE_CIDR
-            value: <k3s-services>
+            value: <path:/vaults/homelab/items/multus-dns-route#service-cidr>
           - name: GATEWAY
-            value: <k3s-gateway>
+            value: <path:/vaults/homelab/items/multus-dns-route#gateway>
+          - name: INTERFACE
+            value: <path:/vaults/homelab/items/multus-dns-route#interface>
           securityContext:
             privileged: true
