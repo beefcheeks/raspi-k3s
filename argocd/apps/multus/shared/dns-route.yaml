@@ -20,10 +20,10 @@ spec:
           - ip route add $SERVICE_CIDR via $GATEWAY dev $INTERFACE
           env:
           - name: SERVICE_CIDR
-            value: <path:/vaults/homelab/items/multus-dns-route#service-cidr>
+            value: <path:vaults/homelab/items/multus-dns-route#service-cidr>
           - name: GATEWAY
-            value: <path:/vaults/homelab/items/multus-dns-route#gateway>
+            value: <path:vaults/homelab/items/multus-dns-route#gateway>
           - name: INTERFACE
-            value: <path:/vaults/homelab/items/multus-dns-route#interface>
+            value: <path:vaults/homelab/items/multus-dns-route#interface>
           securityContext:
             privileged: true
