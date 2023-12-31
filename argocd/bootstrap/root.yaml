@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/beefcheeks/raspi-k3s
     targetRevision: HEAD
-    path: argocd
+    path: argocd/appsets
   destination:
     name: in-cluster
     namespace: argocd
