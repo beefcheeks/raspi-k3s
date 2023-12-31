@@ -1,8 +1,0 @@
-kind: Deployment
-metadata:
-  name: ignored
-spec:
-  template:
-    metadata:
-      annotations:
-        k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system"}]'
