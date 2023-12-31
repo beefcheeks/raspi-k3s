@@ -1,4 +1,4 @@
-schema_version: 20
+schema_version: 27
 
 bind_host: 0.0.0.0
 bind_port: 8080
