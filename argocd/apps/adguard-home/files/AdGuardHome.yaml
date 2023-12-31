@@ -1,7 +1,11 @@
 schema_version: 27
 
-bind_host: 0.0.0.0
-bind_port: 8080
+http:
+  address: 0.0.0.0:8080
+
+trusted_proxies:
+  - <path:vaults/homelab/items/cidrs#localhost>
+  - <path:vaults/homelab/items/cidrs#k3s>
 
 dns:
   bind_hosts:
@@ -38,10 +42,6 @@ dns:
       answer: <ip-router>
     - domain: <router-https>
       answer: <ip-router>
-
-trusted_proxies:
-  - <path:vaults/homelab/items/cidrs#localhost>
-  - <path:vaults/homelab/items/cidrs#k3s>
 
 tls:
   enabled: true
