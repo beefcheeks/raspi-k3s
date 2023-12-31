@@ -1,0 +1,23 @@
+namespace: asus-router
+
+resources:
+- resources/deployment.yaml
+- resources/onepassworditem.yaml
+
+configMapGenerator:
+  - name: script
+    files:
+     - files/configure.sh
+
+patches:
+  # Enable external network interface via multus to eliminate hostNetwork: true
+  - target:
+      kind: Deployment
+      name: asus-router
+    path: patches/multus-interface.yaml
+  # Ensure DNS routes correctly while using multus
+  # Always put this last so it becomes the first initContainer to run
+  - target:
+      kind: Deployment
+      name: asus-router
+    path: ../multus/shared/dns-route.yaml

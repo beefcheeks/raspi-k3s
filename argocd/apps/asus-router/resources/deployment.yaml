@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asus-router-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: asus-router-manager
+  template:
+    metadata:
+      labels:
+        app: asus-router-manager
+    spec:
+      containers:
+        - name: asus-router-manager
+          image: panubo/sshd:latest
+          command:
+          - /opt/script/configure.sh
+          env:
+            - name: ROUTER_IP
+              valueFrom:
+                secretKeyRef:
+                  name: ssh-config
+                  key: ip
+            - name: ROUTER_SSH_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: ssh-config
+                  key: ssh-port
+            - name: ROUTER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ssh-config
+                  key: user
+          volumeMounts:
+            - name: script
+              mountPath: /opt/script
+              readOnly: true
+            - name: ssh-key
+              mountPath: /opt/ssh
+              readOnly: true
+            - name: static-clients
+              mountPath: /opt/static-clients
+              readOnly: true
+      volumes:
+        - name: script
+          configMap:
+            name: script
+            defaultMode: 268
+        - name: ssh-key
+          secret:
+            secretName: ssh-key
+            defaultMode: 0400
+        - name: static-clients
+          secret:
+            secretName: static-clients
