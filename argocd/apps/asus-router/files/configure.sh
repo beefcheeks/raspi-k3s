@@ -19,6 +19,6 @@ ssh $ROUTER_USER@$ROUTER_IP \
   -p $ROUTER_SSH_PORT \
   -i /opt/ssh/id_rsa \
   -o StrictHostKeyChecking=accept-new \
-  "nvram set dhcp_staticlist=\"$DHCP_STATICLIST\"""
+  "nvram set dhcp_staticlist=\"$DHCP_STATICLIST\""
 
 echo "Script completed."
