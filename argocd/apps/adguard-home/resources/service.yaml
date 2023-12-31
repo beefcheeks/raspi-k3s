@@ -15,6 +15,7 @@ spec:
     port: 853
     targetPort: 8530
     name: dns-tls
+  externalTrafficPolicy: Local
 ---
 apiVersion: v1
 kind: Service
@@ -29,12 +30,14 @@ spec:
     port: 53
     targetPort: 5300
     name: dns-udp
+  externalTrafficPolicy: Local
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: adguard-home-admin
 spec:
+  type: ClusterIP
   selector:
     app: adguard-home
   ports:

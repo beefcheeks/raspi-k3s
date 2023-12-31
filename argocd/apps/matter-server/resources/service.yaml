@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: matter-api
 spec:
+  type: ClusterIP
   selector:
     app: matter-server
   ports:

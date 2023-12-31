@@ -4,3 +4,4 @@ metadata:
   name: ignored
 spec:
   type: LoadBalancer
+  externalTrafficPolicy: Local

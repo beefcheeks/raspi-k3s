@@ -3,11 +3,11 @@ kind: Service
 metadata:
   name: homebridge
 spec:
+  type: ClusterIP
+  selector:
+    app: homebridge
   ports:
   - name: http
     port: 80
     protocol: TCP
     targetPort: 8581
-  selector:
-    app: homebridge
-  type: ClusterIP
