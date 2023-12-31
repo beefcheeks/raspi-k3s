@@ -17,6 +17,8 @@ dns:
   cache_ttl_max: 84600
 
   enable_dnssec: true
+  all_servers: true
+  fastest_addr: true
   upstream_dns:
     - https://security.cloudflare-dns.com/dns-query
     - tls://security.cloudflare-dns.com
