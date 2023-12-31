@@ -1,7 +1,7 @@
-schema_version: 27
+schema_version: 20
 
-http:
-  address: 0.0.0.0:8080
+bind_host: 0.0.0.0
+bind_port: 8080
 
 dns:
   bind_hosts:
