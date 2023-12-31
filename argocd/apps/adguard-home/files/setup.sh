@@ -18,6 +18,7 @@ do
             "ids":[env(ip), env(mac)],
             "use_global_settings": true,
             "use_global_blocked_services": true
+            "blocked_services": {}
         }
         ]' \
         /opt/adguardhome/conf/AdGuardHome.yaml
