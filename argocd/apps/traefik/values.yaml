@@ -24,7 +24,7 @@ providers:
 
 resources:
   requests:
-    cpu: "200m"
+    cpu: "100m"
     memory: "100Mi"
 
 # Required for external IPs to be passed for allow/deny rules

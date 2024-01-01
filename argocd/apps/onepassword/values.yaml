@@ -1,4 +1,12 @@
+# Reference: https://github.com/1Password/connect-helm-charts/blob/main/charts/connect/values.yaml
+connect:
+  api:
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "50Mi"
+
 operator:
   create: true
-  pollingInterval: 60
+  pollingInterval: 30
   serviceType: ClusterIP

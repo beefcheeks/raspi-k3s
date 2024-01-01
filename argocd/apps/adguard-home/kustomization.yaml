@@ -23,3 +23,10 @@ configMapGenerator:
 generatorOptions:
   annotations:
     avp.kubernetes.io/path: "vaults/homelab/items/dns"
+
+patches:
+  # Add resource requests to adguard-home
+  - target:
+      kind: StatefulSet
+      name: adguard-home
+    path: patches/resources.yaml

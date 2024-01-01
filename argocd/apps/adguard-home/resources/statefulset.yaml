@@ -67,10 +67,6 @@ spec:
           protocol: UDP
         - containerPort: 3000
           name: http-setup
-        resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
         volumeMounts:
         - name: certs
           mountPath: /opt/adguardhome/certs
