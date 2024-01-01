@@ -14,6 +14,13 @@ ports:
 experimental:
   kubernetesGateway:
     enabled: true
+
+# Increase timeout to prevent not ready state from flapping
+livenessProbe:
+  timeoutSeconds: 5
+readinessProbe:
+  timeoutSeconds: 5
+
 # Required for Traefik to update the LoadBalancer status field
 # Without this, ArgoCD apps with ingress resources get stuck in a Progressing loop
 # See: https://github.com/traefik/traefik/issues/6303
