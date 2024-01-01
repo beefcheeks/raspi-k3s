@@ -1,3 +1,5 @@
+# Reference: https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+#
 # MQTTS configuration required by mosquitto
 additionalArguments:
   - --entrypoints.mqtts.address=:8883/tcp
@@ -19,6 +21,11 @@ providers:
   kubernetesIngress:
     publishedService:
       enabled: true
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "100Mi"
 
 # Required for external IPs to be passed for allow/deny rules
 service:

@@ -1,0 +1,12 @@
+kind: StatefulSet
+metadata:
+  name: ignored
+spec:
+  template:
+    spec:
+      containers:
+        - name: home-assistant
+          resources:
+            requests:
+              cpu: 50m
+              memory: 750Mi

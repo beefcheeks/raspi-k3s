@@ -1,3 +1,14 @@
+# Reference: https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
+applicationSet:
+  resources:
+    requests:
+      cpu: 500m
+      memory: 100Mi
+controller:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 250Mi
 configs:
   cm:
     # Enable kustomize to render helm charts
@@ -43,6 +54,10 @@ repoServer:
       resources:
         - secrets
         - configmaps
+  resources:
+    requests:
+      cpu: 250m
+      memory: 250Mi
   initContainers:
     - name: download-tools
       image: registry.access.redhat.com/ubi8

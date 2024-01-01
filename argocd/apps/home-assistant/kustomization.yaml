@@ -42,6 +42,11 @@ patches:
       kind: StatefulSet
       name: home-assistant
     path: patches/blueprints.yaml
+  # Add resource requests to home-assistant
+  - target:
+      kind: StatefulSet
+      name: home-assistant
+    path: patches/resources.yaml
   # Ensure route advertisements update the routing table
   - target:
       kind: StatefulSet
