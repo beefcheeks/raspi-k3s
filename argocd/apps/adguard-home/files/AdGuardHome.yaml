@@ -29,21 +29,21 @@ dns:
 
   rewrites:
     - domain: <adguard-home>
-      answer: <path:vaults/homelab/items/ip-address/rpi4-4>
+      answer: <path:vaults/homelab/items/ip-address#rpi4-4>
     - domain: <argocd>
-      answer: <path:vaults/homelab/items/ip-address/rpi4-4>
+      answer: <path:vaults/homelab/items/ip-address#rpi4-4>
     - domain: <argocd-grpc>
-      answer: <path:vaults/homelab/items/ip-address/rpi4-4>
+      answer: <path:vaults/homelab/items/ip-address#rpi4-4>
     - domain: <home-assistant>
-      answer: <path:vaults/homelab/items/ip-address/rpi4-4>
+      answer: <path:vaults/homelab/items/ip-address#rpi4-4>
     - domain: <homebridge>
-      answer: <path:vaults/homelab/items/ip-address/rpi4-4>
+      answer: <path:vaults/homelab/items/ip-address#rpi4-4>
     - domain: <mosquitto>
-      answer: <path:vaults/homelab/items/ip-address/rpi4-4>
+      answer: <path:vaults/homelab/items/ip-address#rpi4-4>
     - domain: <router-http>
-      answer: <path:vaults/homelab/items/ip-address/router>
+      answer: <path:vaults/homelab/items/ip-address#router>
     - domain: <router-https>
-      answer: <path:vaults/homelab/items/ip-address/router>
+      answer: <path:vaults/homelab/items/ip-address#router>
 
 tls:
   enabled: true
