@@ -43,6 +43,11 @@ spec:
               operator: In
               values:
                 - "3"
+        - matchExpressions:
+            - key: wave
+              operator: In
+              values:
+                - "4"
   syncPolicy:
     preserveResourcesOnDeletion: true
   template:

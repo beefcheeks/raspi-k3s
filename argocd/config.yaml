@@ -45,3 +45,7 @@ apps:
   - app: mosquitto
     namespace: mosquitto
     wave: "3"
+  # Wave 4
+  - app: cloudflare-tunnel
+    namespace: cloudflare-tunnel
+    wave: "4"
