@@ -1,0 +1,21 @@
+namespace: longhorn-system
+
+images:
+  # Image should be similar to Raspberry Pi OS debian version
+  - name: debian
+    newTag: bookworm-20231218-slim
+
+patches:
+  # Raspbian lite does not come with iscsi tools installed
+  - target:
+      kind: DaemonSet
+      name: longhorn-manager
+    path: patches/iscsi-installer.yaml
+
+helmCharts:
+  - includeCRDs: true
+    name: longhorn
+    namespace: longhorn-system
+    releaseName: longhorn
+    repo: https://charts.longhorn.io
+    version: 1.5.3

@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ignored
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: iscsi-intaller
+          image: debian:latest
+          command:
+            - apt install open-iscsi -y
+          env:
+            - name: ROOT_MOUNT_DIR
+              value: /root
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: root-mount
+              mountPath: /root
+      volumes:
+        - name: root-mount
+          hostPath:
+            path: /

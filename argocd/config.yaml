@@ -3,6 +3,9 @@ apps:
   - app: gateway
     namespace: kube-system
     wave: "0"
+  - app: longhorn
+    namespace: longhorn-system
+    wave: "0"
   - app: multus
     namespace: kube-system
     wave: "0"
