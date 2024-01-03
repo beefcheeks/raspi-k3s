@@ -56,10 +56,7 @@ repoServer:
         - configmaps
   resources:
     requests:
-      cpu: 250m
-      memory: 250Mi
-    limits:
-      cpu: "750m"
+      cpu: 500m
       memory: 250Mi
   initContainers:
     - name: download-tools
