@@ -9,7 +9,11 @@ spec:
         - name: iscsi-intaller
           image: debian:latest
           command:
-            - apt install open-iscsi -y
+            - apt
+          args:
+            - install
+            - open-iscsi
+            - -y
           env:
             - name: ROOT_MOUNT_DIR
               value: /root
