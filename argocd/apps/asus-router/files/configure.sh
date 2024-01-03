@@ -21,6 +21,4 @@ ssh $ROUTER_USER@$ROUTER_IP \
   -o StrictHostKeyChecking=accept-new \
   "nvram set dhcp_staticlist=\"$DHCP_STATICLIST\""
 
-echo "Script completed, sleeping..."
-
-sleep infinity
+echo "Script completed, exiting..."

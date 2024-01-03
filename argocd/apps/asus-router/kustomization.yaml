@@ -1,5 +1,9 @@
 namespace: asus-router
 
+images:
+  - name: portainer/pause
+    newTag: "3.9"
+
 resources:
 - resources/deployment.yaml
 - resources/onepassworditem.yaml

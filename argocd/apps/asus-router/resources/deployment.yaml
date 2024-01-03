@@ -12,7 +12,7 @@ spec:
       labels:
         app: asus-router-manager
     spec:
-      containers:
+      initContainers:
         - name: asus-router-manager
           image: panubo/sshd:latest
           command:
@@ -43,6 +43,9 @@ spec:
             - name: static-clients
               mountPath: /opt/static-clients
               readOnly: true
+      containers:
+        - name: pause
+          image: portainer/pause:latest
       volumes:
         - name: script
           configMap:
