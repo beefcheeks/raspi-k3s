@@ -1,6 +1,5 @@
 # Reference: https://github.com/longhorn/charts/blob/longhorn-1.5.3/charts/longhorn/values.yaml
 #
-# Needed because of a bug: https://github.com/longhorn/longhorn/issues/6623
-serviceAccount:
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+# Needed because of a bug: https://github.com/longhorn/longhorn/issues/6415
+helmPreUpgradeCheckerJob:
+  enabled: false
