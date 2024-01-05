@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ignored
+spec:
+  template:
+    spec:
+      containers:
+        - name: logdna-agent
+          env:
+            - name: LOGDNA_TAGS
+              value: "homelab,stage"
