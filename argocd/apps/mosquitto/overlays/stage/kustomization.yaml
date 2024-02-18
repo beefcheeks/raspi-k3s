@@ -1,0 +1,9 @@
+resources:
+- ../../base
+
+patches:
+  # Add annotations to specify environment-specific host
+  - target:
+      kind: Gateway
+      name: mosquitto
+    path: patches/gateway.yaml

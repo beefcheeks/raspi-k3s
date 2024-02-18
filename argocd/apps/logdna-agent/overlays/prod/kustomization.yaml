@@ -1,0 +1,9 @@
+resources:
+- ../../base
+
+patches:
+  # Add annotations to specify env-specific multus mac address
+  - target:
+      kind: DaemonSet
+      name: logdna-agent
+    path: patches/agent-tags.yaml

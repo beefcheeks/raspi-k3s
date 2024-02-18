@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard-home
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https-redirect@kubernetescrd,kube-system-ip-allow-list@kubernetescrd
+spec:
+  # Need to specify ingressClass for reasons: https://github.com/argoproj/argo-cd/issues/4863#issuecomment-1516246342
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: adguard-home-admin
+                port:
+                  name: http
+      host: <adguard-home>
+  tls:
+    - hosts:
+        - <adguard-home>
+      secretName: adguard-home

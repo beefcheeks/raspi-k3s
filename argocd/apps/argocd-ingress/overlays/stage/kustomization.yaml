@@ -1,0 +1,13 @@
+resources:
+- ../../base
+
+patches:
+  # Add annotations to specify environment-specific host
+  - target:
+      kind: Ingress
+      name: argocd-server-http
+    path: patches/ingress.yaml
+  - target:
+      kind: Ingress
+      name: argocd-server-grpc
+    path: patches/ingress.yaml

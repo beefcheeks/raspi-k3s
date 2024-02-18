@@ -1,0 +1,68 @@
+schema_version: 27
+
+http:
+  address: 0.0.0.0:8080
+
+trusted_proxies:
+  - <path:vaults/homelab/items/trusted-proxies#localhost>
+  - <path:vaults/homelab/items/trusted-proxies#k3s-pods>
+
+dns:
+  bind_hosts:
+    - 0.0.0.0
+  port: 5300
+
+  cache_size: 4194304
+  cache_ttl_min: 4
+  cache_ttl_max: 84600
+
+  enable_dnssec: true
+  all_servers: true
+  fastest_addr: true
+  upstream_dns:
+    - https://security.cloudflare-dns.com/dns-query
+    - tls://security.cloudflare-dns.com
+    - https://dns.quad9.net/dns-query
+    - tls://dns.quad9.net
+    - https://dns.adguard.com/dns-query
+    - tls://dns.adguard.com
+
+  rewrites:
+    - domain: <path:vaults/homelab/items/ingress#adguard-home>
+      answer: <path:vaults/homelab/items/ip-address#ip-prod>
+    - domain: <path:vaults/homelab/items/ingress#argocd>
+      answer: <path:vaults/homelab/items/ip-address#ip-prod>
+    - domain: <path:vaults/homelab/items/ingress#argo-grpc>
+      answer: <path:vaults/homelab/items/ip-address#ip-prod>
+    - domain: <path:vaults/homelab/items/ingress#home-assistant>
+      answer: <path:vaults/homelab/items/ip-address#ip-prod>
+    - domain: <path:vaults/homelab/items/ingress#homebridge>
+      answer: <path:vaults/homelab/items/ip-address#ip-prod>
+    - domain: <path:vaults/homelab/items/ingress#mosquitto>
+      answer: <path:vaults/homelab/items/ip-address#ip-prod>
+    - domain: <path:vaults/homelab/items/ingress-stage#adguard-home>
+      answer: <path:vaults/homelab/items/ip-address#ip-stage>
+    - domain: <path:vaults/homelab/items/ingress-stage#argocd>
+      answer: <path:vaults/homelab/items/ip-address#ip-stage>
+    - domain: <path:vaults/homelab/items/ingress-stage#argo-grpc>
+      answer: <path:vaults/homelab/items/ip-address#ip-stage>
+    - domain: <path:vaults/homelab/items/ingress-stage#home-assistant>
+      answer: <path:vaults/homelab/items/ip-address#ip-stage>
+    - domain: <path:vaults/homelab/items/ingress-stage#homebridge>
+      answer: <path:vaults/homelab/items/ip-address#ip-stage>
+    - domain: <path:vaults/homelab/items/ingress-stage#mosquitto>
+      answer: <path:vaults/homelab/items/ip-address#ip-stage>
+    - domain: <path:vaults/homelab/items/router-dns#http>
+      answer: <path:vaults/homelab/items/ip-address#ip-router>
+    - domain: <path:vaults/homelab/items/router-dns#https>
+      answer: <path:vaults/homelab/items/ip-address#ip-router>
+
+tls:
+  enabled: true
+  server_name: <adguard-home>
+  port_https: 4430
+  port_dns_over_tls: 8530
+  port_dns_over_quic: 8530
+  allow_unencrypted_doh: true
+  certificate_path: "/opt/adguardhome/certs/tls.crt"
+  private_key_path: "/opt/adguardhome/certs/tls.key"

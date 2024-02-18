@@ -1,0 +1,9 @@
+namespace: cloudflare-tunnel
+
+helmCharts:
+  - name: cloudflare-tunnel
+    namespace: cloudflare-tunnel
+    releaseName: cloudflare-tunnel
+    repo: https://cloudflare.github.io/helm-charts
+    version: 0.3.0
+    valuesFile: values.yaml
