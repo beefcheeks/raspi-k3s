@@ -2,8 +2,6 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
   name: root
   namespace: argocd
 spec:
@@ -11,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/beefcheeks/raspi-k3s
     targetRevision: main
-    path: argocd/appsets
+    path: argocd/appsets/prod
   destination:
     name: in-cluster
     namespace: argocd
