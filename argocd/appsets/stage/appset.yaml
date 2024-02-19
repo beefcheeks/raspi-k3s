@@ -1,8 +1,6 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
   name: homelab
 spec:
   goTemplate: true
@@ -64,7 +62,7 @@ spec:
   templatePatch: |
     spec:
       syncPolicy:
-        {{- if .autoSync | default true }}
+        {{- if (.autoSync | default true) }}
         automated:
           prune: {{ .prune | default true }}
           selfHeal: {{ .selfHeal | default true }}

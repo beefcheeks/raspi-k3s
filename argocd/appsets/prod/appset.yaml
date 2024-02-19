@@ -1,8 +1,6 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
   name: homelab
 spec:
   goTemplate: true
@@ -11,9 +9,9 @@ spec:
         generators:
           - git:
               repoURL: https://github.com/beefcheeks/raspi-k3s.git
-              revision: stage
+              revision: main
               files:
-                - path: argocd/config/stage.yaml
+                - path: argocd/config/prod.yaml
           - list:
               elements: []
               elementsYaml: '{{ .apps | toJson }}'
@@ -56,15 +54,15 @@ spec:
       project: homelab
       source:
         repoURL: https://github.com/beefcheeks/raspi-k3s.git
-        targetRevision: stage
-        path: 'argocd/apps/{{ .app }}{{ .directory | default "/overlays/stage" }}'
+        targetRevision: main
+        path: 'argocd/apps/{{ .app }}{{ .directory | default "/overlays/prod" }}'
       destination:
         name: in-cluster
         namespace: '{{ .namespace }}'
   templatePatch: |
     spec:
       syncPolicy:
-        {{- if .autoSync | default true }}
+        {{- if (.autoSync | default true) }}
         automated:
           prune: {{ .prune | default true }}
           selfHeal: {{ .selfHeal | default true }}
