@@ -69,9 +69,7 @@ spec:
           prune: {{ .prune | default true }}
           selfHeal: {{ .selfHeal | default true }}
         {{- end }}
-        {{ if .syncOptions | default (list "CreateNamespace=true") }}
         syncOptions:
-          {{- range .syncOptions }}
+          {{- range .syncOptions | default (list "CreateNamespace=true") }}
           - {{ . }}
           {{- end }}
-        {{- end }}
