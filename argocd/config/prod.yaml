@@ -27,9 +27,6 @@ apps:
   - app: logdna-agent
     namespace: logdna-agent
     wave: "1"
-  - app: matter-server
-    namespace: home-assistant
-    wave: "1"
   - app: traefik
     namespace: kube-system
     directory: "/"
@@ -50,6 +47,9 @@ apps:
     wave: "3"
   - app: homebridge
     namespace: homebridge
+    wave: "3"
+  - app: matter-server
+    namespace: home-assistant
     wave: "3"
   - app: mosquitto
     namespace: mosquitto
