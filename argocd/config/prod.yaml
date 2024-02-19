@@ -34,6 +34,9 @@ apps:
   # Wave 2
   - app: argocd
     namespace: argocd
+    syncOptions:
+    # Ensure argocd resources are not deleted (prevents other resource deletion)
+    - "PrunePropagationPolicy=orphan"
     wave: "2"
   # Wave 3
   - app: adguard-home
