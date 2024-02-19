@@ -62,7 +62,7 @@ spec:
   templatePatch: |
     spec:
       syncPolicy:
-        {{- if (.autoSync | default true) }}
+        {{- if not .manualSync }}
         automated:
           prune: {{ .prune | default true }}
           selfHeal: {{ .selfHeal | default true }}
