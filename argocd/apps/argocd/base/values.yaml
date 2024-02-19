@@ -79,7 +79,7 @@ repoServer:
     # argocd-vault-plugin with Helm
     - name: avp-kustomize-helm
       command: [/var/run/argocd/argocd-cmp-server]
-      image: quay.io/argoproj/argocd:v2.9.3
+      image: quay.io/argoproj/argocd:v2.10.1
       envFrom:
         - secretRef:
             name: argocd-vault-plugin
