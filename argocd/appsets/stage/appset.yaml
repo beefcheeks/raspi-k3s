@@ -63,10 +63,15 @@ spec:
         namespace: '{{ .namespace }}'
   templatePatch: |
     spec:
-      {{- if or (.autoSync | default true) (.syncOptions | default (list "CreateNamespace=true")) }}
       syncPolicy:
+        {{- if .autoSync | default true }}
         automated:
           prune: {{ .prune | default true }}
           selfHeal: {{ .selfHeal | default true }}
-        syncOptions: .syncOptions
-      {{- end }}
+        {{- end }}
+        {{ if .syncOptions | default (list "CreateNamespace=true"}}
+        syncOptions:
+          {{- range .syncOptions }}
+          - {{ . }}
+          {{- end }}
+        {{- end }}
