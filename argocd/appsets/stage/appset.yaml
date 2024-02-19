@@ -57,7 +57,7 @@ spec:
       source:
         repoURL: https://github.com/beefcheeks/raspi-k3s.git
         targetRevision: stage
-        path: 'argocd/apps/{{ .app }}/{{ .directory | default "overlays/stage" }}'
+        path: 'argocd/apps/{{ .app }}{{ .directory | default "/overlays/stage" }}'
       destination:
         name: in-cluster
         namespace: '{{ .namespace }}'

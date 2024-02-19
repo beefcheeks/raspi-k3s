@@ -2,27 +2,27 @@ apps:
   # Wave 0
   - app: gateway
     namespace: kube-system
-    directory: ""
+    directory: "/"
     wave: "0"
   - app: multus
     namespace: kube-system
-    directory: ""
+    directory: "/"
     syncOptions:
     # Ensure multus resources are not deleted (prevents other resource deletion)
     - "PrunePropagationPolicy=orphan"
     wave: "0"
   - app: onepassword
     namespace: onepassword
-    directory: ""
+    directory: "/"
     wave: "0"
   # Wave 1
   - app: asus-router
     namespace: asus-router
-    directory: ""
+    directory: "/"
     wave: "1"
   - app: cert-manager
     namespace: cert-manager
-    directory: ""
+    directory: "/"
     wave: "1"
   - app: logdna-agent
     namespace: logdna-agent
@@ -32,7 +32,7 @@ apps:
     wave: "1"
   - app: traefik
     namespace: kube-system
-    directory: ""
+    directory: "/"
     wave: "1"
   # Wave 2
   - app: argocd
