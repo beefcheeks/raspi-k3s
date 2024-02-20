@@ -5,7 +5,7 @@ patches:
   # Add annotations to specify environment-specific host
   - target:
       kind: Ingress
-      name: home-assistant
+      name: homebridge
     path: patches/ingress.yaml
   # Add annotations to specify env-specific multus mac address
   - target:
