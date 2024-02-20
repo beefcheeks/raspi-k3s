@@ -2,6 +2,11 @@ resources:
 - ../../base
 
 patches:
+  # Add annotations to specify environment-specific host
+  - target:
+      kind: Ingress
+      name: home-assistant
+    path: patches/ingress.yaml
   # Add annotations to specify env-specific multus mac address
   - target:
       kind: StatefulSet

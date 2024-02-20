@@ -1,4 +1,4 @@
-kind: Gateway
+kind: Ingress
 metadata:
   name: ignored
   annotations:

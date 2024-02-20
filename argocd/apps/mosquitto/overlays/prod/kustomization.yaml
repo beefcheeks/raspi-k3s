@@ -1,13 +1,10 @@
 resources:
 - ../../base
+- resources/onepassworditem.yaml
 
 patches:
   # Add annotations to specify environment-specific host
   - target:
-      kind: Ingress
-      name: argocd-server-http
-    path: patches/ingress.yaml
-  - target:
-      kind: Ingress
-      name: argocd-server-grpc
-    path: patches/ingress.yaml
+      kind: Gateway
+      name: mosquitto
+    path: patches/gateway.yaml

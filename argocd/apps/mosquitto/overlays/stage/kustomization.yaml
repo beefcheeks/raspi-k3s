@@ -1,5 +1,6 @@
 resources:
 - ../../base
+- resources/onepassworditem.yaml
 
 patches:
   # Add annotations to specify environment-specific host

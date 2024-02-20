@@ -2,4 +2,4 @@ kind: ConfigMap
 metadata:
   name: initial-config
   annotations:
-    avp.kubernetes.io/path: "vaults/homelab/items/adguard-login"
+    avp.kubernetes.io/path: "vaults/homelab/items/ingress"
