@@ -32,7 +32,7 @@ dns:
       answer: <path:vaults/homelab/items/ingress#ip-address>
     - domain: <path:vaults/homelab/items/ingress#argocd>
       answer: <path:vaults/homelab/items/ingress#ip-address>
-    - domain: <path:vaults/homelab/items/ingress#argo-grpc>
+    - domain: <path:vaults/homelab/items/ingress#argocd-grpc>
       answer: <path:vaults/homelab/items/ingress#ip-address>
     - domain: <path:vaults/homelab/items/ingress#home-assistant>
       answer: <path:vaults/homelab/items/ingress#ip-address>
@@ -44,7 +44,7 @@ dns:
       answer: <path:vaults/homelab/items/ingress-stage#ip-address>
     - domain: <path:vaults/homelab/items/ingress-stage#argocd>
       answer: <path:vaults/homelab/items/ingress-stage#ip-address>
-    - domain: <path:vaults/homelab/items/ingress-stage#argo-grpc>
+    - domain: <path:vaults/homelab/items/ingress-stage#argocd-grpc>
       answer: <path:vaults/homelab/items/ingress-stage#ip-address>
     - domain: <path:vaults/homelab/items/ingress-stage#home-assistant>
       answer: <path:vaults/homelab/items/ingress-stage#ip-address>

@@ -1,5 +1,10 @@
 namespace: argocd
 
+# Ensure image matches that of helm chart
+images:
+  - name: quay.io/argoproj/argocd
+    newTag: v2.10.1
+
 helmCharts:
   - name: argo-cd
     namespace: argocd
