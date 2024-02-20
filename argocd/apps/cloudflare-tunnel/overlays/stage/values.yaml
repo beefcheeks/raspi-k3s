@@ -1,8 +1,8 @@
 cloudflare:
-  tunnelName: homelab
+  tunnelName: homelab-stage
   secretName: cloudflare-tunnel
   ingress:
-    - hostname: <path:vaults/homelab/items/dns#external-home-assistant>
+    - hostname: <path:vaults/homelab/items/ingress-stage#>
       service: http://home-assistant.home-assistant
 
 replicaCount: 1
