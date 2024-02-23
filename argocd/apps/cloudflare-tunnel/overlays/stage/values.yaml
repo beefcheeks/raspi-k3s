@@ -5,4 +5,7 @@ cloudflare:
     - hostname: <path:vaults/homelab/items/ingress-stage#home-assistant-external>
       service: http://home-assistant.home-assistant
 
+image:
+  tag: 2024.2.1
+
 replicaCount: 1
