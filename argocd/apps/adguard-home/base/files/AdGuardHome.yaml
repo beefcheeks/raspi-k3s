@@ -27,6 +27,7 @@ dns:
     - https://dns.adguard.com/dns-query
     - tls://dns.adguard.com
 
+filtering:
   rewrites:
     - domain: '<path:vaults/homelab/items/ingress#adguard-home>'
       answer: <path:vaults/homelab/items/ingress#ip-address>
