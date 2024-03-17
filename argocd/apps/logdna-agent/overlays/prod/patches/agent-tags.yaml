@@ -9,4 +9,4 @@ spec:
         - name: logdna-agent
           env:
             - name: LOGDNA_TAGS
-              value: "homelab,stage"
+              value: "homelab,prod"
