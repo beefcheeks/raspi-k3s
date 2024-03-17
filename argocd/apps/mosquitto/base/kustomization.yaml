@@ -1,0 +1,21 @@
+namespace: mosquitto
+
+images:
+  - name: eclipse-mosquitto
+    newTag: 2.0.18
+
+resources:
+  - resources/gateway.yaml
+  - resources/pvc.yaml
+  - resources/service.yaml
+  - resources/statefulset.yaml
+  - resources/tcproute.yaml
+
+configMapGenerator:
+  - name: config
+    files:
+      - files/mosquitto.conf
+
+  - name: startup
+    files:
+      - files/startup.sh

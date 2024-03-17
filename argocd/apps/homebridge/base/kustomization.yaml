@@ -1,0 +1,25 @@
+namespace: homebridge
+
+images:
+  - name: homebridge/homebridge
+    newTag: 2023-11-28
+
+resources:
+  - resources/ingress.yaml
+  - resources/pvc.yaml
+  - resources/service.yaml
+  - resources/statefulset.yaml
+
+# Patch Homebridge StatefulSet to use multus interface so hostNetwork: true is not needed
+patches:
+  # Enable macvlan interface via multus
+  - target:
+      kind: StatefulSet
+      name: homebridge
+    path: patches/multus-interface.yaml
+  # Patch routing for DNS while using multus
+  # Always put this last so it becomes the first initContainer to run
+  - target:
+      kind: StatefulSet
+      name: homebridge
+    path: ../../multus/shared/dns-route.yaml

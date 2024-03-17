@@ -6,7 +6,6 @@ namespace: argocd
 resources:
   - namespace.yaml
   - project.yaml
-  - root.yaml
 
 helmCharts:
   - name: argo-cd
@@ -14,4 +13,4 @@ helmCharts:
     releaseName: argocd
     repo: https://argoproj.github.io/argo-helm
     valuesFile: values.yaml
-    version: 5.51.6
+    version: 6.1.0

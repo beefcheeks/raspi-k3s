@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: mosquitto
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  gatewayClassName: traefik
+  listeners:
+  - name: mqtts
+    protocol: TLS
+    port: 8883
+    hostname: <mosquitto>
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: mosquitto
+        group: ""

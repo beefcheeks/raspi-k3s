@@ -1,0 +1,5 @@
+kind: Gateway
+metadata:
+  name: ignored
+  annotations:
+    avp.kubernetes.io/path: "vaults/homelab/items/ingress-stage"

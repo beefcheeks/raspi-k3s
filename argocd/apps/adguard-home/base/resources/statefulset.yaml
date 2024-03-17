@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  name: adguard-home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adguard-home
+  serviceName: adguard-home
+  template:
+    metadata:
+      labels:
+        app: adguard-home
+    spec:
+      initContainers:
+      - name: adguard-setup
+        image: adguard/adguardhome:latest
+        env:
+        - name: ADGUARD_USER
+          valueFrom:
+            secretKeyRef:
+              name: adguard-login
+              key: user
+        - name: ADGUARD_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: adguard-login
+              key: password
+        command:
+        - /opt/scripts/setup.sh
+        volumeMounts:
+        - name: initial-config
+          mountPath: /opt/config
+        - name: conf
+          mountPath: /opt/adguardhome/conf
+        - name: scripts
+          mountPath: /opt/scripts
+        - name: static-clients
+          mountPath: /opt/static-clients
+      containers:
+      - name: adguard-home
+        image: adguard/adguardhome:latest
+        ports:
+        - containerPort: 5300
+          name: dns-udp
+          protocol: UDP
+        - containerPort: 5300
+          name: dns-tcp
+          protocol: TCP
+        - containerPort: 8530
+          name: dns-quic
+          protocol: UDP
+        - containerPort: 8530
+          name: dns-tls
+          protocol: TCP
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 4430
+          name: https
+          protocol: TCP
+        - containerPort: 4430
+          name: dns-over-https
+          protocol: UDP
+        - containerPort: 3000
+          name: http-setup
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+        - name: certs
+          mountPath: /opt/adguardhome/certs
+        - name: conf
+          mountPath: /opt/adguardhome/conf
+        - name: data
+          mountPath: /opt/adguardhome/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: adguard-home
+      - name: certs
+        secret:
+          secretName: adguard-home
+      - name: conf
+        emptyDir: {}
+      - name: initial-config
+        configMap:
+          name: initial-config
+      - name: scripts
+        configMap:
+          name: scripts
+          defaultMode: 268
+      - name: static-clients
+        secret:
+          secretName: static-clients

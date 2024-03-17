@@ -1,0 +1,14 @@
+resources:
+- ../../base
+- resources/onepassworditem.yaml
+
+patches:
+  # Add annotations to specify environment-specific adguard web host
+  - target:
+      kind: ConfigMap
+      name: initial-config
+    path: patches/initial-config.yaml
+  - target:
+      kind: Ingress
+      name: adguard-home
+    path: patches/ingress.yaml

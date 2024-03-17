@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: home-assistant
+  name: home-assistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: home-assistant
+  serviceName: 
+  template:
+    metadata:
+      labels:
+        app: home-assistant
+    spec:
+      initContainers:
+      - image: ghcr.io/home-assistant/home-assistant:stable
+        imagePullPolicy: IfNotPresent
+        name: init-home-assistant
+        command:
+        - /opt/scripts/setup.sh
+        volumeMounts:
+        - name: config
+          mountPath: '/config'
+        - name: homekit-triggers-workaround
+          mountPath: /homekit-triggers-workaround
+        - name: initial-config
+          mountPath: /opt/config
+        - name: setup
+          mountPath: /opt/scripts
+      containers:
+      - name: home-assistant
+        image: ghcr.io/home-assistant/home-assistant:stable
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 8123
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 50m
+            memory: 750Mi
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: dbus
+          mountPath: /run/dbus
+          readOnly: True
+        - name: homekit-triggers-workaround
+          mountPath: /usr/src/homeassistant/homeassistant/components/homekit/type_triggers.py
+          subPath: type_triggers.py
+      restartPolicy: Always
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: home-assistant
+      # Only needed for bluetooth/thread/zigbee
+      - name: dbus
+        hostPath:
+          path: /run/dbus
+      # Only needed if exposing triggers as homekit programmable switches
+      - name: homekit-triggers-workaround
+        emptyDir: {}
+      - name: setup
+        configMap:
+          name: setup
+          defaultMode: 268
+      - name: initial-config
+        configMap:
+          name: initial-config

@@ -1,0 +1,19 @@
+# This file is the root application for the applicationset
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: homelab
+  source:
+    repoURL: https://github.com/beefcheeks/raspi-k3s
+    targetRevision: main
+    path: argocd/appsets/prod
+  destination:
+    name: in-cluster
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

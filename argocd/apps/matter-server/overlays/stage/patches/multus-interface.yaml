@@ -1,0 +1,6 @@
+apiVersion: ignored
+kind: StatefulSet
+metadata:
+  annotations:
+    avp.kubernetes.io/path: "vaults/homelab/items/multus-mac-stage"
+  name: ignored

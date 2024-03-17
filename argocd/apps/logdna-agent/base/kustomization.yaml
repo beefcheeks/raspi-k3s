@@ -1,0 +1,22 @@
+namespace: logdna-agent
+
+resources:
+  - resources/onepassworditem.yaml
+  # Syslog to https log forwarder
+  - https://github.com/logdna/logdna-rsyslog/raw/c17ce1bf9a7160c74f4820518f01229882742aae/logdna-rsyslog-config-https.yml
+  - https://github.com/logdna/logdna-rsyslog/raw/c17ce1bf9a7160c74f4820518f01229882742aae/logdna-rsyslog-workload.yml
+  # Agent leases for k8s stats/events
+  - https://github.com/logdna/logdna-agent-v2/raw/3.9.1/k8s/event-leader-lease.yaml
+  - https://github.com/logdna/logdna-agent-v2/raw/3.9.1/k8s/reporter-leader-lease.yaml
+  # Actual agent
+  - https://github.com/logdna/logdna-agent-v2/raw/3.9.1/k8s/agent-resources.yaml
+
+patches:
+  # Patch to make rsyslog service type LoadBalancer for router logs
+  - target:
+      kind: Service
+    path: patches/rsyslog-lb.yaml
+  # Patch to enable Kubernetes metrics and events
+  - target:
+      kind: DaemonSet
+    path: patches/agent-enrichment.yaml

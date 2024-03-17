@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: homelab
+spec:
+  goTemplate: true
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: https://github.com/beefcheeks/raspi-k3s.git
+              revision: stage
+              files:
+                - path: argocd/config/stage.yaml
+          - list:
+              elements: []
+              elementsYaml: '{{ .apps | toJson }}'
+  # Requires progressive sync to be enabled in argocd
+  strategy:
+    type: RollingSync
+    rollingSync:
+      steps:
+        - matchExpressions:
+            - key: wave
+              operator: In
+              values:
+                - '0'
+        - matchExpressions:
+            - key: wave
+              operator: In
+              values:
+                - '1'
+        - matchExpressions:
+            - key: wave
+              operator: In
+              values:
+                - '2'
+        - matchExpressions:
+            - key: wave
+              operator: In
+              values:
+                - '3'
+        - matchExpressions:
+            - key: wave
+              operator: In
+              values:
+                - '4'
+  template:
+    metadata:
+      name: '{{ .app }}'
+      labels:
+        wave: '{{ .wave }}'
+    spec:
+      project: homelab
+      source:
+        repoURL: https://github.com/beefcheeks/raspi-k3s.git
+        targetRevision: stage
+        path: 'argocd/apps/{{ .app }}{{ .directory | default "/overlays/stage" }}'
+      destination:
+        name: in-cluster
+        namespace: '{{ .namespace }}'
+  templatePatch: |
+    spec:
+      syncPolicy:
+        {{- if not .manualSync }}
+        automated:
+          prune: {{ .prune | default true }}
+          selfHeal: {{ .selfHeal | default true }}
+        {{- end }}
+        syncOptions:
+          {{- range .syncOptions | default (list "CreateNamespace=true") }}
+          - {{ . }}
+          {{- end }}

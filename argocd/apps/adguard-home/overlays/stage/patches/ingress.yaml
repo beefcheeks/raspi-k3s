@@ -1,0 +1,5 @@
+kind: Ingress
+metadata:
+  name: adguard-home
+  annotations:
+    avp.kubernetes.io/path: "vaults/homelab/items/ingress-stage"

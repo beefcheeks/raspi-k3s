@@ -1,0 +1,18 @@
+namespace: home-assistant
+
+images:
+  - name: homeassistant/aarch64-addon-matter-server
+    newTag: 5.0.1
+
+resources:
+  - resources/pvc.yaml
+  - resources/service.yaml
+  - resources/statefulset.yaml
+
+patches:
+  # Ensure DNS routes correctly while using multus
+  # Always put this last so it becomes the first initContainer to run
+  - target:
+      kind: StatefulSet
+      name: matter-server
+    path: ../../multus/shared/dns-route.yaml

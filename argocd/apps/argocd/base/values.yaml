@@ -1,0 +1,112 @@
+# Reference: https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
+applicationSet:
+  resources:
+    requests:
+      cpu: 500m
+      memory: 100Mi
+controller:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 250Mi
+configs:
+  cm:
+    # Enable kustomize to render helm charts
+    kustomize.buildOptions: --enable-helm
+  ## BEGIN ARGOCD VAULT PLUGIN CONFIGURATION ##
+  cmp:
+    # Creates the configmap argocd-cmp-cm
+    create: true
+    # Adapted from: https://github.com/argoproj-labs/argocd-vault-plugin/blob/v1.17.0/manifests/cmp-sidecar/argocd-repo-server.yaml
+    plugins:
+      avp-kustomize-helm:
+        allowConcurrency: true
+        discover:
+          find:
+            command:
+              - find
+              - "."
+              - -name
+              - kustomization.yaml
+        generate:
+          command:
+            - sh
+            - "-c"
+            - "kustomize build --enable-helm --load-restrictor LoadRestrictionsNone . | argocd-vault-plugin generate -"
+        lockRepo: false
+  params:
+    # Enable progressive sync (ordering for apps in appset)
+    applicationsetcontroller.enable.progressive.syncs: true
+    # Disable local TLS since we're using ingress + cert-manager
+    server.insecure: true
+  secret:
+    # Don't create a secret because a OnePasswordItem will create it for us
+    createSecret: false
+repoServer:
+  name: repo-server
+  rbac:
+    - verbs:
+        - get
+        - list
+        - watch
+      apiGroups:
+        - ''
+      resources:
+        - secrets
+        - configmaps
+  resources:
+    requests:
+      cpu: 500m
+      memory: 250Mi
+  initContainers:
+    - name: download-tools
+      image: registry.access.redhat.com/ubi8
+      env:
+        - name: AVP_VERSION
+          value: 1.17.0
+        - name: AVP_ARCH
+          value: linux_arm64
+      command: [sh, -c]
+      args:
+        - >-
+            curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_$(AVP_ARCH) -o argocd-vault-plugin &&
+            chmod +x argocd-vault-plugin &&
+            mv argocd-vault-plugin /custom-tools/
+      volumeMounts:
+        - mountPath: /custom-tools
+          name: custom-tools
+  extraContainers:
+    # argocd-vault-plugin with Helm
+    - name: avp-kustomize-helm
+      command: [/var/run/argocd/argocd-cmp-server]
+      image: quay.io/argoproj/argocd:PLACEHOLDER
+      envFrom:
+        - secretRef:
+            name: argocd-vault-plugin
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+      volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /tmp
+          name: cmp-tmp
+        # Register plugins into sidecar
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          subPath: avp-kustomize-helm.yaml
+          name: argocd-cmp-cm
+        # Important: Mount tools into $PATH
+        - name: custom-tools
+          subPath: argocd-vault-plugin
+          mountPath: /usr/local/bin/argocd-vault-plugin
+  volumes:
+    - configMap:
+        name: argocd-cmp-cm
+      name: argocd-cmp-cm
+    - name: cmp-tmp
+      emptyDir: {}
+    - name: custom-tools
+      emptyDir: {}
+## END ARGOCD VAULT PLUGIN CONFIGURATION ##
