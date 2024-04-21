@@ -23,6 +23,11 @@ spec:
               if [ ! -L /host/opt/cni/bin ]; then
                   ln -s /var/lib/rancher/k3s/data/current/bin /host/opt/cni/bin
               fi
+              # Remove multus conf file to prevent nested config bug
+              # See: https://github.com/k8snetworkplumbingwg/multus-cni/issues/1089#issuecomment-1550442393
+              if [ -f /etc/cni/net.d/00-multus.conflist ]; then
+                  rm /etc/cni/net.d/00-multus.conflist
+              fi
           securityContext:
             privileged: true
           volumeMounts:

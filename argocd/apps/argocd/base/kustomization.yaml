@@ -3,7 +3,7 @@ namespace: argocd
 # Ensure image matches that of helm chart
 images:
   - name: quay.io/argoproj/argocd
-    newTag: v2.10.1
+    newTag: v2.10.7
 
 helmCharts:
   - name: argo-cd
@@ -11,4 +11,4 @@ helmCharts:
     releaseName: argocd
     repo: https://argoproj.github.io/argo-helm
     valuesFile: values.yaml
-    version: 6.1.0
+    version: 6.7.12

@@ -8,5 +8,4 @@ connect:
 
 operator:
   create: true
-  pollingInterval: 30
   serviceType: ClusterIP

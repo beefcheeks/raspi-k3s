@@ -1,0 +1,310 @@
+# This automation manages a sensor-activated set of lights/switches
+# Light turns on when sensor is within threshold range
+# Light turns off when sensor is not within threshold range for a set period of time
+# for / timers lose state on restart, so input_datetime is used instead
+# An optional set of override input_booleans can stop the automation
+blueprint:
+  name: Sensor Threshold Activated Light
+  domain: automation
+  input:
+    sensor_entity:
+      name: Sensor
+      description: Sensor that turn on lights/switches when a threshold is hit
+      selector:
+        entity:
+          domain: sensor
+    sensor_min:
+      name: Sensor - Minimum Level
+      description: The light does not turn on below this level.
+      default: -999999
+      selector:
+        number:
+          mode: box
+          min: -999999
+          max: 999999
+    sensor_max:
+      name: Sensor - Maximum Level
+      description: The light does not turn on above this level.
+      default: 999999
+      selector:
+        number:
+          mode: box
+          min: -999999
+          max: 999999
+    fans:
+      name: Fans
+      description: "Fans to turn on and off"
+      default: []
+      selector:
+        entity:
+          multiple: true
+          domain: fan
+    lights:
+      name: Lights
+      description: "Lights to turn on and off"
+      default: []
+      selector:
+        entity:
+          multiple: true
+          domain: light
+    switches:
+      name: Switches
+      description: "Switches to turn on and off"
+      default: []
+      selector:
+        entity:
+          multiple: true
+          domain: switch
+    wait_time:
+      name: Wait Time
+      description: "How long to leave the lights/switches on after the sensor value goes outside the threshold(s)."
+      default: 60
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+    datetime:
+      name: Input DateTime
+      description: input_datetime entity for persisting timer state
+      selector:
+        entity:
+          domain: input_datetime
+    # Brightness (only applies to entity type light)
+    brightness_level:
+      name: Brightness Level
+      description: (Optional) The static brightness level to set lights to when they turn on. Does not apply to switches. Default value 0 does not set brightness.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: percent
+    brightness_entity:
+      name: Brightness Entity
+      description: (Optional) The input_number entity to match the brightness level to for the lights. Does not apply to switches. Overrides Brightness Level. 
+      default: {}
+      selector:
+        entity:
+          domain: input_number
+    fan_speed:
+      name: Fan Speed
+      description: (Optional) The speed the fan is set to when it turns on.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: percent
+    time_start:
+      name: Start Time
+      description: (Optional) When the automation can start running
+      default: '0:00:00'
+      selector:
+        time:
+    time_end:
+      name: End Time
+      description: (Optional) When the automation stops running
+      default: '23:59:59'
+      selector:
+        time:
+    # Input booleans that act as enablement overrides for this automation
+    boolean_overrides:
+      name: Input Boolean Overrides
+      description: (Optional) input_booleans that disable this automation if any are on
+      default: []
+      selector:
+        entity:
+          domain: input_boolean
+    boolean_activations:
+      name: Input Boolean Activations
+      description: (Optional) input_booleans that this automation ensures matches the state of the lights/switches
+      default: []
+      selector:
+        entity:
+          domain: input_boolean
+          multiple: true
+    # Useful if you miss a datetime 'off' trigger during a restart
+    downtime_grace_period:
+      name: Downtime Grace Period
+      description: (Optional) Grace period in minutes for back-processing input_datetime triggers missed during downtime/restarts.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 720
+          unit_of_measurement: minutes
+# If sensor threshold change is detected within the delay, restart the script.
+mode: restart
+
+variables:
+  # Direct input variables
+  boolean_activations: !input boolean_activations
+  boolean_overrides: !input boolean_overrides
+  brightness_entity: !input brightness_entity
+  brightness_level: !input brightness_level
+  datetime: !input datetime
+  fan_speed: !input fan_speed
+  fans: !input fans
+  lights: !input lights
+  sensor_entity: !input sensor_entity
+  sensor_max: !input sensor_max
+  sensor_min: !input sensor_min
+  switches: !input switches
+  wait_time: !input wait_time
+  # Derivative input variables
+  fans_lights_switches: >
+    {{ fans + lights + switches }}
+
+trigger:
+  - id: sensor_state
+    platform: state
+    entity_id: !input sensor_entity
+
+  - id: timer
+    platform: time
+    at: !input datetime
+
+condition:
+  # Since there can be multiple overrides, we just need to know if a single override is on
+  - condition: template
+    value_template: >
+      {{ boolean_overrides | length == 0 or boolean_overrides | select('is_state', 'on') | list | count == 0 }}
+  # Do not run if sensor data is not available
+  - condition: template
+    value_template: >
+      {{ states(sensor_entity) not in ['unavailable', 'unknown', 'none'] }}
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: sensor_state
+          # Time is optionally specified (e.g. only turn on if day/night)
+          # Only applies to setting/resetting the timer, not the timer expiring
+          - condition: time
+            after: !input time_start
+            before: !input time_end
+        sequence:
+          # If statement needed to determine inside/outside sensor threshold
+          - if:
+              # Detect 'inside' threshold for sensor value
+              - condition: template
+                value_template: >
+                  {{ sensor_min < trigger.to_state.state | float < sensor_max }}
+            then:
+              # Always reset timer if basic conditions are met
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: !input datetime
+                # Reset is arbitrarily set to 1 day in the future
+                data:
+                  datetime: >
+                    {{ now() + timedelta(days=1) }}
+              # Turn on lights, switches, and fans in parallel
+              - parallel:
+                  - repeat:
+                      for_each: >
+                        {{ fans }}
+                      sequence:
+                        - condition: template
+                          value_template: >
+                            {{ states(repeat.item) == 'off' }}
+                        - service: fan.turn_on
+                          target:
+                            entity_id: >
+                              {{ repeat.item }}
+                          # Service data keys that are defined must be the correct type and supported by the entity
+                          # Service data keys cannot be None, so they must be programmatically added if they exist
+                          # Only include a specific option if it is a defined input
+                          # Dictionary updates are not allowed in home assistant, so a list of tuples is appended to
+                          # List of tuples is converted to dictionary to create the final templated data object
+                          data: >
+                            {% set data = [] %}
+                            {% if fan_speed > 0 %}
+                              {% set data = data + [("percentage", fan_speed)] %}
+                            {% endif %}
+                            {{ dict.from_keys(data) }}
+                  - repeat:
+                      for_each: >
+                        {{ lights }}
+                      sequence:
+                        - condition: template
+                          value_template: >
+                            {{ states(repeat.item) == 'off' }}
+                        - service: light.turn_on
+                          target:
+                            entity_id: >
+                              {{ repeat.item }}
+                          # Service data keys that are defined must be the correct type and supported by the entity
+                          # Service data keys cannot be None, so they must be programmatically added if they exist
+                          # Only include a specific option if it is a defined input
+                          # Dictionary updates are not allowed in home assistant, so a list of tuples is appended to
+                          # List of tuples is converted to dictionary to create the final templated data object
+                          data: >
+                            {% set data = [] %}
+                            {% if brightness_entity | length > 0 %}
+                              {% set data = data + [("brightness_pct", states(brightness_entity))] %}
+                            {% elif brightness_level > 0 %}
+                              {% set data = data + [("brightness_pct", brightness_level)] %}
+                            {% endif %}
+                            {{ dict.from_keys(data) }}
+                  - repeat:
+                      for_each: >
+                        {{ switches + boolean_activations }}
+                      sequence:
+                        - condition: template
+                          value_template: >
+                            {{ states(repeat.item) == 'off' }}
+                        - service_template: >
+                            {{ repeat.item.split(".")[0] }}.turn_on
+                          data:
+                            entity_id: >
+                              {{ repeat.item }}
+            else:
+              # If any light/switch is already on, sensor outside threshold starts timer to turn it off
+              - condition: template
+                value_template: >
+                  {% set ns = namespace(is_on=false) %}
+                  {% for entity in fans_lights_switches %}
+                    {% if states(entity) == 'on' %}
+                      {% set ns.is_on = true %}
+                    {% endif %}
+                  {% endfor %}
+                  {{ ns.is_on }}
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: !input datetime
+                data:
+                  datetime: >
+                    {{ now() + timedelta(seconds=wait_time) }}
+      - conditions:
+          - or:
+              # On timer end, turn lights/switches/activations off
+              - condition: template
+                value_template: >
+                  {{ trigger.entity_id == datetime }}
+              # Alternatively, on home assistant startup, if within the grace period, also turn off lights/switches/activations
+              - and:
+                  - condition: template
+                    value_template: >
+                      {{ trigger.platform == 'homeassistant' }}
+                  - condition: template
+                    value_template: >
+                      {{ downtime_grace_period > 0 }}
+                  - condition: template
+                    value_template: >
+                      {{ 0 < (now() | as_timestamp - states(datetime) | as_timestamp) <= timedelta(minutes=downtime_grace_period) }}
+        sequence:
+          - repeat:
+              for_each: >
+                {{ fans_lights_switches + boolean_activations }}
+              sequence:
+                - condition: template
+                  value_template: >
+                    {{ states(repeat.item) == 'on' }}
+                - service_template: >
+                    {{ repeat.item.split(".")[0] }}.turn_off
+                  data:
+                    entity_id: >
+                      {{ repeat.item }}

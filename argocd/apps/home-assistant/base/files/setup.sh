@@ -23,15 +23,16 @@ fi
 # Only needed if exposing triggers as homekit programmable switches
 cat /usr/src/homeassistant/homeassistant/components/homekit/type_triggers.py | sed "s/subtype.replace/str(subtype).replace/" >  /homekit-triggers-workaround/type_triggers.py
 
-# If blueprints exist, symlink blueprints directory in /config to mounted location
+# If blueprints exist, (eventually) copy blueprints directory in /config to mounted location
 if [[ -d /opt/blueprints ]]
 then
     if [[ ! -d /config/blueprints/automation ]]
     then
         mkdir -p /config/blueprints/automation
     fi
-    if [[ ! -L /config/blueprints/automation/custom ]]
-    then
-        ln -s /opt/blueprints /config/blueprints/automation/custom
-    fi
+    # Commented out for debugging purposes
+    # if [[ ! -L /config/blueprints/automation/custom ]]
+    # then
+    #     ln -s /opt/blueprints /config/blueprints/automation/custom
+    # fi
 fi
