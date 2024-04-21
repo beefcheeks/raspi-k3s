@@ -8,7 +8,7 @@ resources:
 
 images:
   - name: ghcr.io/home-assistant/home-assistant
-    newTag: 2023.12.3
+    newTag: 2024.4.3
 
 # Custom blueprints for use in home-assistant
 # Updates require a yaml configuration refresh via the UI (or container restart)
