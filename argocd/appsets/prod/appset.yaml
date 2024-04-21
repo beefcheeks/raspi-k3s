@@ -3,6 +3,10 @@ kind: ApplicationSet
 metadata:
   name: homelab
 spec:
+  # Allow overriding sync automation from the UI
+  ignoreApplicationDifferences:
+    - jqPathExpressions:
+      - .spec.syncPolicy.automated
   goTemplate: true
   generators:
     - matrix:
