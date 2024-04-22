@@ -25,8 +25,8 @@ spec:
               fi
               # Remove multus conf file to prevent nested config bug
               # See: https://github.com/k8snetworkplumbingwg/multus-cni/issues/1089#issuecomment-1550442393
-              if [ -f /etc/cni/net.d/00-multus.conflist ]; then
-                  rm /etc/cni/net.d/00-multus.conflist
+              if [ -f /host/etc/cni/net.d/00-multus.conflist ]; then
+                  rm /host/etc/cni/net.d/00-multus.conflist
               fi
           securityContext:
             privileged: true
