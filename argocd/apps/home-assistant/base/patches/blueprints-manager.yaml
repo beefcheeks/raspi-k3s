@@ -1,0 +1,30 @@
+# Patch home-assistant StatefulSet to mount custom blueprint directory for init script
+# This enables gitops for the specific blueprints in home-assistant
+# Updates require a yaml configuration refresh via the UI (or container restart)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ignored
+spec:
+  template:
+    spec:
+      containers:
+        - name: blueprints-manager
+          image: busybox
+          command:
+            - /opt/scripts/blueprints-manager.sh
+          volumeMounts:
+            - name: blueprints
+              mountPath: /opt/blueprints
+            - name: blueprints-manager
+              mountPath: /opt/scripts
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: blueprints
+          configMap:
+            name: blueprints
+        - name: blueprints-manager
+          configMap:
+            name: blueprints-manager
+            defaultMode: 268
