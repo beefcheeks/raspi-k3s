@@ -8,7 +8,9 @@ resources:
 
 images:
   - name: ghcr.io/home-assistant/home-assistant
-    newTag: 2024.4.3
+    newTag: 2024.5.1
+  - name: busybox
+    newTag: 1.36.1
 
 # Custom blueprints for use in home-assistant
 # Updates require a yaml configuration refresh via the UI (or container restart)
@@ -18,10 +20,18 @@ configMapGenerator:
       - files/blueprints/automation-manual-override.yaml
       - files/blueprints/motion-activated-light.yaml
       - files/blueprints/sensor-threshold-activated-light.yaml
+    options:
+      disableNameSuffixHash: true
+
+  - name: blueprints-manager
+    files:
+      - files/blueprints-manager.sh
 
   - name: initial-config
     files:
       - files/initial-config.yaml
+    options:
+      disableNameSuffixHash: true
 
   - name: route-manager
     files:
@@ -41,7 +51,7 @@ patches:
   - target:
       kind: StatefulSet
       name: home-assistant
-    path: patches/blueprints.yaml
+    path: patches/blueprints-manager.yaml
   # Ensure route advertisements update the routing table
   - target:
       kind: StatefulSet

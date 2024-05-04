@@ -1,9 +1,12 @@
 #!/bin/sh
 
+CONFIG_FILE_DEST=/config/configuration.yaml
+BLUEPRINTS_DIR=/config/blueprints/automation/custom
+
 # Create initial Setup
-if [[ ! -f /config/configuration.yaml ]]
+if [[ ! -f $CONFIG_FILE_DEST ]]
 then
-    cp /opt/config/configuration.yaml /config/configuration.yaml
+    cp /opt/config/configuration.yaml $CONFIG_FILE_DEST
 fi
 if [[ ! -f /config/automations.yaml ]]
 then
@@ -23,16 +26,8 @@ fi
 # Only needed if exposing triggers as homekit programmable switches
 cat /usr/src/homeassistant/homeassistant/components/homekit/type_triggers.py | sed "s/subtype.replace/str(subtype).replace/" >  /homekit-triggers-workaround/type_triggers.py
 
-# If blueprints exist, (eventually) copy blueprints directory in /config to mounted location
-if [[ -d /opt/blueprints ]]
+# Ensure blueprints directory is created
+if [[ ! -d $BLUEPRINTS_DIR ]]
 then
-    if [[ ! -d /config/blueprints/automation ]]
-    then
-        mkdir -p /config/blueprints/automation
-    fi
-    # Commented out for debugging purposes
-    # if [[ ! -L /config/blueprints/automation/custom ]]
-    # then
-    #     ln -s /opt/blueprints /config/blueprints/automation/custom
-    # fi
+    mkdir -p $BLUEPRINTS_DIR
 fi
