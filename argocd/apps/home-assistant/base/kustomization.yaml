@@ -17,9 +17,9 @@ images:
 configMapGenerator:
   - name: blueprints
     files:
-      - files/blueprints/automation-manual-override.yaml
-      - files/blueprints/motion-activated-light.yaml
-      - files/blueprints/sensor-threshold-activated-light.yaml
+      - files/blueprints/manual_override.yaml
+      - files/blueprints/motion_activated_light.yaml
+      - files/blueprints/sensor_threshold.yaml
     options:
       disableNameSuffixHash: true
 
