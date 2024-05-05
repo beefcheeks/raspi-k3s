@@ -1,9 +1,6 @@
 cloudflare:
   tunnelName: homelab-stage
   secretName: cloudflare-tunnel
-  ingress:
-    - hostname: <path:vaults/homelab/items/ingress-stage#home-assistant-external>
-      service: http://home-assistant.home-assistant
 
 image:
   tag: 2024.4.1

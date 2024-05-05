@@ -10,3 +10,10 @@ helmCharts:
     repo: https://cloudflare.github.io/helm-charts
     version: 0.3.0
     valuesFile: values.yaml
+
+patches:
+  # Add custom route to map to ingress
+  - target:
+      kind: Deployment
+      name: cloudflare-tunnel
+    path: patches/host-aliases.yaml
