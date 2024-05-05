@@ -3,7 +3,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   annotations:
-    avp.kubernetes.io/path: "vaults/homelab/items/ip-allow-list"
+    avp.kubernetes.io/path: vaults/homelab/items/ip-allow-list
   name: ip-allow-list
 spec:
   ipWhiteList:
@@ -15,8 +15,29 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
+  annotations:
+    avp.kubernetes.io/path: vaults/homelab/items/trusted-proxies
+  name: ip-allow-list-cloudflare-tunnel
+spec:
+  ipWhiteList:
+    sourceRange:
+      - <localhost>
+      - <k3s-pods>
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
   name: https-redirect
 spec:
   redirectScheme:
     permanent: true
     scheme: https
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: proxied-headers
+spec:
+  headers:
+    hostsProxyHeaders:
+      - "Host"

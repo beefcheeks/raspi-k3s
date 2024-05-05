@@ -1,0 +1,12 @@
+kind: Deployment
+metadata:
+  name: ignored
+  annotations:
+    avp.kubernetes.io/path: vaults/homelab/items/ingress-stage
+spec:
+  template:
+    spec:
+      hostAliases:
+        - ip: <ip-address>
+          hostnames:
+            - <home-assistant-external>
