@@ -29,9 +29,11 @@ configMapGenerator:
 
   - name: initial-config
     files:
-      - files/initial-config.yaml
+      - files/configuration.yaml
     options:
       disableNameSuffixHash: true
+      annotations:
+        avp.kubernetes.io/path: "vaults/homelab/items/trusted-proxies"
 
   - name: route-manager
     files:
@@ -42,11 +44,6 @@ configMapGenerator:
       - files/setup.sh
 
 patches:
-  # Add configuration to support ingress
-  - target:
-      kind: ConfigMap
-      name: initial-config
-    path: patches/initial-config.yaml
   # Add custom blueprints to home-assistant
   - target:
       kind: StatefulSet
