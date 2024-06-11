@@ -11,6 +11,10 @@ apps:
     # Ensure multus resources are not deleted (prevents other resource deletion)
     - "PrunePropagationPolicy=orphan"
     wave: "0"
+  - app: ngrok-ingress
+    namespace: ngrok-ingress-controller
+    directory: "/"
+    wave: "0"
   - app: onepassword
     namespace: onepassword
     directory: "/"

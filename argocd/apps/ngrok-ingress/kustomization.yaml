@@ -1,0 +1,15 @@
+
+namespace: ngrok-ingress-controller
+
+resources:
+- resources/onepassworditem.yaml
+
+helmCharts:
+  - includeCRDs: true
+    name: kubernetes-ingress-controller
+    namespace: ngrok-ingress-controller
+    releaseName: ngrok
+    repo: https://ngrok.github.io/kubernetes-ingress-controller
+    valuesFile: values.yaml
+    version: 0.14.0
+
