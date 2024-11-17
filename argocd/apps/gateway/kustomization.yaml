@@ -1,6 +1,0 @@
-# Kubernetes gateway API required for non http/https ingress
-# Traefik and cert-manager support v1 Gateway and GatewayClass resources
-# Traefik now bundles all GA (v1) resources, including Gateway and GatewayClass
-# The only missing resource is the TCPRoute that we use for mosquitto mqtts
-resources:
-  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tcproutes.yaml
