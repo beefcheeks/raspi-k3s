@@ -7,4 +7,4 @@ helmCharts:
     releaseName: connect
     repo: https://1password.github.io/connect-helm-charts/
     valuesFile: values.yaml
-    version: 1.14.0
+    version: 1.16.0

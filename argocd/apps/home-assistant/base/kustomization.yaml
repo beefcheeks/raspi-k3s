@@ -8,9 +8,9 @@ resources:
 
 images:
   - name: ghcr.io/home-assistant/home-assistant
-    newTag: 2024.5.1
+    newTag: 2024.11.2
   - name: busybox
-    newTag: 1.36.1
+    newTag: 1.37.0
 
 # Custom blueprints for use in home-assistant
 # Updates require a yaml configuration refresh via the UI (or container restart)

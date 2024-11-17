@@ -3,13 +3,13 @@ namespace: kube-system
 resources:
   - resources/dhcp-daemon.yaml
   - resources/macvlan.yaml
-  - https://github.com/k8snetworkplumbingwg/multus-cni/raw/v4.0.2/deployments/multus-daemonset.yml
+  - https://github.com/k8snetworkplumbingwg/multus-cni/raw/v4.1.3/deployments/multus-daemonset.yml
 
 configMapGenerator:
   - name: cni-plugins
     literals:
       - arch=arm64
-      - version=v1.3.0
+      - version=v1.6.0
 
 generatorOptions:
   annotations:

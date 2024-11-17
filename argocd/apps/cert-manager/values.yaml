@@ -1,6 +1,9 @@
 global:
   leaderElection:
     namespace: cert-manager
-installCRDs: true
-extraArgs:
-  - --feature-gates=ExperimentalGatewayAPISupport=true
+config:
+  apiVersion: controller.config.cert-manager.io/v1alpha1
+  kind: ControllerConfiguration
+  enableGatewayAPI: true
+crds:
+  enabled: true

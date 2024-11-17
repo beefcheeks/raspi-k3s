@@ -2,7 +2,7 @@ namespace: home-assistant
 
 images:
   - name: homeassistant/aarch64-addon-matter-server
-    newTag: 5.5.1
+    newTag: 6.6.0
 
 resources:
   - resources/pvc.yaml
