@@ -13,4 +13,4 @@ helmCharts:
     releaseName: argocd
     repo: https://argoproj.github.io/argo-helm
     valuesFile: values.yaml
-    version: 6.7.12
+    version: 7.7.5

@@ -63,7 +63,7 @@ repoServer:
       image: registry.access.redhat.com/ubi8
       env:
         - name: AVP_VERSION
-          value: 1.17.0
+          value: 1.18.1
         - name: AVP_ARCH
           value: linux_arm64
       command: [sh, -c]

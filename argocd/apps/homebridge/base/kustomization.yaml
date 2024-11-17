@@ -2,7 +2,7 @@ namespace: homebridge
 
 images:
   - name: homebridge/homebridge
-    newTag: 2023-11-28
+    newTag: 2024-10-25
 
 resources:
   - resources/ingress.yaml

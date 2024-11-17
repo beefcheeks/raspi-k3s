@@ -1,4 +1,4 @@
-schema_version: 27
+schema_version: 29
 
 http:
   address: 0.0.0.0:8080
@@ -17,8 +17,7 @@ dns:
   cache_ttl_max: 84600
 
   enable_dnssec: true
-  all_servers: true
-  fastest_addr: true
+  upstream_mode: parallel
   upstream_dns:
     - https://security.cloudflare-dns.com/dns-query
     - tls://security.cloudflare-dns.com

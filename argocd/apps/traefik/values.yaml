@@ -3,17 +3,14 @@
 # MQTTS configuration required by mosquitto
 additionalArguments:
   - --entrypoints.mqtts.address=:8883/tcp
-ports:
-  mqtts:
-    expose: true
-    exposedPort: 8883
-    port: 8883
-    protocol: TCP
 
-# Required for Kubernetes gateways
-experimental:
-  kubernetesGateway:
-    enabled: true
+# Minimize possibility of 1 pod being not ready knocking out traefik LB IP
+deployment:
+  replicas: 2
+
+# Don't deploy a default gateway - handled by mosquitto
+gateway:
+  enabled: false
 
 # Increase timeout to prevent not ready state from flapping
 livenessProbe:
@@ -21,13 +18,19 @@ livenessProbe:
 readinessProbe:
   timeoutSeconds: 5
 
-# Required for Traefik to update the LoadBalancer status field
-# Without this, ArgoCD apps with ingress resources get stuck in a Progressing loop
-# See: https://github.com/traefik/traefik/issues/6303
+ports:
+  mqtts:
+    expose:
+      default: true
+    exposedPort: 8883
+    port: 8883
+    protocol: TCP
+
+# Required to integrate Traefik with Kubernetes GatewayClass
 providers:
-  kubernetesIngress:
-    publishedService:
-      enabled: true
+  kubernetesGateway:
+    enabled: true
+    experimentalChannel: true
 
 resources:
   requests:

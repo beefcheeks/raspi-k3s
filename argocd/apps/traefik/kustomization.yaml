@@ -1,6 +1,9 @@
 namespace: kube-system
 
 resources:
+  # Traefik installs the base GA (v1) CRDs from gateway-api
+  # However, TCPRoute is not yet GA (v1), so we must manually apply the TCPRoute CRD here
+  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tcproutes.yaml
   - resources/middleware.yaml
 
 helmCharts:
@@ -9,5 +12,5 @@ helmCharts:
     namespace: kube-system
     releaseName: traefik
     repo: https://traefik.github.io/charts
-    version: 25.0.0
+    version: 33.0.0
     valuesFile: values.yaml
