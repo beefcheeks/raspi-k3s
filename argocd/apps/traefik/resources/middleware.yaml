@@ -15,29 +15,8 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  annotations:
-    avp.kubernetes.io/path: vaults/homelab/items/trusted-proxies
-  name: ip-allow-list-cloudflare-tunnel
-spec:
-  ipAllowList:
-    sourceRange:
-      - <localhost>
-      - <k3s-pods>
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
   name: https-redirect
 spec:
   redirectScheme:
     permanent: true
     scheme: https
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: proxied-headers
-spec:
-  headers:
-    hostsProxyHeaders:
-      - "Host"

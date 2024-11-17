@@ -1,3 +1,4 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -28,9 +29,12 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: home-assistant-external
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-https-redirect@kubernetescrd
 spec:
   # Need to specify ingressClass for reasons: https://github.com/argoproj/argo-cd/issues/4863#issuecomment-1516246342
-  ingressClassName: ngrok
+  ingressClassName: traefik
   rules:
     - host: <home-assistant-external>
       http:
@@ -42,3 +46,7 @@ spec:
                 name: home-assistant
                 port:
                   name: http
+  tls:
+    - hosts:
+        - <home-assistant-external>
+      secretName: home-assistant-external
