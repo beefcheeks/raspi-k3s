@@ -40,6 +40,9 @@ apps:
   - app: argocd-ingress
     namespace: argocd
     wave: "3"
+  - app: cloudflare-ddns
+    namespace: cloudflare-ddns
+    wave: "3"
   - app: home-assistant
     namespace: home-assistant
     wave: "3"
