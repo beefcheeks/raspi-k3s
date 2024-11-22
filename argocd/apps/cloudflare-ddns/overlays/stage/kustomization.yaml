@@ -1,0 +1,9 @@
+resources:
+- ../../base
+
+patches:
+  # Add annotations to specify environment-specific ddns host
+  - target:
+      kind: StatefulSet
+      name: cloudflare-ddns
+    path: patches/statefulset.yaml
