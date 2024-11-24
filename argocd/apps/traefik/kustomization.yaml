@@ -2,8 +2,12 @@ namespace: kube-system
 
 resources:
   # Traefik installs the base GA (v1) CRDs from gateway-api
-  # However, TCPRoute is not yet GA (v1), so we must manually apply the TCPRoute CRD here
+  # However, all other resources are not yet GA (v1), so we must manually apply those CRDs here
   - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tcproutes.yaml
+  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_udproutes.yaml
+  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_backendtlspolicies.yaml
+  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/tags/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_backendlbpolicies.yaml
   - resources/middleware.yaml
 
 helmCharts:
