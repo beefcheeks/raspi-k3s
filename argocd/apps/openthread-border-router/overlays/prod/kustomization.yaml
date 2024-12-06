@@ -15,3 +15,10 @@ configMapGenerator:
   - name: otbr-supervisor
     files:
     - files/nginx.conf
+
+patches:
+  # Ensure DNS routes correctly while using multus
+  - target:
+      kind: StatefulSet
+      name: matter-server
+    path: ../../multus/shared/dns-route.yaml
