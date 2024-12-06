@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openthread-border-router
+  labels:
+    app: openthread-border-router
+spec:
+  selector:
+    app: openthread-border-router
+  ports:
+    - name: web
+      port: 8080
+      protocol: TCP
+      targetPort: web
+    - name: api
+      port: 8081
+      protocol: TCP
+      targetPort: api

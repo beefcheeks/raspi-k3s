@@ -6,4 +6,4 @@ spec:
   template:
     metadata:
       annotations:
-        k8s.v1.cni.cncf.io/networks: '[{"name":"macvlan-conf","namespace":"kube-system","mac":"<matter-server>"}]'
+        k8s.v1.cni.cncf.io/networks: '[{"interface":"<path:vaults/homelab/items/multus-dns-route#supervisor-addons-interface>","name":"macvlan-conf","namespace":"kube-system","mac":"<matter-server>"}]'

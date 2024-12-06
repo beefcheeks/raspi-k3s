@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mock-supervisor
+spec:
+  type: ClusterIP
+  selector:
+    app: mock-supervisor
+  ports:
+    - protocol: TCP
+      port: 80
+      name: http
