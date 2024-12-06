@@ -15,6 +15,9 @@ configMapGenerator:
   - name: matter-supervisor
     files:
     - files/nginx.conf
+  - name: route-manager-matter-server
+    files:
+    - ../../home-assistant/base/files/route-manager.sh
 
 patches:
   # Ensure DNS routes correctly while using multus
@@ -26,3 +29,8 @@ patches:
       kind: StatefulSet
       name: matter-server
     path: patches/multus-interface.yaml
+  # Ensure route advertisements update the routing table for thread
+  - target:
+      kind: StatefulSet
+      name: matter-server
+    path: patches/route-manager.yaml
