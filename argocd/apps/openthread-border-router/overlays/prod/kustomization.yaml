@@ -12,6 +12,6 @@ images:
     newTag: 1.27.3
 
 configMapGenerator:
-  - name: otbr-supervisor-config
+  - name: otbr-supervisor
     files:
     - files/nginx.conf
