@@ -16,14 +16,21 @@ spec:
             - /bin/sh
           args:
           - -c
+          # Change network adapter name to work with matter-server
           # Add custom route so DNS can reach service CIDR
-          - ip route add $SERVICE_CIDR via $GATEWAY dev $INTERFACE
+          - |
+            ip link set $OLD_INTERFACE down
+            ip link set $OLD_INTERFACE name $NEW_INTERFACE
+            ip link set $NEW_INTERFACE up
+            ip route add $SERVICE_CIDR via $GATEWAY dev $NEW_INTERFACE
           env:
           - name: SERVICE_CIDR
             value: <path:vaults/homelab/items/multus-dns-route#service-cidr>
           - name: GATEWAY
             value: <path:vaults/homelab/items/multus-dns-route#gateway>
-          - name: INTERFACE
-            value: <path:vaults/homelab/items/multus-dns-route#interface>
+          - name: OLD_INTERFACE
+            value: <path:vaults/homelab/items/multus-dns-route#old-interface>
+          - name: NEW_INTERFACE
+            value: <path:vaults/homelab/items/multus-dns-route#new-interface>
           securityContext:
             privileged: true

@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: openthread-border-router
+  labels:
+    app: openthread-border-router
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openthread-border-router
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: '[{"interface":"<path:vaults/homelab/items/multus-dns-route#supervisor-addons-interface>","name":"macvlan-conf","namespace":"kube-system","mac":"<path:vaults/homelab/items/multus-mac#openthread-border-router>"}]'
+      labels:
+        app: openthread-border-router
+    spec:
+      # Used to mock supervisor api
+      hostAliases:
+        - ip: "127.0.0.1"
+          hostnames:
+            - "supervisor"
+      containers:
+        - name: otbr-supervisor
+          image: nginx:latest
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+        - name: openthread-border-router
+          image: homeassistant/aarch64-addon-otbr:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: web
+            - containerPort: 8081
+              protocol: TCP
+              name: api
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
+                - NET_ADMIN
+            privileged: true
+          volumeMounts:
+            - name: data
+              mountPath: /data/thread
+              readOnly: false
+            - name: usb-device
+              mountPath: /dev/ttyUSB0
+              readOnly: false
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: openthread-border-router
+        - name: nginx-config
+          configMap:
+            name: otbr-supervisor
+        - name: usb-device
+          hostPath:
+            path: /dev/ttyUSB0
+            type: CharDevice
