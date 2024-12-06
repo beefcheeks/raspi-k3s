@@ -20,5 +20,5 @@ patches:
   # Ensure DNS routes correctly while using multus
   - target:
       kind: StatefulSet
-      name: matter-server
+      name: openthread-border-router
     path: ../../multus/shared/dns-route.yaml
