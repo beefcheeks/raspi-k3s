@@ -21,4 +21,4 @@ patches:
   - target:
       kind: StatefulSet
       name: openthread-border-router
-    path: ../../multus/shared/dns-route.yaml
+    path: ../../../multus/shared/dns-route.yaml
