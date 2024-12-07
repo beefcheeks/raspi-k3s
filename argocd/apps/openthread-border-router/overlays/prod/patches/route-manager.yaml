@@ -1,0 +1,24 @@
+# Patch openthread-border-router StatefulSet to use route manager needed for thread border route advertisement
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ignored
+spec:
+  template:
+    spec:
+      # Ensure route advertisement works
+      containers:
+        - name: route-manager
+          image: apearson/radvd:latest
+          securityContext:
+            privileged: true
+          command:
+            - /opt/scripts/route-manager.sh
+          volumeMounts:
+            - name: route-manager
+              mountPath: /opt/scripts
+      volumes:
+        - name: route-manager
+          configMap:
+            name: route-manager-openthread-border-router
+            defaultMode: 268
