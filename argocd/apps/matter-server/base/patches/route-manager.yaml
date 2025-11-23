@@ -9,7 +9,7 @@ spec:
       # Ensure route advertisement works
       containers:
         - name: route-manager
-          image: apearson/radvd:latest
+          image: yanqiyu/radvd:latest
           securityContext:
             privileged: true
           command:
