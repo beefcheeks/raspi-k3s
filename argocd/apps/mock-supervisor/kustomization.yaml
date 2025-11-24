@@ -2,7 +2,7 @@ namespace: home-assistant
 
 images:
   - name: nginx
-    newTag: 1.27.3
+    newTag: 1.29.3
 
 resources:
   - resources/deployment.yaml
@@ -11,5 +11,4 @@ resources:
 configMapGenerator:
   - name: mock-supervisor
     files:
-    - files/nginx.conf
-
+      - files/nginx.conf
