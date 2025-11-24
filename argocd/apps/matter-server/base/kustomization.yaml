@@ -2,9 +2,9 @@ namespace: home-assistant
 
 images:
   - name: homeassistant/aarch64-addon-matter-server
-    newTag: 6.6.1
+    newTag: 8.1.1
   - name: nginx
-    newTag: 1.27.3
+    newTag: 1.29.3
 
 resources:
   - resources/pvc.yaml
@@ -14,10 +14,10 @@ resources:
 configMapGenerator:
   - name: matter-supervisor
     files:
-    - files/nginx.conf
+      - files/nginx.conf
   - name: route-manager-matter-server
     files:
-    - ../../home-assistant/base/files/route-manager.sh
+      - ../../home-assistant/base/files/route-manager.sh
 
 patches:
   # Ensure DNS routes correctly while using multus

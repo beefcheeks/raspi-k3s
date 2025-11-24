@@ -7,17 +7,17 @@ resources:
 
 images:
   - name: homeassistant/aarch64-addon-otbr
-    newTag: 2.12.1
+    newTag: 2.15.1
   - name: nginx
-    newTag: 1.27.3
+    newTag: 1.29.3
 
 configMapGenerator:
   - name: otbr-supervisor
     files:
-    - files/nginx.conf
+      - files/nginx.conf
   - name: route-manager-openthread-border-router
     files:
-    - ../../../home-assistant/base/files/route-manager.sh
+      - ../../../home-assistant/base/files/route-manager.sh
 
 patches:
   # Ensure DNS routes correctly while using multus
