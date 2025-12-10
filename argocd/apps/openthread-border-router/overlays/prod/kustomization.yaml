@@ -7,7 +7,7 @@ resources:
 
 images:
   - name: homeassistant/aarch64-addon-otbr
-    newTag: 2.15.1
+    newTag: 2.15.2
   - name: nginx
     newTag: 1.29.3
 
