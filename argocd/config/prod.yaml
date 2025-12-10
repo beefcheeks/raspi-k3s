@@ -3,8 +3,8 @@ apps:
     namespace: kube-system
     directory: "/"
     syncOptions:
-    # Ensure multus resources are not deleted (prevents other resource deletion)
-    - "PrunePropagationPolicy=orphan"
+      # Ensure multus resources are not deleted (prevents other resource deletion)
+      - "PrunePropagationPolicy=orphan"
     wave: "0"
   - app: mock-supervisor
     namespace: home-assistant
@@ -34,8 +34,8 @@ apps:
   - app: argocd
     namespace: argocd
     syncOptions:
-    # Ensure argocd resources are not deleted (prevents other resource deletion)
-    - "PrunePropagationPolicy=orphan"
+      # Ensure argocd resources are not deleted (prevents other resource deletion)
+      - "PrunePropagationPolicy=orphan"
     wave: "2"
   # Wave 3
   - app: adguard-home
@@ -49,9 +49,6 @@ apps:
     wave: "3"
   - app: home-assistant
     namespace: home-assistant
-    wave: "3"
-  - app: homebridge
-    namespace: homebridge
     wave: "3"
   - app: matter-server
     namespace: home-assistant
