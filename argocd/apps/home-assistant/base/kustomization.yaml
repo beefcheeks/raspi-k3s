@@ -17,6 +17,7 @@ images:
 configMapGenerator:
   - name: blueprints
     files:
+      - files/blueprints/button_actions.yaml
       - files/blueprints/manual_override.yaml
       - files/blueprints/motion_activated_light.yaml
       - files/blueprints/sensor_threshold.yaml
