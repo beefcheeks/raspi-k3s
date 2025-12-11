@@ -1,0 +1,58 @@
+# This automation handles button press events
+# Supports single press, double press, and long press actions
+# Each action slot is optional - leave empty to skip that press type
+blueprint:
+  name: Button Actions
+  domain: automation
+  input:
+    button_entity:
+      name: Button Event Entity
+      description: The button event entity to monitor for press events
+      selector:
+        entity:
+          domain: event
+    action_single_press:
+      name: Single Press Action
+      description: (Optional) Actions to run on single press
+      default: []
+      selector:
+        action:
+    action_double_press:
+      name: Double Press Action
+      description: (Optional) Actions to run on double press
+      default: []
+      selector:
+        action:
+    action_long_press:
+      name: Long Press Action
+      description: (Optional) Actions to run on long press
+      default: []
+      selector:
+        action:
+
+mode: single
+
+trigger:
+  - trigger: state
+    entity_id: !input button_entity
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input button_entity
+            state: single_press
+            attribute: event_type
+        sequence: !input action_single_press
+      - conditions:
+          - condition: state
+            entity_id: !input button_entity
+            state: double_press
+            attribute: event_type
+        sequence: !input action_double_press
+      - conditions:
+          - condition: state
+            entity_id: !input button_entity
+            state: long_press
+            attribute: event_type
+        sequence: !input action_long_press
