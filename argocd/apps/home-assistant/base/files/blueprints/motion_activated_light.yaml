@@ -171,6 +171,7 @@ variables:
   boolean_overrides: !input boolean_overrides
   brightness_entity: !input brightness_entity
   brightness_level: !input brightness_level
+  contact_sensors_reverse: !input contact_sensors_reverse
   datetime: !input datetime
   downtime_grace_period: !input downtime_grace_period
   lights: !input lights
