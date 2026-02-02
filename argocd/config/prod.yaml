@@ -1,15 +1,4 @@
 apps:
-  - app: multus
-    namespace: kube-system
-    directory: "/"
-    syncOptions:
-      # Ensure multus resources are not deleted (prevents other resource deletion)
-      - "PrunePropagationPolicy=orphan"
-    wave: "0"
-  - app: mock-supervisor
-    namespace: home-assistant
-    directory: "/"
-    wave: "0"
   - app: onepassword
     namespace: onepassword
     directory: "/"
@@ -47,15 +36,9 @@ apps:
   - app: cloudflare-ddns
     namespace: cloudflare-ddns
     wave: "3"
-  - app: home-assistant
-    namespace: home-assistant
-    wave: "3"
-  - app: matter-server
-    namespace: home-assistant
+  - app: ha-ingress
+    namespace: ha-ingress
     wave: "3"
   - app: mosquitto
     namespace: mosquitto
-    wave: "3"
-  - app: openthread-border-router
-    namespace: home-assistant
     wave: "3"
