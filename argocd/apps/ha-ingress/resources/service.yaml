@@ -11,9 +11,9 @@ spec:
 ---
 apiVersion: v1
 kind: Endpoints
-annotations:
-  avp.kubernetes.io/path: "vaults/homelab/items/ingress"
 metadata:
+  annotations:
+    avp.kubernetes.io/path: "vaults/homelab/items/ingress"
   name: home-assistant
 subsets:
   - addresses:
