@@ -37,6 +37,7 @@ apps:
     namespace: cloudflare-ddns
     wave: "3"
   - app: ha-ingress
+    directory: "/"
     namespace: ha-ingress
     wave: "3"
   - app: mosquitto
