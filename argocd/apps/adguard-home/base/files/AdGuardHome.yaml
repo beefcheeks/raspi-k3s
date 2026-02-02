@@ -28,33 +28,19 @@ dns:
 
 filtering:
   rewrites:
-    - domain: '<path:vaults/homelab/items/ingress#adguard-home>'
+    - domain: "<path:vaults/homelab/items/ingress#adguard-home>"
       answer: <path:vaults/homelab/items/ingress#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress#argocd>'
+    - domain: "<path:vaults/homelab/items/ingress#argocd>"
       answer: <path:vaults/homelab/items/ingress#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress#argocd-grpc>'
+    - domain: "<path:vaults/homelab/items/ingress#argocd-grpc>"
       answer: <path:vaults/homelab/items/ingress#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress#home-assistant>'
+    - domain: "<path:vaults/homelab/items/ingress#home-assistant>"
       answer: <path:vaults/homelab/items/ingress#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress#homebridge>'
+    - domain: "<path:vaults/homelab/items/ingress#mosquitto>"
       answer: <path:vaults/homelab/items/ingress#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress#mosquitto>'
-      answer: <path:vaults/homelab/items/ingress#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress-stage#adguard-home>'
-      answer: <path:vaults/homelab/items/ingress-stage#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress-stage#argocd>'
-      answer: <path:vaults/homelab/items/ingress-stage#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress-stage#argocd-grpc>'
-      answer: <path:vaults/homelab/items/ingress-stage#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress-stage#home-assistant>'
-      answer: <path:vaults/homelab/items/ingress-stage#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress-stage#homebridge>'
-      answer: <path:vaults/homelab/items/ingress-stage#ip-address>
-    - domain: '<path:vaults/homelab/items/ingress-stage#mosquitto>'
-      answer: <path:vaults/homelab/items/ingress-stage#ip-address>
-    - domain: '<path:vaults/homelab/items/router-dns#http>'
+    - domain: "<path:vaults/homelab/items/router-dns#http>"
       answer: <path:vaults/homelab/items/router-dns#ip-address>
-    - domain: '<path:vaults/homelab/items/router-dns#https>'
+    - domain: "<path:vaults/homelab/items/router-dns#https>"
       answer: <path:vaults/homelab/items/router-dns#ip-address>
 
 tls:

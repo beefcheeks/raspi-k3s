@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-assistant
+spec:
+  ports:
+    - name: http
+      port: 8123
+      targetPort: 8123
+  # no selector, uses endpoint
+---
+apiVersion: v1
+kind: Endpoints
+annotations:
+  avp.kubernetes.io/path: "vaults/homelab/items/ingress"
+metadata:
+  name: home-assistant
+subsets:
+  - addresses:
+      - ip: <ip-address-home-assistant>
+    ports:
+      - name: http
+        port: 8123
+        protocol: TCP

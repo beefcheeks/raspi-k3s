@@ -1,0 +1,5 @@
+namespace: ha-ingress
+
+resources:
+  - resources/ingress.yaml
+  - resources/service.yaml
