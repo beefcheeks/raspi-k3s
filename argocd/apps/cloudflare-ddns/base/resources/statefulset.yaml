@@ -29,3 +29,7 @@ spec:
           value: '1000'
         - name: PGID
           value: '1000'
+        - name: IP4_PROVIDER
+          value: ipify
+        - name: IP6_PROVIDER
+          value: none
