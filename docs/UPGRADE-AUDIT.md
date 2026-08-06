@@ -12,16 +12,30 @@ image org/provider when the newer one is better-supported.
 | Pi OS | Debian 11 bullseye | Debian 12 bookworm / 13 trixie | 1–2 majors | Low (defer) |
 | Argo CD (chart) | `7.7.5` (app `v2.13.1`) | chart `10.3.0` (app **v3.x**) | major, **v2→v3** | High |
 | Traefik (chart, vendored) | `33.0.0` (app `v3.2.0`) | chart `40.3.0`/`41.0.0` (app `v3.7.4`) | 7+ chart majors, same major v3 | Medium |
-| cert-manager | `v1.16.1` | `v1.21.1` | 5 minors | Medium |
+| cert-manager | `v1.16.1` | `v1.21.1` | 5 minors; **1.21 needs k8s 1.33+** | **Gated on k3s** |
 | AdGuard Home | `v0.107.54` | `v0.107.78` (stable) | patch/minor | Low |
 | Mosquitto | `2.0.18` | `2.0.x` latest (2.1.2 exists) | patch (or new 2.1) | Low |
 | 1Password Connect / operator | `1.7.3` / `1.8.1` | verify latest | unknown | Low |
-| cloudflare-ddns (favonia) | `1.15.0` | `1.17.0` | 2 minors | Low |
+| cloudflare-ddns (favonia) | `1.15.0` | `1.17.0` | 2 minors; **`ipify` provider dropped → migrate `IP4_PROVIDER` to `cloudflare.trace`** | Low |
 | logdna-agent | `3.9.1` | `stable` tag (still `logdna` org) | minor | Low |
 | logdna-rsyslog | `latest` (**untagged!**) | your own beta project | pin a digest | Low |
 | coredns / metrics-server / local-path / klipper-lb | bundled | ships with k3s | upgraded *by* k3s | — |
 
 > The last row upgrades automatically when k3s upgrades — don't bump them independently.
+
+> **⚠️ Sequencing rule (Kubernetes coupling) — added after the first bump attempt.** Version
+> bumps fall in two classes:
+> - **k3s-independent** — pure app containers (AdGuard, cloudflare-ddns, Mosquitto). No k8s
+>   API-version dependency; bump anytime.
+> - **k3s-coupled** — Helm components with a Kubernetes support window (cert-manager, Argo CD,
+>   Traefik). These must **follow** the k3s upgrade. Proven the hard way: **cert-manager 1.21
+>   supports only k8s 1.33–1.36**, so on today's k3s 1.28 it is *incompatible* — cert-manager
+>   stays at `v1.16.1` until k3s is upgraded. **Verify the k8s floor for Argo CD 10.x and
+>   Traefik 40.x before bumping them too.** Always check a component's min-k8s before touching it.
+>
+> Note where versions live: each app's pin is the **`images:` transformer `newTag` in the base
+> `kustomization.yaml`** (the StatefulSet's `:latest` is just a placeholder the transformer
+> overrides); Helm apps pin via `helmCharts[].version` in their kustomization.
 
 ---
 
@@ -65,8 +79,12 @@ hands-off minor hops, but on a single node the manual loop above is fine and mor
 Order by risk, lowest first:
 
 1. **cloudflare-ddns** `1.15.0 → 1.17.0` — patch statefulset image tag. Trivial.
-2. **cert-manager** `v1.16.1 → v1.21.1` — bump chart/image; check CRD upgrade notes per
-    minor (Gateway API additions in 1.20). Low-risk, well-behaved upgrades.
+2. **cert-manager** `v1.16.1 → v1.21.1` — **DEFERRED: gated on k3s.** 1.21 requires k8s
+    1.33–1.36; incompatible with k3s 1.28. Bump only *after* k3s reaches ≥1.33. When you do:
+    chart manages CRDs (`crds.enabled: true`), Gateway API support matured in 1.20 (we set
+    `enableGatewayAPI: true`), and the breaking changes are Helm RBAC/metrics values — re-check
+    them at execution time. If a security patch is needed sooner, bump within the 1.28-compatible
+    line instead (latest `v1.16.x`).
 3. **AdGuard Home** `v0.107.54 → v0.107.78` — stay on the `0.107` **stable** line; avoid the
     `0.108.x` betas.
 4. **Mosquitto** `2.0.18 → latest 2.0.x`. `2.1.x` is a new minor — only jump if you want its
