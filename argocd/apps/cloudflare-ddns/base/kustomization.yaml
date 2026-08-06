@@ -2,7 +2,7 @@ namespace: cloudflare-ddns
 
 images:
   - name: favonia/cloudflare-ddns
-    newTag: 1.15.0
+    newTag: 1.17.0
 
 resources:
   - resources/onepassworditem.yaml

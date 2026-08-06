@@ -30,6 +30,6 @@ spec:
         - name: PGID
           value: '1000'
         - name: IP4_PROVIDER
-          value: ipify
+          value: cloudflare.trace
         - name: IP6_PROVIDER
           value: none

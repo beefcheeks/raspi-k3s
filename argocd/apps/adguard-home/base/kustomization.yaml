@@ -2,7 +2,7 @@ namespace: adguard-home
 
 images:
   - name: adguard/adguardhome
-    newTag: v0.107.54
+    newTag: v0.107.78
 
 resources:
   - resources/ingress.yaml
