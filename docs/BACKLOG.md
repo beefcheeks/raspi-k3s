@@ -8,8 +8,8 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
 
 ### Tooling / access
 - [x] **P0 — Set up MCP servers** so Claude can build against HA and read historic logs.
-  - [x] `ha-mcp` (homeassistant-ai) → connected direct to HA Pi at
-        `http://10.0.0.9:8123/api/webhook/mcp_…` (cluster-independent, survives degraded states).
+  - [x] `ha-mcp` (homeassistant-ai) → connected direct to the HA Pi's local MCP webhook
+        (cluster-independent, survives degraded states).
   - [x] `mezmo-mcp` (remote) → connected at `https://mcp.mezmo.com/mcp`.
   - [x] Restarted + smoke-tested: Mezmo (~20k lines/hr flowing; classic ingestion, no v3
         pipelines) and ha-mcp (985 entities, HA 2026.8.0) both healthy.
@@ -58,7 +58,7 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
         Traefik (v3 at k3s 1.32+). Move `externalTrafficPolicy: Local`, `replicas: 2`, and the
         `ip-allow-list`/`https-redirect` middlewares to a `HelmChartConfig` + middlewares manifest;
         remove `--disable traefik` from the k3s server args. Riskier (ingress-path cutover).
-  - [ ] Remove the stale `mq.staatz.co` rewrite from AdGuard (`adguard-home` config) — batch with
+  - [ ] Remove the stale MQTT-hostname rewrite from AdGuard (`adguard-home` config) — batch with
         a Traefik restart to avoid an extra DNS blip.
 
 ## Done

@@ -12,8 +12,8 @@ Argo CD continuously reconciles the cluster to match `main`.
 - **kubectl context:** `homepi4` (already configured on this machine).
 - **k3s is installed with `--disable traefik`** — Traefik is managed by Argo CD instead
   (we need features the bundled chart doesn't expose). Don't assume k3s-bundled Traefik.
-- There is **no staging environment** anymore. Only `prod` is live. (Staging scaffolding
-  still exists in the tree — see "Known drift" below — but nothing deploys it.)
+- There is **no staging environment** — only `prod` is live (the old staging scaffolding and
+  `stage` branch have been removed).
 
 ## Architecture: how deployment works
 
@@ -58,7 +58,7 @@ add-on / HACS ecosystem — **not** this repo. This cluster now provides just **
 > **MQTT is no longer in this cluster.** The `mosquitto` app was retired (2026-08); HA now runs
 > its own **Mosquitto broker add-on** locally on the HA Pi, so HA connects to `core-mosquitto`
 > over localhost — no cluster, TLS-gateway, or DNS dependency. (History: the broker used to live
-> here behind a Traefik Gateway TLS listener at `mq.staatz.co:8883`, which forced HA into a
+> here behind a Traefik Gateway TLS listener at `mq.<internal-domain>:8883`, which forced HA into a
 > split-horizon-DNS + TLS-SNI setup — all removed. If you re-add an off-Pi MQTT client, point it
 > at the HA Pi's broker, not this cluster.)
 
@@ -77,8 +77,9 @@ add a placeholder + vault path instead.
 
 ## DNS & networking
 
-- **Internal:** `staatz.co` — resolves only on the LAN via **AdGuard Home** (`adguard-home`).
-- **External:** `therexhouse.com` — public, dynamic IP kept current by `cloudflare-ddns`.
+- **Internal:** `<internal-domain>` (real value in 1Password `ingress`) — resolves only on the LAN
+  via **AdGuard Home** (`adguard-home`).
+- **External:** `<external-domain>` — public, dynamic IP kept current by `cloudflare-ddns`.
 - Ingress/LoadBalancer via Traefik + k3s servicelb (`svclb-*` daemonsets).
 
 ## Conventions
@@ -104,13 +105,13 @@ add a placeholder + vault path instead.
 
 ## Known drift / cleanup backlog
 
-See `docs/RESTRUCTURE.md` and `docs/UPGRADE-AUDIT.md` for the full inventory. In short:
+The historical drift has mostly been cleaned up (2026-08 — legacy dirs, disabled app dirs,
+orphan namespaces/PVCs, staging scaffolding, and the in-cluster mosquitto broker are all gone;
+see `docs/BACKLOG.md` for the log). What remains:
 
-- Legacy pre-Argo-CD top-level dirs (`deconz/ gateway/ hyperion/ pihole/ homebridge/
-  multus/ logdna/ cert-manager/ cloudflare-ddns/ asus-router/`) are superseded by `argocd/`.
-- Disabled app dirs under `argocd/apps/` (HA stack, homebridge, multus, longhorn).
-- Orphaned empty namespaces (`homebridge`, `home-assistant`, `cloudflare-tunnel`) and
-  stale PVCs left over from the HA migration.
-- Staging scaffolding (`config/stage.yaml`, `roots/stage.yaml`, `appsets/stage/`,
-  per-app `overlays/stage/`) with no environment behind it.
-- Versions behind (k3s 1.28 is EOL; see the upgrade audit).
+- **Versions behind** — k3s `1.28` is **EOL** and is the next major task; cert-manager / argocd /
+  traefik bumps are gated on it. See `docs/UPGRADE-AUDIT.md`.
+- Pi OS is Debian 11 (bullseye); a bookworm reimage is deferred.
+- The `raspian/` and `ubuntu/` OS-install guides are dated (reference older OS/k3s).
+- Untracked WIP under `argocd/apps/asus-router/` (`resources/{ingress,service}.yaml`,
+  `files/static-clients.csv`) — part of the pending asus-router static-IP work.

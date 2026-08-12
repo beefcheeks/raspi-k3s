@@ -1,0 +1,5 @@
+# This repo is PUBLIC. Never commit files that fingerprint the network or leak secrets —
+# source those from 1Password (argocd-vault-plugin) instead.
+
+# Router static-DHCP inventory: MAC addresses / IPs / device names.
+argocd/apps/asus-router/files/static-clients.csv

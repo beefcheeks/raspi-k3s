@@ -1,10 +1,12 @@
 # Repository Restructuring Plan (review before executing)
 
-Status: **proposal only — nothing here has been applied.** Reflects decisions made 2026-08:
-HA + companions are managed on a separate Pi via the HA add-on/HACS ecosystem, so their
-in-cluster manifests here are dead. Staging is gone.
+Status: **mostly EXECUTED (2026-08).** Groups A–E and the staging teardown (Group D1) are done —
+dead app dirs, legacy top-level dirs, orphan namespaces/PVCs, and staging scaffolding are all
+removed; the in-cluster mosquitto broker was retired and Traefik slimmed to HTTP-only. See
+`BACKLOG.md` for the current state. The remaining item is the untracked asus-router WIP (Group A).
+This doc is kept as the historical record of the plan; the sections below describe what *was* done.
 
-The cleanup is grouped by blast radius. Do the safe stuff first; each group is independent.
+The cleanup was grouped by blast radius. Each group was independent.
 
 ---
 

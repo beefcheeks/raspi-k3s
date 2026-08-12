@@ -1,27 +1,32 @@
-# Overview
+# raspi-k3s
 
-Goal of this project is to act as a storage repository for various Raspberry Pi projects. At the moment, I'm running a [k3s](https://k3s.io) [kubernetes cluster](https://kubernetes.io) on Raspian Buster Lite 64-bit on a single Raspberry Pi 4.
+A **single-node Raspberry Pi 4 homelab** running a [k3s](https://k3s.io) Kubernetes cluster,
+managed entirely via **GitOps with [Argo CD](https://argo-cd.readthedocs.io)**. This repo is the
+source of truth — Argo CD continuously reconciles the cluster to match `main`.
 
-# Getting started
+## Start here
 
-I would highly recommend starting by following the [Raspian + k3s Installation Guide](raspian/README.md). If you prefer to use Ubuntu, follow [Ubuntu + k3s Installation Guide](ubuntu/README.md).
+- **[CLAUDE.md](CLAUDE.md)** — how the repo and cluster fit together: the GitOps architecture, the
+  enabled-apps mechanism, sync waves, secrets, and conventions. **Read this first.**
+- **[argocd/README.md](argocd/README.md)** — bootstrapping k3s + 1Password + Argo CD from scratch.
+- **[docs/](docs/)** — [`BACKLOG.md`](docs/BACKLOG.md) (task tracker),
+  [`UPGRADE-AUDIT.md`](docs/UPGRADE-AUDIT.md) (version status + upgrade runbook),
+  [`RESTRUCTURE.md`](docs/RESTRUCTURE.md) (cleanup plan).
 
-## Table of Contents
+## What's running
 
-OS Installation & Configuration
-* [Raspian](raspian/README.md)
-* [Ubuntu](ubuntu/README.md)
+Everything deploys through one Argo CD `ApplicationSet` that reads
+[`argocd/config/prod.yaml`](argocd/config/prod.yaml) — the enabled-apps manifest. An app directory
+existing under `argocd/apps/` does **not** mean it's deployed; that file is the source of truth.
+Currently live:
 
-Kubernetes expanded capabilities (often prequisites for specific applications)
-* [Auto-renewing Lets Encrypt SSL certificates (cert-manager)](cert-manager/README.md)
-* [Dynamic DNS updater with Cloudflare](cloudflare-ddns/README.md)
-* [multus CNI plugin for attaching custom host interfaces to pods](multus/README.md)
-* [Kubernetes gateways for auto-renewable TLS endpoints - EXPERIMENTAL!](gateway/README.md)
+`onepassword · asus-router · cert-manager · logdna-agent · traefik · argocd ·
+adguard-home · argocd-ingress · cloudflare-ddns · ha-ingress`
 
-Kubernetes applications
-* [homebridge](homebridge/README.md)
-* [DNS filtering & adblock with pi-hole](pihole/README.md)
-* [Asus Router Management via SSH](asus-router/README.md)
-* [Logging with LogDNA agent & syslog forwarder](logdna/README.md)
-* [Zigbee Device Management with deCONZ](deconz/README.md)
-* [Dynamic edge lighting with hyperion](hyperion/README.md)
+Home Assistant runs on a **separate Pi** (managed via its own add-on / HACS ecosystem, not this
+repo); this cluster only provides its TLS-terminating ingress (`ha-ingress`). See CLAUDE.md.
+
+## OS install guides
+
+- **[Raspberry Pi OS + k3s](raspian/README.md)** (recommended)
+- **[Ubuntu + k3s](ubuntu/README.md)**
