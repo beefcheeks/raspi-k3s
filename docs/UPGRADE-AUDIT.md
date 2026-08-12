@@ -46,18 +46,21 @@ skew policy — **no skipping minor versions.**
 
 Path: `1.28 → 1.29 → 1.30 → 1.31 → 1.32 → 1.33 → 1.34 → 1.35 → 1.36`
 
-**Two hard checkpoints:**
-1. **etcd 3.5 → 3.6 (introduced in k3s v1.34+):** there is *no safe path* unless you first
-   run **etcd ≥ 3.5.26**, which ships in the **Jan-2025 k3s v1.32** releases. So: **stop at
-   v1.32, let it settle, then continue past 1.34.** Skipping this can corrupt cluster data.
-2. **k3s-bundled Traefik v2→v3 at v1.32:** **N/A for us** — k3s runs with `--disable traefik`
-   and Traefik is managed by Argo CD. This cluster is unaffected by that change.
+**Datastore = SQLite/kine** (verified 2026-08: server args are just `server --disable traefik
+--write-kubeconfig-mode 644`, no `--cluster-init`), which simplifies things:
+1. **No etcd checkpoint.** The etcd 3.5→3.6 landmine is etcd-only and does **not** apply — just
+   step through every minor (no mandatory stop at 1.32).
+2. **k3s-bundled Traefik v2→v3 at v1.32:** **N/A** — k3s runs `--disable traefik`; Traefik is
+   Argo-CD-managed. Unaffected.
 
 **Per-minor procedure (single node):**
 ```bash
-# 0. BACK UP FIRST (k3s uses embedded etcd/sqlite; snapshot both the datastore and the SD/SSD)
-sudo k3s etcd-snapshot save        # if using etcd; otherwise back up /var/lib/rancher/k3s
-sudo cp -a /etc/rancher/k3s /root/k3s-config-backup
+# 0. BACK UP FIRST. Datastore is SQLite, so `k3s etcd-snapshot` does NOT apply. Instead:
+#    best: a full SD/SSD image (safest rollback). Minimum: stop k3s + copy datastore & config:
+sudo systemctl stop k3s
+sudo cp -a /var/lib/rancher/k3s/server/db   /root/k3s-db-backup      # SQLite state (state.db*)
+sudo cp -a /var/lib/rancher/k3s/server/token /etc/rancher/k3s /root/  # node token + config
+sudo systemctl start k3s
 
 # 1. Upgrade one minor at a time (re-run the installer pinned to the next minor)
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik" \
