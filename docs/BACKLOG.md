@@ -46,7 +46,7 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
       bumps (cert-manager `1.21`, argocd `3.x`, traefik `40.x`) are now **UNBLOCKED**.
   - [x] Pure-container warm-up bumps rolled out: adguard `v0.107.78`, cloudflare-ddns `1.17.0`
         (+ migrated DDNS `IP4_PROVIDER` ipify→cloudflare.trace). Verified Synced/Healthy.
-  - [ ] cert-manager `v1.16.1 → v1.21.1` — **deferred, gated on k3s ≥1.33.**
+  - [x] cert-manager `v1.16.1 → v1.21.1` — **done (2026-08)**; Synced/Healthy on k3s 1.36.
   - [ ] Verify argocd 10.x / traefik 40.x min-k8s before bumping (likely also k3s-gated).
 - [x] **k3s upgrade — DONE (2026-08): 1.28 → 1.36.3+k3s1**, one minor at a time (SQLite datastore
       → no etcd checkpoint; `--disable traefik` preserved throughout). Lesson: **pace hops on this
@@ -56,10 +56,20 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
   - [ ] **Phase 2 (now):** slim the custom Traefik — drop the `mqtts:8883` entrypoint, the
         `kubernetesGateway` provider (`experimentalChannel`), and the hand-pinned experimental
         Gateway API CRDs. Leaves Traefik HTTP-only; also de-risks the Traefik 33→40 chart bump.
-  - [ ] **Phase 3 (with k3s upgrade):** evaluate collapsing custom Traefik → k3s **bundled**
-        Traefik (v3 at k3s 1.32+). Move `externalTrafficPolicy: Local`, `replicas: 2`, and the
-        `ip-allow-list`/`https-redirect` middlewares to a `HelmChartConfig` + middlewares manifest;
-        remove `--disable traefik` from the k3s server args. Riskier (ingress-path cutover).
+  - [~] **Phase 3 — bundled-Traefik cutover ATTEMPTED (2026-08) then ROLLED BACK.** Moved the app
+        to a `HelmChartConfig` + middlewares manifest and removed `--disable traefik`. It failed for
+        two reasons: (1) the bundled `traefik`/`traefik-crd` `HelmChart` CRs had been **stuck
+        terminating since 2024-03-17** (leftover `wrangler.cattle.io/helm-controller` finalizer from
+        the original disable) so k3s's install manifest was a no-op against them; (2) after clearing
+        the finalizers, the bundled `traefik-crd` chart **could not adopt the existing CRDs** (custom
+        chart applied them non-helm-owned; install uses `--force-conflicts=false`), so the `traefik`
+        chart's `validate-install-crd` failed *"Required CRDs are missing."* Recovered by reverting to
+        the custom chart (`92b2221`) and re-adding `--disable traefik` via
+        `/etc/rancher/k3s/config.yaml`. **Cost: a multi-minute ingress outage.** Lesson: bundled
+        cutover needs a planned window + pre-cleaned CRDs + traefik-crd-before-traefik ordering.
+  - [ ] **Preferred alt to Phase 3:** bump the **custom** Traefik chart `33.0.0 → 40.x` (stays
+        ArgoCD-managed, no k3s helm-controller / CRD-adoption dance) — gets the k3s-coupled version
+        bump with far less blast radius than the bundled cutover.
   - [ ] Remove the stale MQTT-hostname rewrite from AdGuard (`adguard-home` config) — batch with
         a Traefik restart to avoid an extra DNS blip.
 
