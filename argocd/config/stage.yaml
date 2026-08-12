@@ -36,6 +36,3 @@ apps:
   - app: cloudflare-ddns
     namespace: cloudflare-ddns
     wave: "3"
-  - app: mosquitto
-    namespace: mosquitto
-    wave: "3"
