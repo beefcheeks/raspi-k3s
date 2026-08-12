@@ -42,15 +42,19 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
   - [ ] **Remaining:** rewrite `README.md` (still links deleted dirs); **staging teardown**
         (Group D: `config/stage.yaml`, `roots/stage.yaml`, `appsets/stage/`, per-app
         `overlays/stage/`). See `RESTRUCTURE.md`.
-- [ ] **Version upgrades** — see `UPGRADE-AUDIT.md`. **k3s is now on 1.36**, so the k8s-coupled
-      bumps (cert-manager `1.21`, argocd `3.x`, traefik `40.x`) are now **UNBLOCKED**.
+- [x] **Version upgrades — DONE (2026-08).** See `UPGRADE-AUDIT.md`. k3s `1.28 → 1.36`, then all the
+      k8s-coupled bumps: cert-manager `1.21`, traefik chart `40.3.0` (v3.7.4), argocd `10.3.2` (**v3.5.0**).
   - [x] Pure-container warm-up bumps rolled out: adguard `v0.107.78`, cloudflare-ddns `1.17.0`
         (+ migrated DDNS `IP4_PROVIDER` ipify→cloudflare.trace). Verified Synced/Healthy.
   - [x] cert-manager `v1.16.1 → v1.21.1` — **done (2026-08)**; Synced/Healthy on k3s 1.36.
   - [x] traefik chart `33.0.0 → 40.3.0` (Traefik `v3.2 → v3.7.4`) — **done (2026-08)**, custom
         ArgoCD-managed chart; zero-downtime roll (RollingUpdate maxUnavailable=0, replicas 2).
-  - [ ] argocd `7.7.5 → 10.x` (v2.13 → v3) — **remaining coupled bump; paused for a later session.**
-        Verify min-k8s first.
+  - [x] argocd `7.7.5 → 10.3.2` (v2.13.1 → **v3.5.0**) — **done (2026-08)**, zero-downtime self-upgrade.
+        Two safety pins added: `application.resourceTrackingMethod: label` (v3 flips the default to
+        annotation → would force mass re-adoption) and `global.networkPolicy.create: false` (chart 10
+        defaults netpols on; the old chart created none). AVP CMP sidecar survived the major bump;
+        all 11 apps re-rendered Synced/Healthy. **Follow-ups (optional):** migrate tracking to
+        `annotation` and enable NetworkPolicies as separate, tested changes.
 - [x] **k3s upgrade — DONE (2026-08): 1.28 → 1.36.3+k3s1**, one minor at a time (SQLite datastore
       → no etcd checkpoint; `--disable traefik` preserved throughout). Lesson: **pace hops on this
       Pi** — batching 4 back-to-back overloaded the SQLite datastore (16s kine writes, load ~13);
