@@ -37,7 +37,11 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
       dashboard tool). Depends on `ha-mcp` being connected for authoring.
 
 ## Planned (see linked docs)
-- [ ] **Repo restructure** — legacy dir cleanup + staging teardown. See `RESTRUCTURE.md`.
+- [x] **Repo restructure — dead-dir cleanup done.** Removed 7 disabled app dirs + 10 legacy
+      top-level dirs + orphan namespaces/PVCs (homebridge, home-assistant, cloudflare-tunnel).
+  - [ ] **Remaining:** rewrite `README.md` (still links deleted dirs); **staging teardown**
+        (Group D: `config/stage.yaml`, `roots/stage.yaml`, `appsets/stage/`, per-app
+        `overlays/stage/`). See `RESTRUCTURE.md`.
 - [ ] **Version upgrades** — see `UPGRADE-AUDIT.md`. **k3s 1.28→ is next and must come first:**
       cert-manager/argocd/traefik bumps are gated on it (cert-manager 1.21 needs k8s 1.33+).
   - [x] Pure-container warm-up bumps rolled out: adguard `v0.107.78`, cloudflare-ddns `1.17.0`
@@ -66,3 +70,7 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
       verified the rollout on-cluster.
 - [x] 2026-08 — Migrated MQTT off-cluster: HA now uses a local Mosquitto add-on broker; removed
       the k3s `mosquitto` app (statefulset + Gateway + TCPRoute + cert) via GitOps.
+- [x] 2026-08 — Slimmed Traefik to HTTP-only (dropped the Gateway API/mqtts machinery +
+      experimental CRDs + `experimentalChannel`); closed public `8883`. De-risks the Traefik bump.
+- [x] 2026-08 — Deleted dead app dirs, legacy pre-ArgoCD dirs, and orphan namespaces/PVCs.
+      Cluster + repo now down to only live, in-use apps (10 + root).
