@@ -36,8 +36,6 @@ filtering:
       answer: <path:vaults/homelab/items/ingress#ip-address>
     - domain: "<path:vaults/homelab/items/ingress#home-assistant>"
       answer: <path:vaults/homelab/items/ingress#ip-address>
-    - domain: "<path:vaults/homelab/items/ingress#mosquitto>"
-      answer: <path:vaults/homelab/items/ingress#ip-address>
     - domain: "<path:vaults/homelab/items/router-dns#http>"
       answer: <path:vaults/homelab/items/router-dns#ip-address>
     - domain: "<path:vaults/homelab/items/router-dns#https>"
