@@ -1,7 +1,13 @@
 namespace: kube-system
 
-# Manifest-only: we no longer ship our own Traefik chart. The k3s-bundled Traefik (v3)
-# is customized via the HelmChartConfig below; the middlewares are plain traefik.io CRs.
 resources:
-  - resources/helmchartconfig.yaml
   - resources/middleware.yaml
+
+helmCharts:
+  - includeCRDs: true
+    name: traefik
+    namespace: kube-system
+    releaseName: traefik
+    repo: https://traefik.github.io/charts
+    version: 33.0.0
+    valuesFile: values.yaml

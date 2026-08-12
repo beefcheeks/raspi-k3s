@@ -1,0 +1,25 @@
+# Reference: https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+
+# Minimize possibility of 1 pod being not ready knocking out traefik LB IP
+deployment:
+  replicas: 2
+
+# No Gateway API — Traefik is HTTP-ingress only (Gateway/MQTTS removed with mosquitto)
+gateway:
+  enabled: false
+
+# Increase timeout to prevent not ready state from flapping
+livenessProbe:
+  timeoutSeconds: 5
+readinessProbe:
+  timeoutSeconds: 5
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "100Mi"
+
+# Required for external IPs to be passed for allow/deny rules
+service:
+  spec:
+    externalTrafficPolicy: Local
