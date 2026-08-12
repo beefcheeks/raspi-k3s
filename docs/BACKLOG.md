@@ -47,7 +47,10 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
   - [x] Pure-container warm-up bumps rolled out: adguard `v0.107.78`, cloudflare-ddns `1.17.0`
         (+ migrated DDNS `IP4_PROVIDER` ipify→cloudflare.trace). Verified Synced/Healthy.
   - [x] cert-manager `v1.16.1 → v1.21.1` — **done (2026-08)**; Synced/Healthy on k3s 1.36.
-  - [ ] Verify argocd 10.x / traefik 40.x min-k8s before bumping (likely also k3s-gated).
+  - [x] traefik chart `33.0.0 → 40.3.0` (Traefik `v3.2 → v3.7.4`) — **done (2026-08)**, custom
+        ArgoCD-managed chart; zero-downtime roll (RollingUpdate maxUnavailable=0, replicas 2).
+  - [ ] argocd `7.7.5 → 10.x` (v2.13 → v3) — **remaining coupled bump; paused for a later session.**
+        Verify min-k8s first.
 - [x] **k3s upgrade — DONE (2026-08): 1.28 → 1.36.3+k3s1**, one minor at a time (SQLite datastore
       → no etcd checkpoint; `--disable traefik` preserved throughout). Lesson: **pace hops on this
       Pi** — batching 4 back-to-back overloaded the SQLite datastore (16s kine writes, load ~13);
@@ -67,9 +70,11 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
         the custom chart (`92b2221`) and re-adding `--disable traefik` via
         `/etc/rancher/k3s/config.yaml`. **Cost: a multi-minute ingress outage.** Lesson: bundled
         cutover needs a planned window + pre-cleaned CRDs + traefik-crd-before-traefik ordering.
-  - [ ] **Preferred alt to Phase 3:** bump the **custom** Traefik chart `33.0.0 → 40.x` (stays
-        ArgoCD-managed, no k3s helm-controller / CRD-adoption dance) — gets the k3s-coupled version
-        bump with far less blast radius than the bundled cutover.
+  - [x] **Chosen path instead of Phase 3: bumped the custom Traefik chart `33.0.0 → 40.3.0`**
+        (2026-08). ArgoCD-managed, no k3s helm-controller / CRD-adoption dance — clean zero-downtime
+        roll to `v3.7.4`, all apps Synced/Healthy. Bundled cutover shelved (see Phase 3 above).
+        Note: chart 40 no longer bundles the Gateway API CRDs, so 5 empty `gateway.networking.k8s.io`
+        CRDs now linger (untracked, 0 CRs) — trivial optional `kubectl delete crd` cleanup.
   - [ ] Remove the stale MQTT-hostname rewrite from AdGuard (`adguard-home` config) — batch with
         a Traefik restart to avoid an extra DNS blip.
 
