@@ -74,3 +74,9 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
       experimental CRDs + `experimentalChannel`); closed public `8883`. De-risks the Traefik bump.
 - [x] 2026-08 — Deleted dead app dirs, legacy pre-ArgoCD dirs, and orphan namespaces/PVCs.
       Cluster + repo now down to only live, in-use apps (10 + root).
+- [x] 2026-08 — Repo tidy: removed staging scaffolding (Group D1), rewrote README, scrubbed real
+      domains from the public docs, gitignored the router device-inventory CSV.
+- [x] 2026-08 — AirGradient static IPs: reserved Back Open Air (`.62`), Landing ONE (`.136`), and
+      the TV Room AiMesh node (`.3`); removed 3 stale container ghosts. Fixed `configure.sh` to
+      `nvram commit` + reload dnsmasq so reservations actually persist/apply. (Router surveyed:
+      ZenWiFi BQ16 Pro, stock FW 3.0.0.6 — feeds the P1 firmware item.)
