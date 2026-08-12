@@ -31,7 +31,7 @@ Everything flows through one Argo CD `ApplicationSet` (`homelab`):
 
 **Sync waves** (RollingSync, ordered): `0` onepassword → `1` asus-router, cert-manager,
 logdna-agent, traefik → `2` argocd → `3` adguard-home, argocd-ingress, cloudflare-ddns,
-ha-ingress, mosquitto.
+ha-ingress.
 
 > An app directory existing under `argocd/apps/` does **not** mean it's deployed. Check
 > `argocd/config/prod.yaml`. Several app dirs are defined but disabled (dead weight).
@@ -39,7 +39,7 @@ ha-ingress, mosquitto.
 ### Currently enabled apps (must match the live cluster)
 
 `onepassword · asus-router · cert-manager · logdna-agent · traefik · argocd ·
-adguard-home · argocd-ingress · cloudflare-ddns · ha-ingress · mosquitto`
+adguard-home · argocd-ingress · cloudflare-ddns · ha-ingress`
 
 To **enable/disable an app**, edit `argocd/config/prod.yaml` — do not `kubectl apply`
 manifests directly.
@@ -48,13 +48,19 @@ manifests directly.
 
 Home Assistant and its companions (Matter server, OpenThread Border Router, add-ons) were
 migrated **off this cluster** onto a dedicated Pi, managed via Home Assistant's own
-add-on / HACS ecosystem — **not** this repo. This cluster only provides two pieces of glue:
+add-on / HACS ecosystem — **not** this repo. This cluster now provides just **one** piece of glue:
 
 - **`ha-ingress`** — TLS termination + reverse proxy for HA. A selector-less `Service`
   plus a manually-managed `Endpoints` object pointing at the HA Pi's IP, fronted by a
   Traefik `Ingress` with cert-manager (Let's Encrypt) certs for the internal and external
   hostnames. This is why HA depends on the cluster: **the cluster does HA's SSL.**
-- **`mosquitto`** — MQTT broker that HA (and Zigbee/Matter stacks on the HA Pi) connect to.
+
+> **MQTT is no longer in this cluster.** The `mosquitto` app was retired (2026-08); HA now runs
+> its own **Mosquitto broker add-on** locally on the HA Pi, so HA connects to `core-mosquitto`
+> over localhost — no cluster, TLS-gateway, or DNS dependency. (History: the broker used to live
+> here behind a Traefik Gateway TLS listener at `mq.staatz.co:8883`, which forced HA into a
+> split-horizon-DNS + TLS-SNI setup — all removed. If you re-add an off-Pi MQTT client, point it
+> at the HA Pi's broker, not this cluster.)
 
 The `argocd/apps/{home-assistant,matter-server,openthread-border-router,mock-supervisor}`
 directories are **legacy** in-cluster definitions from before the migration and are not
