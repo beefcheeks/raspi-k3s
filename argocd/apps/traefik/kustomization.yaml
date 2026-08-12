@@ -9,5 +9,5 @@ helmCharts:
     namespace: kube-system
     releaseName: traefik
     repo: https://traefik.github.io/charts
-    version: 33.0.0
+    version: 40.3.0
     valuesFile: values.yaml
