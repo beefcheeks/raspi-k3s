@@ -42,14 +42,16 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
   - [ ] **Remaining:** rewrite `README.md` (still links deleted dirs); **staging teardown**
         (Group D: `config/stage.yaml`, `roots/stage.yaml`, `appsets/stage/`, per-app
         `overlays/stage/`). See `RESTRUCTURE.md`.
-- [ ] **Version upgrades** — see `UPGRADE-AUDIT.md`. **k3s 1.28→ is next and must come first:**
-      cert-manager/argocd/traefik bumps are gated on it (cert-manager 1.21 needs k8s 1.33+).
+- [ ] **Version upgrades** — see `UPGRADE-AUDIT.md`. **k3s is now on 1.36**, so the k8s-coupled
+      bumps (cert-manager `1.21`, argocd `3.x`, traefik `40.x`) are now **UNBLOCKED**.
   - [x] Pure-container warm-up bumps rolled out: adguard `v0.107.78`, cloudflare-ddns `1.17.0`
         (+ migrated DDNS `IP4_PROVIDER` ipify→cloudflare.trace). Verified Synced/Healthy.
   - [ ] cert-manager `v1.16.1 → v1.21.1` — **deferred, gated on k3s ≥1.33.**
   - [ ] Verify argocd 10.x / traefik 40.x min-k8s before bumping (likely also k3s-gated).
-- [ ] **k3s upgrade** — step 1.28→1.32 (etcd 3.5.26 checkpoint), then →1.36. Needs etcd
-      snapshot + SD/SSD backup first. See `UPGRADE-AUDIT.md` runbook.
+- [x] **k3s upgrade — DONE (2026-08): 1.28 → 1.36.3+k3s1**, one minor at a time (SQLite datastore
+      → no etcd checkpoint; `--disable traefik` preserved throughout). Lesson: **pace hops on this
+      Pi** — batching 4 back-to-back overloaded the SQLite datastore (16s kine writes, load ~13);
+      settle pods *and* load back to baseline between each hop.
 - [ ] **Traefik simplification** (unlocked by mosquitto removal — it was the *only* Gateway API user):
   - [ ] **Phase 2 (now):** slim the custom Traefik — drop the `mqtts:8883` entrypoint, the
         `kubernetesGateway` provider (`experimentalChannel`), and the hand-pinned experimental
