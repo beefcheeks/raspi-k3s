@@ -21,4 +21,12 @@ ssh $ROUTER_USER@$ROUTER_IP \
   -o StrictHostKeyChecking=accept-new \
   "nvram set dhcp_staticlist=\"$DHCP_STATICLIST\""
 
+# Persist to flash and reload dnsmasq so the static list actually takes effect
+# (without this, `nvram set` is RAM-only and new reservations don't apply until reboot)
+ssh $ROUTER_USER@$ROUTER_IP \
+  -p $ROUTER_PORT \
+  -i /opt/ssh/id_rsa \
+  -o StrictHostKeyChecking=accept-new \
+  "nvram commit && service restart_dnsmasq"
+
 echo "Script completed, exiting..."
