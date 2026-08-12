@@ -1,4 +1,10 @@
 # Reference: https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
+
+# Chart 10 defaults global.networkPolicy.create=true; the pre-v3 chart created none.
+# Keep netpols off so this is a pure version bump — enable as a separate, tested change.
+global:
+  networkPolicy:
+    create: false
 applicationSet:
   resources:
     requests:
@@ -13,6 +19,9 @@ configs:
   cm:
     # Enable kustomize to render helm charts
     kustomize.buildOptions: --enable-helm
+    # Pin label-based tracking (Argo CD v3 flips the default to annotation, which would
+    # force mass re-adoption of every already-tracked resource). Preserves current behavior.
+    application.resourceTrackingMethod: label
   ## BEGIN ARGOCD VAULT PLUGIN CONFIGURATION ##
   cmp:
     # Creates the configmap argocd-cmp-cm
