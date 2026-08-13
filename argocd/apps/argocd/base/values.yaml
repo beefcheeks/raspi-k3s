@@ -1,10 +1,11 @@
 # Reference: https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
 
-# Chart 10 defaults global.networkPolicy.create=true; the pre-v3 chart created none.
-# Keep netpols off so this is a pure version bump — enable as a separate, tested change.
+# NetworkPolicies for Argo CD's own components (chart 10 default). Adds intra-namespace
+# segmentation: server/repo-server/controller ↔ redis are explicitly allowed, argocd-server
+# ingress stays open (fronted by Traefik). Enabled as a separate, tested change post-v3-bump.
 global:
   networkPolicy:
-    create: false
+    create: true
 applicationSet:
   resources:
     requests:
