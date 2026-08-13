@@ -31,7 +31,7 @@ Everything flows through one Argo CD `ApplicationSet` (`homelab`):
 
 **Sync waves** (RollingSync, ordered): `0` onepassword → `1` asus-router, cert-manager,
 logdna-agent, traefik → `2` argocd → `3` adguard-home, argocd-ingress, cloudflare-ddns,
-ha-ingress.
+cloudflare-tunnel, ha-ingress.
 
 > An app directory existing under `argocd/apps/` does **not** mean it's deployed. Check
 > `argocd/config/prod.yaml`. Several app dirs are defined but disabled (dead weight).
@@ -39,7 +39,7 @@ ha-ingress.
 ### Currently enabled apps (must match the live cluster)
 
 `onepassword · asus-router · cert-manager · logdna-agent · traefik · argocd ·
-adguard-home · argocd-ingress · cloudflare-ddns · ha-ingress`
+adguard-home · argocd-ingress · cloudflare-ddns · cloudflare-tunnel · ha-ingress`
 
 To **enable/disable an app**, edit `argocd/config/prod.yaml` — do not `kubectl apply`
 manifests directly.
@@ -50,10 +50,14 @@ Home Assistant and its companions (Matter server, OpenThread Border Router, add-
 migrated **off this cluster** onto a dedicated Pi, managed via Home Assistant's own
 add-on / HACS ecosystem — **not** this repo. This cluster now provides just **one** piece of glue:
 
-- **`ha-ingress`** — TLS termination + reverse proxy for HA. A selector-less `Service`
-  plus a manually-managed `Endpoints` object pointing at the HA Pi's IP, fronted by a
-  Traefik `Ingress` with cert-manager (Let's Encrypt) certs for the internal and external
-  hostnames. This is why HA depends on the cluster: **the cluster does HA's SSL.**
+- **`ha-ingress`** — TLS termination + reverse proxy for the **internal** HA hostname. A
+  selector-less `Service` plus a manually-managed `Endpoints` object pointing at the HA Pi's IP,
+  fronted by a Traefik `Ingress` with cert-manager (Let's Encrypt) certs. **External HA access
+  moved to the `cloudflare-tunnel` app (2026-08):** `cloudflared` dials out to Cloudflare and
+  routes `ha.<external-domain>` straight to the HA Pi (`10.0.0.9:8123`), so the `443→Pi`
+  port-forward is **removed**, the home IP is masked, and ha-ingress's external route is now
+  redundant (internal SSL only). WireGuard (router, UDP 51820) uses `wg.<external-domain>`
+  (kept current by `cloudflare-ddns`) as its endpoint.
 
 > **MQTT is no longer in this cluster.** The `mosquitto` app was retired (2026-08); HA now runs
 > its own **Mosquitto broker add-on** locally on the HA Pi, so HA connects to `core-mosquitto`
@@ -79,7 +83,10 @@ add a placeholder + vault path instead.
 
 - **Internal:** `<internal-domain>` (real value in 1Password `ingress`) — resolves only on the LAN
   via **AdGuard Home** (`adguard-home`).
-- **External:** `<external-domain>` — public, dynamic IP kept current by `cloudflare-ddns`.
+- **External:** `<external-domain>` — public. HA is reached via a **Cloudflare Tunnel**
+  (`cloudflare-tunnel` app, `cloudflared` → HA Pi) — outbound-only, no port-forward, IP masked.
+  `cloudflare-ddns` no longer tracks the HA hostname; it now keeps **`wg.<external-domain>`**
+  (the WireGuard endpoint, DNS-only A record) pointed at the dynamic WAN IP.
 - Ingress/LoadBalancer via Traefik + k3s servicelb (`svclb-*` daemonsets).
 
 ## Conventions

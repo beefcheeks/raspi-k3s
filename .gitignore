@@ -3,3 +3,10 @@
 
 # Router static-DHCP inventory: MAC addresses / IPs / device names.
 argocd/apps/asus-router/files/static-clients.csv
+
+# Home Assistant working notes (house layout / device inventory / integrations) — private.
+docs/HOME-ASSISTANT.md
+
+# macOS cruft
+.DS_Store
+**/.DS_Store
