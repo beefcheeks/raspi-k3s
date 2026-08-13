@@ -36,8 +36,12 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
     hostname (`rexpdx` → `200`, LE cert via DNS-01). **Do NOT re-bind DDNS to the account** — it
     re-breaks. Fully repairing the AAE binding = factory reset / Asus support (not worth it). The
     Router app itself works (re-added).
-  - **AirGradient reservations:** Back Open Air confirmed live on `.62`; Landing ONE reservation
-    correct (`.136`) but the device wasn't reconnecting to WiFi (device-side, not router).
+  - **AirGradient reservations:** both confirmed live on their reserved IPs — Back Open Air `.62`,
+    Landing ONE `.136`. (Landing took several restarts to re-associate after the router work — it's
+    served by an **XT8** mesh node upstairs, not the BQ16; see the mesh note below.)
+  - **AiMesh is mixed-model:** BQ16 Pro controller + 2× ZenWiFi **XT8** nodes (`.2` upstairs, `.3` TV
+    room), which run their **own separate firmware**. If 2.4 GHz IoT devices flake at a node after a
+    controller update, check/update the XT8 nodes' firmware too.
 - [ ] **P2 — Settings audit.** Full review of router config (firewall, port forwards, DHCP
       reservations / the `static-clients.csv`, DNS pointing at AdGuard, WireGuard/OpenVPN,
       AiProtection, guest nets, UPnP). Cross-check against what `asus-router-manager` expects.
