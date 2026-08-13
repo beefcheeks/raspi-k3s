@@ -1,4 +1,4 @@
-namespace: cloudflared
+namespace: cloudflare-tunnel
 
 images:
   - name: cloudflare/cloudflared

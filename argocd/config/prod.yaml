@@ -36,8 +36,8 @@ apps:
   - app: cloudflare-ddns
     namespace: cloudflare-ddns
     wave: "3"
-  - app: cloudflared
-    namespace: cloudflared
+  - app: cloudflare-tunnel
+    namespace: cloudflare-tunnel
     wave: "3"
   - app: ha-ingress
     directory: "/"

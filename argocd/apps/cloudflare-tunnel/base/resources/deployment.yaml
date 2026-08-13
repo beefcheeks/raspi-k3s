@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cloudflared
+  name: cloudflare-tunnel
 spec:
   replicas: 1 # single-node cluster; bump to 2 for zero-downtime rollouts (Cloudflare LBs the connections)
   selector:
     matchLabels:
-      app: cloudflared
+      app: cloudflare-tunnel
   template:
     metadata:
       labels:
-        app: cloudflared
+        app: cloudflare-tunnel
     spec:
       containers:
         - name: cloudflared
@@ -29,7 +29,7 @@ spec:
             - name: TUNNEL_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: cloudflared
+                  name: cloudflare-tunnel
                   key: token
           livenessProbe:
             httpGet:

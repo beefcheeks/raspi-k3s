@@ -1,6 +1,6 @@
-# cloudflared (Cloudflare Tunnel)
+# cloudflare-tunnel
 
-Exposes Home Assistant externally **without a router port-forward**. `cloudflared` makes an
+Exposes Home Assistant externally **without a router port-forward**. The `cloudflared` daemon makes an
 **outbound-only** connection to Cloudflare; inbound requests for `ha.therexhouse.com` ride that
 tunnel to HA. Removes the `443 → Pi` WAN forward and hides the home IP.
 
@@ -29,9 +29,9 @@ tunnel to HA. Removes the `443 → Pi` WAN forward and hides the home IP.
      breaks the Withings OAuth callback). If you later want Access on the HA login, add a
      **Bypass** rule for `/auth/*`, the OAuth callback path, and `/api/webhook/*`.
 3. Copy the tunnel **token** (from the "run" command Cloudflare shows) into 1Password:
-   vault `homelab`, item **`cloudflared`**, field **`token`**.
-4. **Enable the app:** add to `argocd/config/prod.yaml` (wave `3`, namespace `cloudflared`).
-   ArgoCD deploys it; the `OnePasswordItem` syncs the token to the `cloudflared` secret.
+   vault `homelab`, item **`cloudflare-tunnel`**, field **`token`**.
+4. **Enable the app:** add to `argocd/config/prod.yaml` (wave `3`, namespace `cloudflare-tunnel`).
+   ArgoCD deploys it; the `OnePasswordItem` syncs the token to the `cloudflare-tunnel` secret.
 
 ## Cutover / rollback
 
