@@ -55,8 +55,9 @@ add-on / HACS ecosystem — **not** this repo. This cluster now provides just **
   fronted by a Traefik `Ingress` with cert-manager (Let's Encrypt) certs. **External HA access
   moved to the `cloudflare-tunnel` app (2026-08):** `cloudflared` dials out to Cloudflare and
   routes `ha.<external-domain>` straight to the HA Pi (`10.0.0.9:8123`), so the `443→Pi`
-  port-forward is **removed**, the home IP is masked, and ha-ingress's external route is now
-  redundant (internal SSL only). WireGuard (router, UDP 51820) uses `wg.<external-domain>`
+  port-forward is **removed**, the home IP is masked, and ha-ingress's external route (the
+  `home-assistant-external` Ingress) has been **removed** — the cluster now terminates HA's
+  **internal** SSL only. WireGuard (router, UDP 51820) uses `wg.<external-domain>`
   (kept current by `cloudflare-ddns`) as its endpoint.
 
 > **MQTT is no longer in this cluster.** The `mosquitto` app was retired (2026-08); HA now runs

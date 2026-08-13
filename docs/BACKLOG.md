@@ -22,6 +22,21 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
       to a stale broker name (`mosquitto.mosquitto`) + split-horizon DNS; rather than keep patching,
       HA now runs a **local Mosquitto add-on** (`core-mosquitto`, protocol 5). k3s `mosquitto` app
       retired (see Done). Verify the repair badge clears on HA's next re-eval/restart.
+- [x] **Removed redundant `home-assistant-external` Ingress (2026-08).** External HA moved to the
+      Cloudflare Tunnel, so `ha.<external-domain>` is a tunnel CNAME and no longer routes to Traefik —
+      the second Ingress in `ha-ingress` + its public LE cert were dead weight (pointless renewals).
+      Dropped it; cert-manager tore down the Certificate; deleted the orphan TLS secret. Cluster now
+      does only HA's **internal** SSL (the remaining `home-assistant` Ingress).
+
+### 1Password `HomeLab` vault tidy (user actions in the 1Password UI; Claude has read-only)
+- [ ] **P2 — Archive stale vault items** (unreferenced by any manifest — diffed 2026-08):
+      `mosquitto-users`, `multus-dns-route`, `multus-mac`, and all six `*-stage` items
+      (`adguard-login-stage`, `argocd-secret-stage`, `argocd-vault-plugin-stage`, `ingress-stage`,
+      `mosquitto-users-stage`, `multus-mac-stage`). Leftovers from retired apps + the torn-down
+      staging env.
+- [ ] **P2 — Drop stale fields inside the `ingress` item:** `homebridge` + `mosquitto` (retired apps,
+      0 refs) and `home-assistant-external` (safe now that the external Ingress is removed). Keep
+      `ip-address-home-assistant` (live — ha-ingress Endpoints).
 
 ### Asus router (creds in 1Password `HomeLab` vault: `router-ssh-key`, `router-ssh-config`, `router-dns`)
 - [x] **P1 — Firmware update — RESOLVED (2026-08) via manual flash.** Router HW was healthy (dual
@@ -64,9 +79,17 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
     `ha-test.therexhouse.com` route deleted. **Remote web-admin on WAN:8443 also disabled
     (`misc_http_x=0`)** — WG is now the sole remote path. Net result: **router has zero inbound
     TCP; only WireGuard UDP/51820 is reachable from the internet.**
-  - **Deferred:** AiProtection (off) → user's call (infected-device-only if any); dedicated IoT
-    SSID → **decided against** (Asus guest routes to a separate subnet, breaks mDNS/LAN — tuning
-    the single net instead).
+  - **AiProtection — decided SKIP (2026-08).** Value is low now: zero inbound TCP makes the WAN-IPS
+    moot, DNS filtering already covers malicious-site blocking, and the residual infected-device
+    detection isn't worth the DPI/throughput hit + Trend Micro telemetry export on an IoT-heavy net.
+    Left off.
+  - **AdGuard for the LG TV (2026-08).** Diffed the static-client inventory: this net is almost all
+    locally-controlled HomeKit gear (nothing to filter) + personal devices (kept OFF AdGuard to avoid
+    false-positive link breakage). Only high-value target is **TV_Room_LG_TV (`.16`)** — webOS is
+    ad/telemetry-heavy and we don't click links on it. Plan: point just the TV's DNS at `10.0.0.10`
+    (TV-side setting), leave everything else as-is. No SPOF exposure for anything that matters.
+  - Dedicated IoT SSID → **decided against** (Asus guest routes to a separate subnet, breaks
+    mDNS/LAN — tuning the single net instead).
 
 ### Dashboards
 - [ ] **P2 — Kitchen iPad Mini dashboard.** Build a wall/kitchen HA dashboard tuned for the
@@ -90,8 +113,17 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
         Two safety pins added: `application.resourceTrackingMethod: label` (v3 flips the default to
         annotation → would force mass re-adoption) and `global.networkPolicy.create: false` (chart 10
         defaults netpols on; the old chart created none). AVP CMP sidecar survived the major bump;
-        all 11 apps re-rendered Synced/Healthy. **Follow-ups (optional):** migrate tracking to
-        `annotation` and enable NetworkPolicies as separate, tested changes.
+        all 11 apps re-rendered Synced/Healthy.
+  - [x] **Follow-up 1 — tracking `label` → `annotation` — done (2026-08).** Flipped
+        `application.resourceTrackingMethod`; forced a manual apply-all pass so every managed
+        resource got stamped with `argocd.argoproj.io/tracking-id` (avoids the lazy half-migrated
+        state where un-stamped resources can dodge prune). Zero pod restarts (metadata-only), all
+        apps Synced/Healthy, Pi load stayed ~0.4 cores.
+  - [x] **Follow-up 2 — NetworkPolicies enabled — done (2026-08).** `global.networkPolicy.create=true`.
+        Chart ships 6 Ingress-only policies; `argocd-server` is allow-all (Traefik UI path stays
+        open — verified `ac.staatz.co` → 200), redis/repo-server/dex allow only their known clients,
+        egress unrestricted (repo-server→git + AVP sidecar→1Password Connect unaffected; sidecar is
+        in-pod so netpol N/A). Verified end-to-end: AVP-heavy apps (adguard-home etc.) still render.
 - [x] **k3s upgrade — DONE (2026-08): 1.28 → 1.36.3+k3s1**, one minor at a time (SQLite datastore
       → no etcd checkpoint; `--disable traefik` preserved throughout). Lesson: **pace hops on this
       Pi** — batching 4 back-to-back overloaded the SQLite datastore (16s kine writes, load ~13);
