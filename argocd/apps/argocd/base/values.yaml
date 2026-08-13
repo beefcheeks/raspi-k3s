@@ -19,9 +19,11 @@ configs:
   cm:
     # Enable kustomize to render helm charts
     kustomize.buildOptions: --enable-helm
-    # Pin label-based tracking (Argo CD v3 flips the default to annotation, which would
-    # force mass re-adoption of every already-tracked resource). Preserves current behavior.
-    application.resourceTrackingMethod: label
+    # Annotation-based tracking (Argo CD v3 default): more robust than the legacy
+    # app.kubernetes.io/instance label — no selector collisions, survives resource
+    # renames, and works on resources that can't carry the extra label. Migrated off
+    # the `label` pin set during the v3 bump (one-time re-adoption churn on rollout).
+    application.resourceTrackingMethod: annotation
   ## BEGIN ARGOCD VAULT PLUGIN CONFIGURATION ##
   cmp:
     # Creates the configmap argocd-cmp-cm
