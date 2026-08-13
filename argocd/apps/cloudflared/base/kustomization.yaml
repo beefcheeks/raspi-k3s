@@ -1,0 +1,9 @@
+namespace: cloudflared
+
+images:
+  - name: cloudflare/cloudflared
+    newTag: 2026.8.1
+
+resources:
+  - resources/onepassworditem.yaml
+  - resources/deployment.yaml
