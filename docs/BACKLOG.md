@@ -42,9 +42,24 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
   - **AiMesh is mixed-model:** BQ16 Pro controller + 2× ZenWiFi **XT8** nodes (`.2` upstairs, `.3` TV
     room), which run their **own separate firmware**. If 2.4 GHz IoT devices flake at a node after a
     controller update, check/update the XT8 nodes' firmware too.
-- [ ] **P2 — Settings audit.** Full review of router config (firewall, port forwards, DHCP
-      reservations / the `static-clients.csv`, DNS pointing at AdGuard, WireGuard/OpenVPN,
-      AiProtection, guest nets, UPnP). Cross-check against what `asus-router-manager` expects.
+- [~] **P2 — Settings audit — done (2026-08), some follow-ups.** Full nvram review.
+  - **Applied (IoT reliability + hardening):** Roaming Assist off (`wlX_user_rssi=0`; it was
+    force-kicking sticky ESP32 IoT at -70), 2.4 GHz → 20 MHz (`wl0_bw=1`) + **ax-off**
+    (`wl0_11ax=0`) for IoT compat, **WPS off** (`wps_enable_x=0` — note the master toggle is
+    `wps_enable_x`, not `wps_enable` which a wireless-restart re-derives), **UPnP off**
+    (`upnp_enable=0`). nvram backup: `/jffs/nvram-full-*.txt`.
+  - **Findings / good:** WPA2/WPA3-mixed on 2.4 (IoT-friendly ✓), AP-isolation off on main ✓,
+    IGMP snooping on ✓, guest "Wifisaurus Rex" properly LAN-isolated ✓, Telnet off / WAN ping
+    off / SSH LAN-only / no DMZ / single 443→Pi forward ✓. WiFi-7 AiMesh: `wl0-3 closed=1` is
+    the internal MLO/backhaul fabric, **not** hidden client SSIDs (don't re-flag).
+  - **AdGuard is bypassed** — DHCP hands clients `1.1.1.1` (`dhcp_dns1_x`), not `10.0.0.10`.
+    Deliberate-ish (Pi = DNS SPOF during outages). Better path if wanted: all clients → AdGuard
+    + per-client filtering exemptions (Apple TV etc.) in AdGuard's Client settings.
+  - **Deferred:** remote web-admin on WAN:8443 (`misc_http_x=1`) → disable *after* verifying
+    WireGuard is a reliable remote path; AiProtection (off) → user's call (infected-device-only
+    if any); dedicated IoT SSID → **decided against** (Asus guest routes to a separate subnet,
+    breaks mDNS/LAN — tuning the single net instead); **Cloudflare Tunnel for HA** → exploring
+    (would let us close the 443 forward entirely).
 
 ### Dashboards
 - [ ] **P2 — Kitchen iPad Mini dashboard.** Build a wall/kitchen HA dashboard tuned for the
