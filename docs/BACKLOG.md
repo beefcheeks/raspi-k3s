@@ -60,12 +60,13 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
     now the tunnel (`cloudflared` → `10.0.0.9:8123`); Withings webhooks verified through it. **Freed
     `ha.therexhouse.com`** for the tunnel by moving WireGuard to **`wg.therexhouse.com`**
     (cloudflare-ddns `ddns-external` field repointed) + updating WG clients. **`443→Pi` forward
-    removed** (`vts_rulelist` empty; WG's UDP 51820 is a built-in server, not a forward). Delete the
-    leftover `ha-test.therexhouse.com` Cloudflare route (dashboard) when convenient.
-  - **Deferred:** remote web-admin on WAN:8443 (`misc_http_x=1`) → **now safe to disable** (WG
-    proven as the remote path); AiProtection (off) → user's call (infected-device-only if any);
-    dedicated IoT SSID → **decided against** (Asus guest routes to a separate subnet, breaks
-    mDNS/LAN — tuning the single net instead).
+    removed** (`vts_rulelist` empty; WG's UDP 51820 is a built-in server, not a forward). Test
+    `ha-test.therexhouse.com` route deleted. **Remote web-admin on WAN:8443 also disabled
+    (`misc_http_x=0`)** — WG is now the sole remote path. Net result: **router has zero inbound
+    TCP; only WireGuard UDP/51820 is reachable from the internet.**
+  - **Deferred:** AiProtection (off) → user's call (infected-device-only if any); dedicated IoT
+    SSID → **decided against** (Asus guest routes to a separate subnet, breaks mDNS/LAN — tuning
+    the single net instead).
 
 ### Dashboards
 - [ ] **P2 — Kitchen iPad Mini dashboard.** Build a wall/kitchen HA dashboard tuned for the
