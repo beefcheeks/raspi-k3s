@@ -24,9 +24,20 @@ Larger plans have their own docs: [`RESTRUCTURE.md`](./RESTRUCTURE.md),
       retired (see Done). Verify the repair badge clears on HA's next re-eval/restart.
 
 ### Asus router (creds in 1Password `HomeLab` vault: `router-ssh-key`, `router-ssh-config`, `router-dns`)
-- [ ] **P1 — Firmware stuck / "red" status.** Router UI shows red and won't flash to the next
-      firmware version. Investigate why (bad partition? unsupported jump? Merlin vs stock?
-      storage full?) and get it to a clean upgradeable state.
+- [x] **P1 — Firmware update — RESOLVED (2026-08) via manual flash.** Router HW was healthy (dual
+      A/B partitions intact, no NAND errors); the "red"/failure was **Asus's OTA hitting a 404**: the
+      updater builds `dlcdnets.asus.com/.../ASUSWRT/BQ16_PRO_3006_102_39256-…` but the firmware is
+      actually hosted at `…/ZenWiFi BQ16 Pro/FW_ZenWiFi_BQ16_Pro_300610239256.zip` (Asus control file
+      even returned `url_dl:"NULL"`). Fix: manual-download + UI upload → now on **`3.0.0.6.102_39256`**.
+      **Future OTAs will likely need the same manual-flash** until Asus fixes the CDN path.
+  - **DDNS/asuscomm:** the router's **ASUS-account AAE binding is corrupted** (device+user tickets
+    expired Feb-2026, cloud login resets w/ `curl 56`) — account-linked DDNS 390s. Worked around by
+    running DDNS in **standalone/device-MAC mode** (`nvram ddns_replace_status=0`) with a fresh
+    hostname (`rexpdx` → `200`, LE cert via DNS-01). **Do NOT re-bind DDNS to the account** — it
+    re-breaks. Fully repairing the AAE binding = factory reset / Asus support (not worth it). The
+    Router app itself works (re-added).
+  - **AirGradient reservations:** Back Open Air confirmed live on `.62`; Landing ONE reservation
+    correct (`.136`) but the device wasn't reconnecting to WiFi (device-side, not router).
 - [ ] **P2 — Settings audit.** Full review of router config (firewall, port forwards, DHCP
       reservations / the `static-clients.csv`, DNS pointing at AdGuard, WireGuard/OpenVPN,
       AiProtection, guest nets, UPnP). Cross-check against what `asus-router-manager` expects.
