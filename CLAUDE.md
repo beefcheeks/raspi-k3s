@@ -111,7 +111,11 @@ see `docs/BACKLOG.md` for the log). What remains:
 
 - **Versions behind** — k3s `1.28` is **EOL** and is the next major task; cert-manager / argocd /
   traefik bumps are gated on it. See `docs/UPGRADE-AUDIT.md`.
-- Pi OS is Debian 11 (bullseye); a bookworm reimage is deferred.
+- Pi OS is Debian 12 (**bookworm**), upgraded in-place from bullseye (2026-08). **Networking note:**
+  the upgrade pulled in **NetworkManager**, which declares `Conflicts=dhcpcd.service` and left eth0
+  `unmanaged` — so at boot dhcpcd was dropped and eth0 got no IP. Fixed by **masking NetworkManager**
+  (`systemctl mask NetworkManager`); this box is ethernet-only, so dhcpcd is the sole net manager and
+  gets `10.0.0.10` via the Asus router's DHCP reservation. Don't unmask NM without re-fixing this.
 - The `raspian/` and `ubuntu/` OS-install guides are dated (reference older OS/k3s).
 - Untracked WIP under `argocd/apps/asus-router/` (`resources/{ingress,service}.yaml`,
   `files/static-clients.csv`) — part of the pending asus-router static-IP work.

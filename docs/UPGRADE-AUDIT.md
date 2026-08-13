@@ -114,13 +114,20 @@ Order by risk, lowest first:
 - No forced migration today. Revisit if you consolidate on a different log backend (see the
   Mezmo MCP note — you may want to keep Mezmo in the loop for historic-log queries).
 
-## Pi OS (deferred)
+## Pi OS — DONE (2026-08): in-place bullseye → bookworm (Debian 12)
 
-- Current: Debian 11 **bullseye** (oldstable; approaching EOL). Options:
-  - **Now:** `sudo apt update && sudo apt full-upgrade` within bullseye for current patches.
-  - **Later:** reimage to a current Raspberry Pi OS (bookworm) on fresh SSD/SD and restore —
-    cleaner and less risky than an in-place `bullseye → bookworm` dist-upgrade on a 4-year-old
-    install. Do this as its own project with a full backup and the k3s snapshot in hand.
+- Did an **in-place `apt` dist-upgrade** (not a reimage): patched bullseye fully first, then flipped
+  Debian/raspberrypi/tailscale apt sources `bullseye → bookworm`, `apt full-upgrade` (~600 pkgs,
+  detached via `systemd-run` so it survived SSH), autoremove, reboot. k3s was untouched (not an apt
+  package) and the cluster came back green on Debian 12 (kernel stayed 6.1.21, arch already 64-bit).
+- **The one landmine — networking:** the upgrade installed **NetworkManager**, which
+  `Conflicts=dhcpcd.service`. At boot NM won (bookworm default) and systemd **dropped dhcpcd**, but
+  NM's RPi config (`managed=false`) refused to touch eth0 → **no IP, Pi off the network, needed
+  console recovery.** Fix: **`systemctl mask NetworkManager`** (+ disable wait-online/dispatcher).
+  Ethernet-only headless box → dhcpcd is the sole manager; `10.0.0.10` comes from the router's DHCP
+  reservation (no static block needed on the Pi). Verified persistent across reboot.
+- Held back: `raspi-config` (non-critical). `rpi-eeprom` was removed in the transition (bootloader
+  already flashed; reinstall if you need the updater).
 
 ---
 
